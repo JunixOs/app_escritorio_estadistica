@@ -7,18 +7,17 @@ from Calcs.Frecuences_Calc import *
 from tkinter import *
 from tkinter import ttk
 
+# Variables Globales
+Labels_Window_Frecuences_Table = []
+#
 class TreeviewFrame(ttk.Frame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.hscrollbar = ttk.Scrollbar(self, orient=HORIZONTAL)
         self.vscrollbar = ttk.Scrollbar(self, orient=VERTICAL)
         self.treeview = ttk.Treeview(
             self,
-            xscrollcommand=self.hscrollbar.set,
             yscrollcommand=self.vscrollbar.set
         )
-        self.hscrollbar.config(command=self.treeview.xview)
-        self.hscrollbar.pack(side=BOTTOM, fill=X)
         self.vscrollbar.config(command=self.treeview.yview)
         self.vscrollbar.pack(side=RIGHT, fill=Y)
         self.treeview.pack(fill="both" , expand=True)
@@ -39,10 +38,18 @@ def Create_Window_Frecuences_Table():
         Main_Window.geometry("1240x700+135+100")
         Main_Window.title("Seleccion")
         Window_Frecuences_Table.destroy()
+    def Delete_Labels(Labels):
+        if(len(Labels) != 0):
+            for a in range(0 , len(Labels)):
+                Labels[a].destroy()
+        Labels_Window_Frecuences_Table = []
+
     def Create_Table(Precision , Input , Table_Frecuences):
         try:
             Table_Frecuences.clear_table()
             
+            Delete_Labels(Labels_Window_Frecuences_Table)
+
             Input = str(Input.get())
             Precision = int(Precision.get())
             Variables , Frecuences = Main_Function(Precision, Input)
@@ -70,6 +77,7 @@ def Create_Window_Frecuences_Table():
                 x_pos = 40+(215*b)
                 lab = Label(Window_Frecuences_Table , text=f"{key} = {value}" , font=("Times New Roman" , 12) , bg="#FEE1AB")
                 lab.place(x=x_pos , y=240)
+                Labels_Window_Frecuences_Table.append(lab)
                 b +=1
         except (IndexError , ValueError, TypeError):
             Error_Icon = PhotoImage(file="Images/error_icon.png")
@@ -88,6 +96,7 @@ def Create_Window_Frecuences_Table():
             Win_Err.grab_set()
             Win_Err.resizable(False,False)
             Win_Err.mainloop()
+
     Window_Frecuences_Table = Toplevel(Main_Window)
     Window_Frecuences_Table.geometry("1240x700+135+100")
     Window_Frecuences_Table.title("Tabla de frecuencias")
@@ -112,7 +121,7 @@ def Create_Window_Frecuences_Table():
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
     Text_Input_Precision_Results.place(x=40 , y=130)
-    Input_Precision_Results = Entry(Window_Frecuences_Table , width=10 , textvariable=Precision , cursor="xterm" , font=("Courier New" , 13) , bg="#ffffff")
+    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=10 , textvariable=Precision , from_=0 , to=6 , increment=1 , font=("Courier New" , 13) , bg="#ffffff")
     Input_Precision_Results.place(x=180 , y=130)
 
     Btn_Calc_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 15) , width=30 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Table)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
@@ -178,7 +187,3 @@ BtnFrecuencyTable.place(x=190,y=300)
 
 Main_Window.resizable(False,False)
 Main_Window.mainloop()
-
-
-
-

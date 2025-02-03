@@ -1,4 +1,5 @@
 from math import *
+
 def Separate_Data(a):
     number = ""
     Data = []
@@ -22,6 +23,10 @@ def Separate_Data(a):
 
 def Conv_Data(Data):
     Data_Converted = Data
+
+    if(len(Data_Converted)<2):
+        raise ValueError
+
     for n in range(0,len(Data)):
         Bool = "." in Data_Converted[n]
         match Bool:
@@ -91,7 +96,7 @@ def Calc_xi(Intervals , m , Precision):
     Arr_xi = []
     for a in range (0 , m):
         if(Precision == 0):
-            Arr_xi.append((Intervals[a][1]-Intervals[a][0])/2)
+            Arr_xi.append(round((Intervals[a][1]-Intervals[a][0])/2))
         else:
             Arr_xi.append(round((Intervals[a][1]-Intervals[a][0])/2 , Precision))
 
@@ -216,7 +221,7 @@ def Main_Function(N_Decimals_Precision , In):
         V_Max = Calc_Max(Data)
 
         n = len(Data)
-        R = Calc_Range(V_Min,V_Max)
+        R = round(Calc_Range(V_Min,V_Max) , 3)
         m = round(1+(3.3*log10(n)))
         C = R/m
 
@@ -224,10 +229,11 @@ def Main_Function(N_Decimals_Precision , In):
         if(C - round(C)==0):
             C = round(C)
             C_N_Decimals = 0
-        elif(C_N_Decimals>3):
-            C = round(C , 3)
         elif(C_N_Decimals>=1 and C_N_Decimals<=3):
             C = round(C , C_N_Decimals)
+        elif(C_N_Decimals>3):
+            C = round(C , 3)
+            C_N_Decimals = 3
 
         
         Arr_Intervals = Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
