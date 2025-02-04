@@ -96,9 +96,9 @@ def Calc_xi(Intervals , m , Precision):
     Arr_xi = []
     for a in range (0 , m):
         if(Precision == 0):
-            Arr_xi.append(round((Intervals[a][1]-Intervals[a][0])/2))
+            Arr_xi.append(round((Intervals[a][1]+Intervals[a][0])/2))
         else:
-            Arr_xi.append(round((Intervals[a][1]-Intervals[a][0])/2 , Precision))
+            Arr_xi.append(round((Intervals[a][1]+Intervals[a][0])/2 , Precision))
 
     return Arr_xi
 
@@ -140,6 +140,8 @@ def Calc_Hi(hi , Precision):
     Acumulate = 0
     for a in hi:
         Acumulate += a
+        if(Acumulate+0.1>=1):
+            Acumulate=1
         if(Precision != 0):
             Arr_Hi.append(round(Acumulate , Precision))
         else:
@@ -153,6 +155,7 @@ def Calc_hi_percent(hi , Precision):
             Arr_hi_percent.append(round(a*100 , Precision))
         else:
             Arr_hi_percent.append(round(a*100))
+            
     return Arr_hi_percent
 
 def Calc_Hi_percent(Hi , Precision):

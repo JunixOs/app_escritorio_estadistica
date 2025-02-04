@@ -22,11 +22,11 @@ class TreeviewFrame(ttk.Frame):
         self.vscrollbar.pack(side=RIGHT, fill=Y)
         self.treeview.pack(fill="both" , expand=True)
 
-    def has_rows(self):
+    def Has_Rows(self):
         return len(self.treeview.get_children()) > 0
     
     def clear_table(self):
-        if(self.has_rows()):
+        if(self.Has_Rows()):
             for item in self.treeview.get_children():
                 self.treeview.delete(item)
 
@@ -121,7 +121,7 @@ def Create_Window_Frecuences_Table():
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
     Text_Input_Precision_Results.place(x=40 , y=130)
-    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=10 , textvariable=Precision , from_=0 , to=6 , increment=1 , font=("Courier New" , 13) , bg="#ffffff")
+    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=10 , textvariable=Precision , from_=0 , to=8 , increment=1 , font=("Courier New" , 13) , bg="#ffffff")
     Input_Precision_Results.place(x=180 , y=130)
 
     Btn_Calc_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 15) , width=30 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Table)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
