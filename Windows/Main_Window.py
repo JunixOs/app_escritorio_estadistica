@@ -1,5 +1,6 @@
 from tkinter import *
-from Window_Calc_Table_of_Frecuency import Create_Window_Frecuences_Table
+import Window_Calc_Table_of_Frecuency as W_Calc_Table
+
 
 Main_Window = Tk()
 
@@ -15,7 +16,7 @@ Main_Window.iconphoto(False,Icon)
 Right_Section = Label(Main_Window , width=531 , height=691 , bg="#F7EDCB" , image=Image_Right_Section , highlightthickness=2 , highlightbackground="#000000")
 Right_Section.place(x=700 , y=0)
 
-BtnFrecuencyTable = Button(Main_Window,text="Crear tabla de frecuencias", font=("Times New Roman", 14) , command=Create_Window_Frecuences_Table , width=30)
+BtnFrecuencyTable = Button(Main_Window,text="Crear tabla de frecuencias", font=("Times New Roman", 14) , command= lambda: W_Calc_Table.Create_Window_Frecuences_Table(Main_Window) , width=30)
 BtnFrecuencyTable.place(x=190,y=300)
 
 Main_Window.resizable(False,False)
