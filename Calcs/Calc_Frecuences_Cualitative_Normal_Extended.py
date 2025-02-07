@@ -1,14 +1,15 @@
 def Find_Character_Modalities(Data):
     Arr_ai = []
-    Arr_ai.append(Data[0])
+    Ref_Data = Data.copy()
+    Arr_ai.append(Ref_Data[0])
     stop = False
     while(not stop):
         for a in Arr_ai:
-            if (Data.count(a) > 0):
-                for n in range (0 , Data.count(a)):
-                    Data.remove(a)
-        if(len(Data) != 0):
-            Arr_ai.append(Data[0])
+            if (Ref_Data.count(a) > 0):
+                for n in range (0 , Ref_Data.count(a)):
+                    Ref_Data.remove(a)
+        if(len(Ref_Data) != 0):
+            Arr_ai.append(Ref_Data[0])
         else:
             stop = True
     return Arr_ai

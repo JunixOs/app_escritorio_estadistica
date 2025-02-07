@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from math import *
 import Calc_Frecuences_Cuantitative_Many_Values as Cuant_Many_Values
 import Calc_Frecuences_Cualitative_Normal_Extended as Cuali_Normal_Extended
@@ -131,6 +135,31 @@ def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
     Arr_xi = Cuant_Normal_Extended.Find_Stadistic_Variable_xi(Data)
     N_Stadistic_Variables = len(Arr_xi)
 
+    Arr_fi = Cuant_Normal_Extended.calc_fi(Data , Arr_xi)
+    Arr_Fi = Cuant_Normal_Extended.calc_Fi(Arr_fi)
+
+    Arr_hi = Cuant_Normal_Extended.Calc_hi(Data , Arr_fi , N_Decimals_Precision)
+    Arr_Hi = Cuant_Normal_Extended.Calc_Hi(Arr_hi , N_Decimals_Precision)
+
+    Arr_hi_percent = Cuant_Normal_Extended.Calc_hi_percent(Arr_hi , N_Decimals_Precision)
+    Arr_Hi_percent = Cuant_Normal_Extended.Calc_Hi_percent(Arr_Hi , N_Decimals_Precision)
+
+    Variables_Values = dict([
+        ("n" ,n),
+        ("Number_Statistic_Variables" , N_Stadistic_Variables),
+    ])
+
+    Frecuences_Values = dict(
+        xi = Arr_xi,
+        fi = Arr_fi,
+        Fi = Arr_Fi,
+        hi = Arr_hi,
+        Hi = Arr_Hi,
+        hi_percent = Arr_hi_percent,
+        Hi_percent = Arr_Hi_percent,
+    )
+    return Variables_Values , Frecuences_Values
+
 def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
     n = len(Data)
 
@@ -153,6 +182,7 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
 
     Frecuences_Values = dict(
         Data = Data,
+        ai = Arr_Char_Mod,
         fi = Arr_fi,
         Fi = Arr_Fi,
         hi = Arr_hi,
@@ -160,6 +190,7 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
         hi_precent = Arr_hi_percent,
         Hi_percent = Arr_Hi_percent,
     )
+
     return Variables_Values , Frecuences_Values
 
 def Main_Function(N_Decimals_Precision , In , Type_Of_Variable):
@@ -170,8 +201,8 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable):
 
     Variables_Cuali_Normal_Extended = None
     Frecuences_Cuali_Normal_Extended = None
-    if(not Data):
-        raise ValueError("Datos procesados incorrectamente")
+    if(not Type_Of_Variable):
+        raise ValueError("No se puede proceder con el analisis")
     else:
         if (Type_Of_Variable == "Cuantitative"):
             Data = Separate_Data(In)
@@ -184,7 +215,7 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable):
 
         elif(Type_Of_Variable == "Cualitative"):
             Data = Separate_Data(In)
-            Data , Is_Float = Conv_Data_To_Numbers(Data)
+
             Variables_Cuali_Normal_Extended , Frecuences_Cuali_Normal_Extended = Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data)
 
     Dictionary_Results = dict([
@@ -198,4 +229,12 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable):
     return Dictionary_Results
 
 if (__name__ == "__main__"):
-    print("Running")
+    """ 
+        Error en la funcion  Cuant_Normal_Extended.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
+        Solucion, usar el metodo copy() para crear una copia del objeto. No usar otras variables, colo copy()
+    """
+    
+    """ 
+        Objetos mutables (como listas, diccionarios, conjuntos, etc.) se pasan por referencia. Si modificas el objeto dentro de la función, los cambios se reflejarán fuera de la función.
+        Objetos inmutables (como enteros, cadenas de texto, tuplas, etc.) se pasan por valor. Esto significa que si modificas el valor dentro de la función, no afectará la variable original fuera de la función.
+    """

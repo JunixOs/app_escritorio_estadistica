@@ -1,14 +1,15 @@
 def Find_Stadistic_Variable_xi(Data):
     Arr_xi = []
-    Arr_xi.append(Data[0])
+    Ref_Data = Data.copy()
+    Arr_xi.append(Ref_Data[0])
     stop = False
     while(not stop):
         for a in Arr_xi:
-            if (Data.count(a) > 0):
-                for n in range (0 , Data.count(a)):
-                    Data.remove(a)
-        if(len(Data) != 0):
-            Arr_xi.append(Data[0])
+            if (Ref_Data.count(a) > 0):
+                for n in range (0 , Ref_Data.count(a)):
+                    Ref_Data.remove(a)
+        if(len(Ref_Data) != 0):
+            Arr_xi.append(Ref_Data[0])
         else:
             stop = True
     return Arr_xi
@@ -32,7 +33,7 @@ def calc_Fi(Arr_fi):
         Arr_Fi.append(Acumulate)
     return Arr_Fi
 
-def Cals_hi(Data , Arr_fi , Precision):
+def Calc_hi(Data , Arr_fi , Precision):
     n = len(Data)
     Arr_hi = []
     for a in Arr_fi:
@@ -62,5 +63,12 @@ def Calc_hi_percent(Arr_hi , Precision):
             Arr_hi_percent.append(round(a*100 , Precision))
         else:
             Arr_hi_percent.append(round(a*100))
-def Calc_Hi_percent():
-    Arr_Hi_percent
+    return Arr_hi_percent
+def Calc_Hi_percent(Arr_Hi , Precision):
+    Arr_Hi_percent = []
+    for a in Arr_Hi:
+        if(Precision !=0):
+            Arr_Hi_percent.append(round(a*100 , Precision))
+        else:
+            Arr_Hi_percent.append(round(a*100))
+    return Arr_Hi_percent
