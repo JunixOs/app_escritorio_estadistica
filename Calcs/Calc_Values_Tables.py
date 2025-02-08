@@ -36,16 +36,20 @@ def Conv_Data_To_Numbers(Data):
     Data_Converted = Data
 
     if(len(Data_Converted)<2):
-        raise ValueError
+        raise ValueError("Se ingresaron muy pocos datos")
     Is_Float = False
     for n in range(0,len(Data)):
         Bool = "." in Data_Converted[n]
-        match Bool:
-            case True:
-                Data_Converted[n] = float(Data_Converted[n])
-                Is_Float = True
-            case False:
-                Data_Converted[n] = int(Data_Converted[n])
+        try:
+            match Bool:
+                case True:
+                    Data_Converted[n] = float(Data_Converted[n])
+                    Is_Float = True
+                case False:
+                    Data_Converted[n] = int(Data_Converted[n])
+        except ValueError:
+            raise ValueError("Error al procesar un tipo de dato incorrecto")
+        
         if (Data_Converted[n]<0):
             raise ValueError("Error al convertir los datos")
     return Data_Converted , Is_Float
@@ -163,7 +167,7 @@ def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
 def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
     n = len(Data)
 
-    Arr_Char_Mod = Cuali_Normal_Extended.Find_Character_Modalities()
+    Arr_Char_Mod = Cuali_Normal_Extended.Find_Character_Modalities(Data)
     Number_Char_Mod = len(Arr_Char_Mod)
 
     Arr_fi = Cuali_Normal_Extended.Calc_fi(Data , Arr_Char_Mod)
@@ -187,7 +191,7 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
         Fi = Arr_Fi,
         hi = Arr_hi,
         Hi = Arr_Hi,
-        hi_precent = Arr_hi_percent,
+        hi_percent = Arr_hi_percent,
         Hi_percent = Arr_Hi_percent,
     )
 

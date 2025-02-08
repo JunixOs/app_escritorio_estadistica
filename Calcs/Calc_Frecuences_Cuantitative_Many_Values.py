@@ -101,7 +101,7 @@ def Calc_Hi(hi , Precision):
     Acumulate = 0
     for a in hi:
         Acumulate += a
-        if(Acumulate+0.1>=1):
+        if(Acumulate+0.0001>=1):
             Acumulate=1
         if(Precision != 0):
             Arr_Hi.append(round(Acumulate , Precision))
