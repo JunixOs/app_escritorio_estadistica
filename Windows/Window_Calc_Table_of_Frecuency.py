@@ -124,6 +124,7 @@ def Put_Data_On_Table_Cuali_Extended(Table_Extended , Variables , Frecuences):
             Table_Extended.treeview.column(col, anchor="center")
 
 def Delete_Labels(Labels):
+    """ Terminar, mostrar valores como Media, promedio , etc """
     if(len(Labels) != 0):
         for a in range(0 , len(Labels)):
             Labels[a].destroy()
@@ -135,7 +136,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     def Back_to_main_window():
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("Seleccion")
+        Main_Window.title("StatApp beta v1.4")
         Window_Frecuences_Table.destroy()
 
     def Create_Table(Precision , Input , Tables):
