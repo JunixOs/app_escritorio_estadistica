@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Calcs.Calc_Values_Tables import *
+from Window_Export_Excel import Generate_Window_Export_Excel
 from Windows_Errors import Frecuences_Error
 from tkinter import *
 from tkinter import ttk
@@ -11,6 +12,8 @@ import Window_Select_File as W_Select_File
 
 # Variables Globales
 Labels_Window_Frecuences_Table = []
+Global_Calcs = {}
+Global_Type_Of_Variable = ""
 #
 class TreeviewFrame(ttk.Frame):
     def __init__(self, *args, **kwargs):
@@ -140,6 +143,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Window_Frecuences_Table.destroy()
 
     def Create_Table(Precision , Input , Tables):
+        global Global_Calcs , Global_Type_Of_Variable
         try:
             for a in Tables.values():
                 a.clear_table()
@@ -204,17 +208,22 @@ def Create_Window_Frecuences_Table(Main_Window):
                 lab.place(x=x_pos , y=260)
                 Labels_Window_Frecuences_Table.append(lab)
                 b +=1 """
-            
-            Btn_Calculate_Again.config(state="normal")
-            Checkbox_Cualitative_Variable.config(state="disabled")
-            Checkbox_Cuantitative_Variable.config(state="disabled")
-            Input_Data.config(state="disabled")
-
+            Global_Calcs = Dictionary_Values
+            Global_Type_Of_Variable = Type_Of_Variable
         except (IndexError , ValueError , NameError , TypeError) as e:
             Win_err = Frecuences_Error("ERROR" , e)
             Win_err.Create_Window(Window_Frecuences_Table)
         except Frecuences_Error as e:
             e.Create_Window(Window_Frecuences_Table)
+        else:
+            Btn_Calculate_Again.config(state="normal")
+            Checkbox_Cualitative_Variable.config(state="disabled")
+            Checkbox_Cuantitative_Variable.config(state="disabled")
+            Input_Data.config(state="disabled")
+            
+            Btn_Generate_Excel.config(state="normal")
+            Btn_Show_Graph.config(state="normal")
+            Btn_Select_File.config(state="disabled")
 
     def Switch_on_Tables():
         if(Checked_Cualitative_Variable.get()):
@@ -258,7 +267,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Normal" , False)
             Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Extended" , False)
-            Display_Or_Hidden_Tables(Dictionary_Tables, "Cuantitative_For_Many_Values" , False)
+            Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_For_Many_Values" , False)
 
     def Checked_Cualitative():
         if(Checked_Cualitative_Variable.get()):
@@ -286,7 +295,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     def Only_Check_Cualitative():
         if(Checked_Cualitative_Variable.get() and Checked_Cuantitative_Variable.get()):
             Checked_Cuantitative_Variable.set(False)
-            """ Checkbox_Cuantitative_Variable.invoke() """
+
         if(not Checked_Cualitative_Variable.get() and not Checked_Cuantitative_Variable.get()):
             Checked_Normal_Table.set(False)
             Checked_Extended_Table.set(False)
@@ -296,7 +305,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     def Only_Check_Cuantitative():
         if(Checked_Cuantitative_Variable.get() and Checked_Cualitative_Variable.get()):
             Checked_Cualitative_Variable.set(False)
-            """ Checkbox_Cualitative_Variable.invoke() """
+
         if(not Checked_Cualitative_Variable.get() and not Checked_Cuantitative_Variable.get()):
             Checked_Normal_Table.set(False)
             Checked_Extended_Table.set(False)
@@ -322,6 +331,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Switch_on_Tables()
 
     def Calculate_Again(Tables):
+        global Global_Calcs , Global_Type_Of_Variable
         for value in Tables.values():
             value.clear_table()
         Btn_Calculate_Again.config(state="disabled")
@@ -329,6 +339,9 @@ def Create_Window_Frecuences_Table(Main_Window):
         Checkbox_Cuantitative_Variable.config(state="normal")
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
+        Btn_Select_File.config(state="normal")
+        Global_Calcs = {}
+        Global_Type_Of_Variable = ""
 
     Window_Frecuences_Table = Toplevel(Main_Window)
     Window_Frecuences_Table.geometry("1240x700+135+100")
@@ -384,11 +397,11 @@ def Create_Window_Frecuences_Table(Main_Window):
     Checkbox_For_Many_Values = Checkbutton(Window_Frecuences_Table , text="Para muchas variables" , font=("Times New Roman" , 13) , bg="#FEE1AB" , variable=Checked_Cuant_For_Many_Values , command=Only_Check_Many_Values)
     Checkbox_For_Many_Values.config(state="disabled")
 
-    Btn_Select_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un archivo" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Select_File.Create_Window_Select_File(Window_Frecuences_Table , Data , Input_Data , Btn_Select_File))
-    Btn_Select_File.place(x=880 , y=170)
+    Btn_Select_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Select_File.Create_Window_Select_File(Window_Frecuences_Table , Data , Input_Data , Btn_Select_File))
+    Btn_Select_File.place(x=860 , y=170)
 
-    Btn_Calculate_Again = Button(Window_Frecuences_Table , text="Calcular con otros valores" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Calculate_Again(Dictionary_Tables))
-    Btn_Calculate_Again.place(x=800 , y=210)
+    Btn_Calculate_Again = Button(Window_Frecuences_Table , text="Calcular con otros valores" , font=("Times New Roman" , 13) , width=20 , bg="#F4B0C0" , command= lambda: Calculate_Again(Dictionary_Tables))
+    Btn_Calculate_Again.place(x=780 , y=210)
     Btn_Calculate_Again.config(state="disabled")
 
     Btn_Generate_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Dictionary_Tables)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
@@ -396,6 +409,14 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     Section_Frecuences_Table = Label(Window_Frecuences_Table , width=168 , height=25 , bg="#FEE1AB" , highlightthickness=2 , highlightbackground="#000000")
     Section_Frecuences_Table.place(x=29 , y=255)
+
+    Btn_Generate_Excel = Button(Window_Frecuences_Table , text="Exportar tabla en Excel" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Generate_Window_Export_Excel(Window_Frecuences_Table , Global_Calcs , Global_Type_Of_Variable))
+    Btn_Generate_Excel.place(x=800 , y=275)
+    Btn_Generate_Excel.config(state="disabled")
+
+    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7")
+    Btn_Show_Graph.place(x=1051 , y=275)
+    Btn_Show_Graph.config(state="disabled")
 
     """ Tabla para Variables Cuantitativas Continuas o Discretas con muchos datos """
     Table_Cuantitative_For_Many_Values = TreeviewFrame(Window_Frecuences_Table)
