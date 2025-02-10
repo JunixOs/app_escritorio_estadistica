@@ -1,17 +1,15 @@
 def Find_Character_Modalities(Data):
     Arr_ai = []
     Ref_Data = Data.copy()
-    Arr_ai.append(Ref_Data[0])
-    stop = False
-    while(not stop):
-        for a in Arr_ai:
-            if (Ref_Data.count(a) > 0):
-                for n in range (0 , Ref_Data.count(a)):
-                    Ref_Data.remove(a)
-        if(len(Ref_Data) != 0):
-            Arr_ai.append(Ref_Data[0])
-        else:
-            stop = True
+    
+    while Ref_Data:
+        element = Ref_Data[0]
+        count = Ref_Data.count(element)
+        
+        if count > 0:
+            Arr_ai.append(element)
+            Ref_Data = [x for x in Ref_Data if x != element]
+    
     return Arr_ai
 
 def Calc_fi(Data , Arr_Char_Mod):

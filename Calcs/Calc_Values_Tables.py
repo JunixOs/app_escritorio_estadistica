@@ -118,7 +118,6 @@ def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data):
         ])
 
         Frecuences_Value = dict(
-            Data_Values = Data,
             Intervals = Arr_Intervals,
             Groups = Arr_Groups,
             xi = Arr_xi,
@@ -185,7 +184,6 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
     ])
 
     Frecuences_Values = dict(
-        Data = Data,
         ai = Arr_Char_Mod,
         fi = Arr_fi,
         Fi = Arr_Fi,

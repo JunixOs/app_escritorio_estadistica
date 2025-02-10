@@ -1,17 +1,15 @@
 def Find_Stadistic_Variable_xi(Data):
     Arr_xi = []
     Ref_Data = Data.copy()
-    Arr_xi.append(Ref_Data[0])
-    stop = False
-    while(not stop):
-        for a in Arr_xi:
-            if (Ref_Data.count(a) > 0):
-                for n in range (0 , Ref_Data.count(a)):
-                    Ref_Data.remove(a)
-        if(len(Ref_Data) != 0):
-            Arr_xi.append(Ref_Data[0])
-        else:
-            stop = True
+    
+    while Ref_Data:
+        element = Ref_Data[0]
+        count = Ref_Data.count(element)
+        
+        if count > 0:
+            Arr_xi.append(element)
+            Ref_Data = [x for x in Ref_Data if x != element]
+    Arr_xi.sort(reverse=True)
     return Arr_xi
 
 def calc_fi(Data , Arr_xi):
