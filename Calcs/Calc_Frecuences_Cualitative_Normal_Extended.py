@@ -1,7 +1,6 @@
 def Find_Character_Modalities(Data):
     Arr_ai = []
     Ref_Data = Data.copy()
-    
     while Ref_Data:
         element = Ref_Data[0]
         count = Ref_Data.count(element)
@@ -9,7 +8,7 @@ def Find_Character_Modalities(Data):
         if count > 0:
             Arr_ai.append(element)
             Ref_Data = [x for x in Ref_Data if x != element]
-    
+    Arr_ai.sort()
     return Arr_ai
 
 def Calc_fi(Data , Arr_Char_Mod):

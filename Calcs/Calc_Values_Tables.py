@@ -193,13 +193,16 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
         Hi_percent = Arr_Hi_percent,
     )
 
+    print(Frecuences_Values)
     return Variables_Values , Frecuences_Values
 
-def Main_Function(N_Decimals_Precision , In , Type_Of_Variable):
+def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
     Variables_Cuant_For_Many_Values = None
     Frecuences_Cuant_For_Many_Values = None
+
     Variables_Cuant_Normal_Extended = None
     Frecuences_Cuant_Normal_Extended = None
+
 
     Variables_Cuali_Normal_Extended = None
     Frecuences_Cuali_Normal_Extended = None
@@ -210,12 +213,32 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable):
             Data = Separate_Data(In)
             Data , Is_Float = Conv_Data_To_Numbers(Data)
 
-            Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data)
-            Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float
-            if(not Is_Float):
-                Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
+            n = len(Data)
+            m = round(1 + 3.222*log10(n))
+            if(m<5):
+                Calc_For_Classes = False
+            else:
+                Calc_For_Classes = True
 
+            match (Is_Discrete):
+                case True:
+                    if(Is_Float):
+                        raise ValueError("Se ha seleccionado un tipo de variable no adecuado \n para los datos actuales")
+                    elif(Calc_For_Classes):
+                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data)
+                        Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float
+                    else:
+                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
+                case False: 
+                    if(Calc_For_Classes):
+                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data)
+                        Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float
+                    else:
+                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
+                case _:
+                    raise ValueError("No se ha seleccionado un tipo de variable adecuado.")
         elif(Type_Of_Variable == "Cualitative"):
+            In = In.replace("\n" , "") #Elimina todo salto de linea no intencional
             Data = Separate_Data(In)
 
             Variables_Cuali_Normal_Extended , Frecuences_Cuali_Normal_Extended = Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data)
@@ -231,6 +254,15 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable):
     return Dictionary_Results
 
 if (__name__ == "__main__"):
+    Data = "Casa Casa Trabajo Trabajo Trabajo Casa Casa Cibercafe Otros Cibercafe Trabajo Trabajo Otros Cibercafe Cibercafe Cibercafe Casa Cibercafe Otros Cibercafe Casa Casa Cibercafe Trabajo Otros Otros Cibercafe Cibercafe Cibercafe Cibercafe "
+    Arr_Data = Separate_Data(Data)
+    Arr_xi = Cuali_Normal_Extended.Find_Character_Modalities(Arr_Data)
+    Arr_fi = Cuali_Normal_Extended.Calc_fi(Arr_Data , Arr_xi)
+    Arr_Fi = Cuali_Normal_Extended.Calc_Fi(Arr_fi)
+    print(Arr_Data)
+    print(Arr_xi)
+    print(Arr_fi)
+    print(Arr_Fi)
     """ 
         Error en la funcion  Cuant_Normal_Extended.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
         Solucion, usar el metodo copy() para crear una copia del objeto. No usar otras variables, colo copy()

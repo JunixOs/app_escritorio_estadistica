@@ -9,7 +9,7 @@ def Find_Stadistic_Variable_xi(Data):
         if count > 0:
             Arr_xi.append(element)
             Ref_Data = [x for x in Ref_Data if x != element]
-    Arr_xi.sort(reverse=True)
+    Arr_xi.sort()
     return Arr_xi
 
 def calc_fi(Data , Arr_xi):

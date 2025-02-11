@@ -139,7 +139,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     def Back_to_main_window():
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("StatApp beta v1.4")
+        Main_Window.title("StatApp beta v1.5")
         Window_Frecuences_Table.destroy()
 
     def Create_Table(Precision , Input , Tables):
@@ -150,16 +150,23 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Input = str(Input.get())
             Precision = int(Precision.get())
+            Is_Discrete = None
             """ Delete_Labels(Labels_Window_Frecuences_Table) """
 
             if(Checked_Cuantitative_Variable.get()):
                 Type_Of_Variable = "Cuantitative"
+                if(Checked_Cuantitative_Continuous.get()):
+                    Is_Discrete = False
+                elif(Checked_Cuantitative_Discret.get()):
+                    Is_Discrete = True
+                else:
+                    raise Frecuences_Error("NO TYPE DEFINED" , "No se pudo detectar si la variable Cuantitativa \n es Discreta o Continua.")
             elif(Checked_Cualitative_Variable.get()):
                 Type_Of_Variable = "Cualitative"
             else:
                 raise Frecuences_Error("NO TYPE DEFINED" , "No se pudo detectar el tipo de variable")
 
-            Dictionary_Values = Main_Function(Precision, Input , Type_Of_Variable)
+            Dictionary_Values = Main_Function(Precision, Input , Type_Of_Variable , Is_Discrete)
 
             match(Type_Of_Variable):
                 case "Cuantitative":
@@ -188,8 +195,21 @@ def Create_Window_Frecuences_Table(Main_Window):
                     V_Cuantitative_For_Many_Values = Dictionary_Values["Variables_Cuant_For_Many_Values"]
                     F_Cuantitative_For_Many_Values = Dictionary_Values["Frecuences_Cuant_For_Many_Values"]
 
-                    Put_Data_On_Table_Cuant_For_Many_Values(Tables["Cuantitative_For_Many_Values"] , V_Cuantitative_For_Many_Values , F_Cuantitative_For_Many_Values)
-
+                    if(V_Cuantitative_For_Many_Values != None and F_Cuantitative_For_Many_Values != None):
+                        Put_Data_On_Table_Cuant_For_Many_Values(Tables["Cuantitative_For_Many_Values"] , V_Cuantitative_For_Many_Values , F_Cuantitative_For_Many_Values)
+                    else:
+                        Tables["Cuantitative_For_Many_Values"].treeview.insert("", END , values=(
+                        "None",
+                        "None",
+                        "None",
+                        "None",
+                        "Pocos",
+                        "Datos",
+                        "Calculo Omitido",
+                        "None",
+                        "None",
+                        "None",
+                        "None",))
                 case "Cualitative":
                     V_Cualitative = Dictionary_Values["Variables_Cuali_Normal_Extended"]
                     F_Cualitative = Dictionary_Values["Frecuences_Cuali_Normal_Extended"]
@@ -225,6 +245,9 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Show_Graph.config(state="normal")
             Btn_Select_File.config(state="disabled")
 
+            Checkbox_Cuantitative_Discret.config(state="disabled")
+            Checkbox_Cuantitative_Continuous.config(state="disabled")
+
     def Switch_on_Tables():
         if(Checked_Cualitative_Variable.get()):
             if(Checked_Normal_Table.get()):
@@ -245,6 +268,13 @@ def Create_Window_Frecuences_Table(Main_Window):
                 Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Normal" , False)
                 Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Extended" , False)
                 Display_Or_Hidden_Tables(Dictionary_Tables, "Cuantitative_For_Many_Values" , False)
+        else:
+            Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Normal" , False)
+            Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Extended" , False)
+            Display_Or_Hidden_Tables(Dictionary_Tables, "Cuantitative_For_Many_Values" , False)
+
+            Display_Or_Hidden_Tables(Dictionary_Tables , "Cualitative_Normal" , False)
+            Display_Or_Hidden_Tables(Dictionary_Tables , "Cualitative_Extended" , False)
 
     def Checked_Cuantitative():
         if(Checked_Cuantitative_Variable.get()):
@@ -255,6 +285,12 @@ def Create_Window_Frecuences_Table(Main_Window):
             Checkbox_For_Many_Values.config(state="normal")
             Checkbox_For_Many_Values.place(x=240 , y=210)
 
+            Checkbox_Cuantitative_Discret.config(state="normal")
+            Checkbox_Cuantitative_Discret.place(x=440 , y=130)
+
+            Checkbox_Cuantitative_Continuous.config(state="normal")
+            Checkbox_Cuantitative_Continuous.place(x=440 , y=170)
+
             Switch_on_Tables()
         else:
             Table_Cuantitative_For_Many_Values.place_forget()
@@ -264,6 +300,14 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Checkbox_For_Many_Values.config(state="disabled")
             Checkbox_For_Many_Values.place_forget()
+
+            Checkbox_Cuantitative_Discret.config(state="disabled")
+            Checkbox_Cuantitative_Discret.place_forget()
+            Checked_Cuantitative_Discret.set(False)
+
+            Checkbox_Cuantitative_Continuous.config(state="disabled")
+            Checkbox_Cuantitative_Continuous.place_forget()
+            Checked_Cuantitative_Continuous.set(False)
 
             Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Normal" , False)
             Display_Or_Hidden_Tables(Dictionary_Tables , "Cuantitative_Extended" , False)
@@ -277,6 +321,14 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Checkbox_For_Many_Values.config(state="disabled")
             Checkbox_For_Many_Values.place_forget()
+
+            Checkbox_Cuantitative_Discret.config(state="disabled")
+            Checkbox_Cuantitative_Discret.place_forget()
+            Checked_Cuantitative_Discret.set(False)
+
+            Checkbox_Cuantitative_Continuous.config(state="disabled")
+            Checkbox_Cuantitative_Continuous.place_forget()
+            Checked_Cuantitative_Continuous.set(False)
 
             if(Checked_Cuant_For_Many_Values.get()):
                 Checked_Cuant_For_Many_Values.set(False)
@@ -330,6 +382,12 @@ def Create_Window_Frecuences_Table(Main_Window):
             Checked_Extended_Table.set(False)
         Switch_on_Tables()
 
+    def Only_Check_Cuant_Discret():
+        if(Checked_Cuantitative_Discret.get() and Checked_Cuantitative_Continuous.get()):
+            Checked_Cuantitative_Continuous.set(False)
+    def Only_Check_Cuant_Continuous():
+        if(Checked_Cuantitative_Continuous.get() and Checked_Cuantitative_Discret.get()):
+            Checked_Cuantitative_Discret.set(False)
     def Calculate_Again(Tables):
         global Global_Calcs , Global_Type_Of_Variable
         for value in Tables.values():
@@ -337,11 +395,33 @@ def Create_Window_Frecuences_Table(Main_Window):
         Btn_Calculate_Again.config(state="disabled")
         Checkbox_Cualitative_Variable.config(state="normal")
         Checkbox_Cuantitative_Variable.config(state="normal")
+        Checked_Cuantitative_Variable.set(False)
+        Checked_Cualitative_Variable.set(False)
+
+        Switch_on_Tables()
+
+        Checked_Extended_Table.set(False)
+        Checked_Normal_Table.set(False)
+        Checked_Cuant_For_Many_Values.set(False)
+        Checkbox_Normal_Table.config(state="disabled")
+        Checkbox_Extended_Table.config(state="disabled")
+        Checkbox_For_Many_Values.config(state="disabled")
+        Checkbox_For_Many_Values.place_forget()
+
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
+        Precision.set(0)
         Btn_Select_File.config(state="normal")
         Global_Calcs = {}
         Global_Type_Of_Variable = ""
+
+        Checkbox_Cuantitative_Continuous.config(state="normal")
+        Checkbox_Cuantitative_Continuous.place_forget()
+        Checked_Cuantitative_Continuous.set(False)
+
+        Checkbox_Cuantitative_Discret.config(state="normal")
+        Checkbox_Cuantitative_Discret.place_forget()
+        Checked_Cuantitative_Discret.set(False)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
     Window_Frecuences_Table.geometry("1240x700+135+100")
@@ -350,11 +430,13 @@ def Create_Window_Frecuences_Table(Main_Window):
     Icon = PhotoImage(file="Images/icon.png")
     Window_Frecuences_Table.iconphoto(False , Icon)
 
-    # Grid = 16 rows , 16 columns
     Data = StringVar(Window_Frecuences_Table)
     Precision = IntVar(Window_Frecuences_Table)
     Checked_Cualitative_Variable = BooleanVar(Window_Frecuences_Table)
     Checked_Cuantitative_Variable = BooleanVar(Window_Frecuences_Table)
+
+    Checked_Cuantitative_Discret = BooleanVar(Window_Frecuences_Table)
+    Checked_Cuantitative_Continuous = BooleanVar(Window_Frecuences_Table)
 
     Checked_Normal_Table = BooleanVar(Window_Frecuences_Table)
     Checked_Extended_Table = BooleanVar(Window_Frecuences_Table)
@@ -396,6 +478,11 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     Checkbox_For_Many_Values = Checkbutton(Window_Frecuences_Table , text="Para muchas variables" , font=("Times New Roman" , 13) , bg="#FEE1AB" , variable=Checked_Cuant_For_Many_Values , command=Only_Check_Many_Values)
     Checkbox_For_Many_Values.config(state="disabled")
+
+    Checkbox_Cuantitative_Discret = Checkbutton(Window_Frecuences_Table , text="Discreta" , font=("Times New Roman" , 13) , bg="#FEE1AB" , variable=Checked_Cuantitative_Discret , command=Only_Check_Cuant_Discret)
+    Checkbox_Cuantitative_Discret.config(state="disabled")
+    Checkbox_Cuantitative_Continuous = Checkbutton(Window_Frecuences_Table , text="Continua" , font=("Times New Roman" , 13) , bg="#FEE1AB" , variable=Checked_Cuantitative_Continuous , command=Only_Check_Cuant_Continuous)
+    Checkbox_Cuantitative_Continuous.config(state="disabled")
 
     Btn_Select_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Select_File.Create_Window_Select_File(Window_Frecuences_Table , Data , Input_Data , Btn_Select_File))
     Btn_Select_File.place(x=860 , y=170)
@@ -457,7 +544,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Table_Cuantitative_Extended = TreeviewFrame(Window_Frecuences_Table)
 
     Table_Cuantitative_Extended.treeview.config(columns=("1", "2" ,"3", "4", "5", "6", "7") , show="headings")
-    Table_Cuantitative_Extended.treeview.heading("1" , text="Variables xi")
+    Table_Cuantitative_Extended.treeview.heading("1" , text="xi")
     Table_Cuantitative_Extended.treeview.heading("2" , text="fi")
     Table_Cuantitative_Extended.treeview.heading("3" , text="Fi")
     Table_Cuantitative_Extended.treeview.heading("4" , text="hi")
