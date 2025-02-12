@@ -193,7 +193,6 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
         Hi_percent = Arr_Hi_percent,
     )
 
-    print(Frecuences_Values)
     return Variables_Values , Frecuences_Values
 
 def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):

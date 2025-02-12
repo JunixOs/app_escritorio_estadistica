@@ -9,6 +9,7 @@ from Windows_Errors import Frecuences_Error
 from tkinter import *
 from tkinter import ttk
 import Window_Select_File as W_Select_File
+import Window_Show_Graph as W_Show_Graph
 
 # Variables Globales
 Labels_Window_Frecuences_Table = []
@@ -458,7 +459,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
     Text_Input_Precision_Results.place(x=840 , y=130)
-    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=10 , textvariable=Precision , from_=0 , to=8 , increment=1 , font=("Courier New" , 13) , bg="#ffffff")
+    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=10 , textvariable=Precision , from_=1 , to=8 , increment=1 , font=("Courier New" , 13) , bg="#ffffff")
     Input_Precision_Results.place(x=980 , y=130)
 
 
@@ -501,7 +502,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Btn_Generate_Excel.place(x=800 , y=275)
     Btn_Generate_Excel.config(state="disabled")
 
-    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7")
+    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Calcs , Precision.get()))
     Btn_Show_Graph.place(x=1051 , y=275)
     Btn_Show_Graph.config(state="disabled")
 
