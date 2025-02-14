@@ -6,7 +6,8 @@ from math import *
 import Calc_Frecuences_Cuantitative_Many_Values as Cuant_Many_Values
 import Calc_Frecuences_Cualitative_Normal_Extended as Cuali_Normal_Extended
 import Calc_Frecuences_Cuantitative_Normal_Extended as Cuant_Normal_Extended
-
+import Summary_Measures.Calc_For_Not_Agrupped_Data as SM_For_Not_Grouped_Data
+import Summary_Measures.Calc_For_Agrupped_Data as SM_For_Grouped_Data
 def Separate_Data(a):
     Value = ""
     Data = []
@@ -54,28 +55,40 @@ def Conv_Data_To_Numbers(Data):
             raise ValueError("Error al convertir los datos")
     return Data_Converted , Is_Float
 
-def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data):
+def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , Is_Discrete):
     V_Min = Cuant_Many_Values.Calc_Min(Data)
     V_Max = Cuant_Many_Values.Calc_Max(Data)
 
     n = len(Data)
     R = round(Cuant_Many_Values.Calc_Range(V_Min,V_Max) , 3)
     m = round(1+(3.3*log10(n)))
-    C = R/m
+    if(Is_Discrete):
+        C = round(R/m , 1)
+        Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , 1)
+        Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , 1)
+    else:
+        int_count = 0
+        for a in Data:
+            if(int(a) == a):
+                int_count += 1
 
-    C_N_Decimals = Cuant_Many_Values.Calc_Decimals_Number(C) # N de decimales de la amplitud (C)
-    if(C - round(C)==0):
-        C = round(C)
-        C_N_Decimals = 0
-    elif(C_N_Decimals>=1 and C_N_Decimals<=3):
-        C = round(C , C_N_Decimals)
-    elif(C_N_Decimals>3):
-        C = round(C , 3)
-        C_N_Decimals = 3
-
-    
-    Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-    Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , C_N_Decimals)
+        if(int_count == len(Data)):
+            C = round(R/m , 1)
+            Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , 1)
+            Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , 1)
+        else:
+            C = round(R/m , 3)
+            C_N_Decimals = Cuant_Many_Values.Calc_Decimals_Number(C) # N de decimales de la amplitud (C)
+            if(C - round(C)==0):
+                C = round(C)
+                C_N_Decimals = 0
+            elif(C_N_Decimals>=1 and C_N_Decimals<=3):
+                C = round(C , C_N_Decimals)
+            elif(C_N_Decimals>3):
+                C = round(C , 3)
+                C_N_Decimals = 3
+            Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+            Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , C_N_Decimals)
 
     Arr_xi = Cuant_Many_Values.Calc_xi(Arr_Intervals , m , N_Decimals_Precision)
 
@@ -87,6 +100,24 @@ def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data):
 
     Arr_hi_percent = Cuant_Many_Values.Calc_hi_percent(Arr_hi , N_Decimals_Precision)
     Arr_Hi_percent = Cuant_Many_Values.Calc_Hi_percent(Arr_Hi , N_Decimals_Precision)
+
+    """ Modificar esto para mas precision en los siguientes calculos """
+    if(N_Decimals_Precision>=1 and N_Decimals_Precision<3):
+        Precision = 2
+    elif(N_Decimals_Precision>=3 and N_Decimals_Precision<5):
+        Precision = 4
+    elif(N_Decimals_Precision>=5 and N_Decimals_Precision<=8):
+        Precision = 6
+    
+    X_ = SM_For_Grouped_Data.Calc_Arithmetic_Average(len(Data) , Arr_xi , Arr_fi , Precision)
+    Me = SM_For_Grouped_Data.Calc_Median_Me(len(Data) , Arr_fi , Arr_Fi , Arr_Intervals , C , Precision)
+    Mo = SM_For_Grouped_Data.Calc_Mode_Mo(Arr_fi , Arr_Intervals , C , Precision)
+    X_h = SM_For_Grouped_Data.Calc_Armonic_Average(len(Data) , Arr_xi , Arr_fi , Precision)
+    X_g = SM_For_Grouped_Data.Calc_Geometric_Average(len(Data) , Arr_xi , Arr_fi , Precision)
+
+    S_2 = SM_For_Grouped_Data.Calc_Variance(len(Data) , Arr_xi , Arr_fi , X_ , Precision)
+    S = SM_For_Grouped_Data.Calc_Standard_Deviation(S_2 , Precision)
+    CV_Percent = SM_For_Grouped_Data.Calc_Percentage_Coefficient_Variation(S , X_ , Precision)
 
     if(__name__ == "__main__"):
         print(f"Datos Ingresados: \n")
@@ -107,6 +138,16 @@ def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data):
             Edad=27,
             Documento=1003882) """
     else:
+        Summary_Measures = dict([
+            ("Arithmetic Average" , X_),
+            ("Geomteric Average" , X_g),
+            ("Armonic Average" , X_h),
+            ("Mode" , Mo),
+            ("Median" , Me),
+            ("Variance" , S_2),
+            ("Standard Deviation" , S),
+            ("CV%" , CV_Percent),
+        ])
         Variables_Value = dict([
             ("V_Max" , V_Max),
             ("V_Min" , V_Min),
@@ -130,7 +171,7 @@ def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data):
         )
 
         # print(Frecuences["Intervals"][0][0])    <--- Ingreso a Intervalos y busco el primer valor del primer intervalo
-        return Variables_Value , Frecuences_Value
+        return Variables_Value , Frecuences_Value , Summary_Measures
 
 def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
     n = len(Data)
@@ -147,6 +188,32 @@ def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
     Arr_hi_percent = Cuant_Normal_Extended.Calc_hi_percent(Arr_hi , N_Decimals_Precision)
     Arr_Hi_percent = Cuant_Normal_Extended.Calc_Hi_percent(Arr_Hi , N_Decimals_Precision)
 
+    if(N_Decimals_Precision>=1 and N_Decimals_Precision<3):
+        Precision = 2
+    elif(N_Decimals_Precision>=3 and N_Decimals_Precision<5):
+        Precision = 4
+    elif(N_Decimals_Precision>=5 and N_Decimals_Precision<=8):
+        Precision = 6
+    X_ = SM_For_Not_Grouped_Data.Calc_Arithmetic_Average(Data , Precision)
+    Me = SM_For_Not_Grouped_Data.Calc_Median_Me(Data)
+    Mo = SM_For_Not_Grouped_Data.Calc_Mode_Mo(Arr_xi , Arr_fi)
+    X_h = SM_For_Not_Grouped_Data.Calc_Armonic_Average(Data , Precision)
+    X_g = SM_For_Not_Grouped_Data.Calc_Geometric_Average(Data , Precision)
+
+    S_2 = SM_For_Not_Grouped_Data.Calc_Variance(X_ , Data , Precision)
+    S = SM_For_Not_Grouped_Data.Calc_Standard_Deviation(S_2 , Precision)
+    CV_Percent = SM_For_Not_Grouped_Data.Calc_Percentage_Coefficient_Variation(S , X_ , Precision)
+
+    Summary_Measures = dict([
+        ("Arithmetic Average" , X_),
+        ("Geomteric Average" , X_g),
+        ("Armonic Average" , X_h),
+        ("Mode" , Mo),
+        ("Median" , Me),
+        ("Variance" , S_2),
+        ("Standard Deviation" , S),
+        ("CV%" , CV_Percent),
+    ])
     Variables_Values = dict([
         ("n" ,n),
         ("Number_Statistic_Variables" , N_Stadistic_Variables),
@@ -161,7 +228,7 @@ def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
         hi_percent = Arr_hi_percent,
         Hi_percent = Arr_Hi_percent,
     )
-    return Variables_Values , Frecuences_Values
+    return Variables_Values , Frecuences_Values , Summary_Measures
 
 def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
     n = len(Data)
@@ -198,10 +265,11 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
 def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
     Variables_Cuant_For_Many_Values = None
     Frecuences_Cuant_For_Many_Values = None
+    Summary_Measures_For_Grouped_Data = None
 
     Variables_Cuant_Normal_Extended = None
     Frecuences_Cuant_Normal_Extended = None
-
+    Summary_Measures_For_Not_Grouped_Data = None
 
     Variables_Cuali_Normal_Extended = None
     Frecuences_Cuali_Normal_Extended = None
@@ -224,16 +292,16 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
                     if(Is_Float):
                         raise ValueError("Se ha seleccionado un tipo de variable no adecuado \n para los datos actuales")
                     elif(Calc_For_Classes):
-                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data)
+                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , Is_Discrete)
                         Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float
                     else:
-                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
+                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
                 case False: 
                     if(Calc_For_Classes):
-                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data)
+                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , Is_Discrete)
                         Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float
                     else:
-                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
+                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
                 case _:
                     raise ValueError("No se ha seleccionado un tipo de variable adecuado.")
         elif(Type_Of_Variable == "Cualitative"):
@@ -245,8 +313,10 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
     Dictionary_Results = dict([
         ("Variables_Cuant_For_Many_Values" , Variables_Cuant_For_Many_Values),
         ("Frecuences_Cuant_For_Many_Values" , Frecuences_Cuant_For_Many_Values),
+        ("Summary_Measures_For_Grouped_Data" , Summary_Measures_For_Grouped_Data),
         ("Variables_Cuant_Normal_Extended" , Variables_Cuant_Normal_Extended),
         ("Frecuences_Cuant_Normal_Extended" , Frecuences_Cuant_Normal_Extended),
+        ("Summary_Measures_For_Not_Grouped_Data" , Summary_Measures_For_Not_Grouped_Data),
         ("Variables_Cuali_Normal_Extended" , Variables_Cuali_Normal_Extended),
         ("Frecuences_Cuali_Normal_Extended" , Frecuences_Cuali_Normal_Extended),
     ])
