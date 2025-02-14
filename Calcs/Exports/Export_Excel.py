@@ -1,9 +1,8 @@
 from tkinter import messagebox
 from datetime import datetime
+import copy
 import os
-from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
-from openpyxl.utils.dataframe import dataframe_to_rows
 import pandas as pd
 
 def Change_Key(dictionary, old_key, new_key):
@@ -12,11 +11,11 @@ def Change_Key(dictionary, old_key, new_key):
 
 def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_name = ""):
     try:
+        time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
         if(file_name == ""):
-            time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
             file_name = f"frecuences_{time}.xlsx"
         elif(not file_name.lower().endswith('.xlsx')):
-            file_name += '.xlsx'
+            file_name += f'_{time}.xlsx'
 
         if not route.endswith("/"):
             route += "/"
@@ -29,7 +28,7 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
         match(Type_Of_Variable):
             case "Cuantitative":
                 if(Data["Frecuences_Cuant_Normal_Extended"] != None):
-                    Copy_Data = Data["Frecuences_Cuant_Normal_Extended"].copy()
+                    Copy_Data = Data["Frecuences_Cuant_Normal_Extended"]
 
                     Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
                     Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
@@ -68,7 +67,7 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
                             worksheet_hoja1.column_dimensions[column].width = adjusted_width
 
                 elif(Data["Frecuences_Cuant_For_Many_Values"] != None):
-                    Copy_Data = Data["Frecuences_Cuant_For_Many_Values"].copy()
+                    Copy_Data = copy.deepcopy(Data["Frecuences_Cuant_For_Many_Values"])
 
                     Copy_Data = Change_Key(Copy_Data , "Intervals" , "[ Li - Ls >")
                     Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")

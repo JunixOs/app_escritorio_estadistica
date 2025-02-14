@@ -21,8 +21,7 @@ class Draw_Graph_for_Each_Variable:
             raise Exception("Error interno")
 
         figure_bars = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
-        figure_pie = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
-
+        
         Axis_y_Title = None
         if(Variable_Of_Frecuency == "fi"):
             Axis_y_Title = "Frecuencia Absoluta (fi)"
@@ -57,12 +56,15 @@ class Draw_Graph_for_Each_Variable:
                     ax_Bars.text(Bar.get_x() + Bar.get_width() / 2 , height , f"{height:.{self.Precision}f}%" , ha="center" , va="bottom" , fontsize=10)
 
             """ Pie """
-            ax_pie = figure_pie.add_subplot(111)
-            ax_pie.pie(Copy_Data[f"{Variable_Of_Frecuency}"] , labels=Copy_Data["Intervals"].astype(str) , autopct="%1.1f%%" , startangle=90)
-            ax_pie.set_title(self.Pie_Title)
-            ax_pie.axis("equal")
+            if(Variable_Of_Frecuency == "fi"):
+                figure_pie = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
+                ax_pie = figure_pie.add_subplot(111)
+                ax_pie.pie(Copy_Data[f"{Variable_Of_Frecuency}"] , labels=Copy_Data["Intervals"].astype(str) , autopct="%1.1f%%" , startangle=90)
+                ax_pie.set_title(self.Pie_Title)
+                ax_pie.axis("equal")
+                return figure_bars , figure_pie
 
-            return figure_bars , figure_pie
+            return figure_bars
 
         elif("Frecuences_Cuant_Normal_Extended" in self.Data):
             Copy_Data = self.Data["Frecuences_Cuant_Normal_Extended"].copy()
@@ -89,12 +91,14 @@ class Draw_Graph_for_Each_Variable:
                     ax_Bars.text(Bar.get_x() + Bar.get_width() / 2 , height , f"{height:.{self.Precision}f}%" , ha="center" , va="bottom" , fontsize=10)
 
             """ Pie """
-            ax_pie = figure_pie.add_subplot(111)
-            ax_pie.pie(Copy_Data[f"{Variable_Of_Frecuency}"] , labels=Copy_Data["xi"] , autopct="%1.1f%%" , startangle=90)
-            ax_pie.set_title(self.Pie_Title)
-            ax_pie.axis("equal")
-
-            return figure_bars , figure_pie
+            if(Variable_Of_Frecuency == "fi"):
+                figure_pie = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
+                ax_pie = figure_pie.add_subplot(111)
+                ax_pie.pie(Copy_Data[f"{Variable_Of_Frecuency}"] , labels=Copy_Data["xi"] , autopct="%1.1f%%" , startangle=90)
+                ax_pie.set_title(self.Pie_Title)
+                ax_pie.axis("equal")
+                return figure_bars , figure_pie
+            return figure_bars
 
         elif("Frecuences_Cuali_Normal_Extended" in self.Data):
             Copy_Data = self.Data["Frecuences_Cuali_Normal_Extended"].copy()
@@ -121,11 +125,14 @@ class Draw_Graph_for_Each_Variable:
                     ax_Bars.text(Bar.get_x() + Bar.get_width() / 2 , height , f"{height:.{self.Precision}f}%" , ha="center" , va="bottom" , fontsize=10)
 
             """ Pie """
-            ax_pie = figure_pie.add_subplot(111)
-            ax_pie.pie(Copy_Data[f"{Variable_Of_Frecuency}"] , labels=Copy_Data["ai"] , autopct="%1.1f%%" , startangle=90)
-            ax_pie.set_title(self.Pie_Title)
-            ax_pie.axis("equal")
+            if(Variable_Of_Frecuency == "fi"):
+                figure_pie = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
+                ax_pie = figure_pie.add_subplot(111)
+                ax_pie.pie(Copy_Data[f"{Variable_Of_Frecuency}"] , labels=Copy_Data["ai"] , autopct="%1.1f%%" , startangle=90)
+                ax_pie.set_title(self.Pie_Title)
+                ax_pie.axis("equal")
+                return figure_bars , figure_pie
 
-            return figure_bars , figure_pie
+            return figure_bars
         else:
             raise Exception("Error al procesar los datos")

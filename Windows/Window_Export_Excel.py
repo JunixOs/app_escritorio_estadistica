@@ -10,7 +10,11 @@ from tkinter import filedialog
 def Select_File(Path):
     Path_File = filedialog.askdirectory(title="Seleccione una carpeta")
     if Path_File:
-        Path.set(Path_File)
+        if(Path):
+            Path.set("")
+            Path.set(Path_File)
+        else:
+            Path.set(Path_File)
 
 def Generate_Window_Export_Excel(Father_Window , Data , Type_Of_Variable):
     if __name__== "__main__":
