@@ -148,9 +148,12 @@ def Create_Window_Frecuences_Table(Main_Window):
         try:
             for a in Tables.values():
                 a.clear_table()
-
+            
             Input = str(Input.get())
-            Precision = int(Precision.get())
+            try:
+                Precision = int(Precision.get())
+            except Exception:
+                raise ValueError("Valor de precision invalida, intente nuevamente.")
             Is_Discrete = None
             """ Delete_Labels(Labels_Window_Frecuences_Table) """
 
@@ -229,19 +232,21 @@ def Create_Window_Frecuences_Table(Main_Window):
                 lab.place(x=x_pos , y=260)
                 Labels_Window_Frecuences_Table.append(lab)
                 b +=1 """
-            Global_Calcs = Dictionary_Values
-            Global_Type_Of_Variable = Type_Of_Variable
-        except (IndexError , ValueError , NameError , TypeError) as e:
+        except (IndexError , ValueError , NameError , TypeError , Exception) as e:
             Win_err = Frecuences_Error("ERROR" , e)
             Win_err.Create_Window(Window_Frecuences_Table)
         except Frecuences_Error as e:
             e.Create_Window(Window_Frecuences_Table)
         else:
+            Global_Calcs = Dictionary_Values
+            Global_Type_Of_Variable = Type_Of_Variable
+
             Btn_Calculate_Again.config(state="normal")
             Checkbox_Cualitative_Variable.config(state="disabled")
             Checkbox_Cuantitative_Variable.config(state="disabled")
             Input_Data.config(state="disabled")
             
+            Btn_Generate_Table.config(state="disabled")
             Btn_Generate_Excel.config(state="normal")
             Btn_Show_Graph.config(state="normal")
             Btn_Select_File.config(state="disabled")
@@ -411,7 +416,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
-        Precision.set(0)
+        Precision.set(3)
         Btn_Select_File.config(state="normal")
         Global_Calcs = {}
         Global_Type_Of_Variable = ""
@@ -424,6 +429,14 @@ def Create_Window_Frecuences_Table(Main_Window):
         Checkbox_Cuantitative_Discret.place_forget()
         Checked_Cuantitative_Discret.set(False)
 
+        Btn_Generate_Table.config(state="normal")
+        Btn_Generate_Excel.config(state="disabled")
+        Btn_Show_Graph.config(state="disabled")
+
+    def Interact_Precision(Tables):
+        if(Global_Calcs != {}):
+            Create_Table(Precision , Data , Tables)
+
     Window_Frecuences_Table = Toplevel(Main_Window)
     Window_Frecuences_Table.geometry("1240x700+135+100")
     Window_Frecuences_Table.title("Tabla de frecuencias")
@@ -433,6 +446,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     Data = StringVar(Window_Frecuences_Table)
     Precision = IntVar(Window_Frecuences_Table)
+
     Checked_Cualitative_Variable = BooleanVar(Window_Frecuences_Table)
     Checked_Cuantitative_Variable = BooleanVar(Window_Frecuences_Table)
 
@@ -459,7 +473,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
     Text_Input_Precision_Results.place(x=840 , y=130)
-    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=10 , textvariable=Precision , from_=1 , to=8 , increment=1 , font=("Courier New" , 13) , bg="#ffffff")
+    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=10 , textvariable=Precision , from_=3 , to=8 , increment=1 , font=("Courier New" , 13) , bg="#ffffff" , command= lambda: Interact_Precision(Dictionary_Tables))
     Input_Precision_Results.place(x=980 , y=130)
 
 
