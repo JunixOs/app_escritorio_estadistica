@@ -24,9 +24,19 @@ def Create_Window_Sucess(Window_Root):
 
     Window_Sucess.resizable(False , False)
     Window_Sucess.mainloop()
-def Process_File_Data(Window_Root , File_Path , Cell_Range , Preview , Data , Input_Data , Btn_Select_File):
+def Process_File_Data(Window_Root , File_Path , Sheet_Number , Cell_Range , Preview , Data , Input_Data , Btn_Select_File):
     try:
-        Excel = pd.read_excel(File_Path.get())
+        if(isinstance(Sheet_Number , float)):
+            raise Exception("Numero de hoja no valido, solo valores enteros")
+        
+        Unload_Excel = pd.ExcelFile(f"{File_Path.get()}")
+        Sheets = Unload_Excel.sheet_names
+        if(Sheet_Number > len(Sheets)):
+            raise Exception("No existe el numero de hoja especificado")
+        
+        Sheet_Number -= 1
+
+        Excel = pd.read_excel(File_Path.get() , sheet_name=Sheet_Number)
         First_Pair, Last_Pair = Cell_Range.get().split(':') # Si ingreso C10:D100 lo separa a "C10" y "D100"
         column_start = First_Pair[0] # Agarro C
         column_end = Last_Pair[0] # Agarro D
@@ -47,13 +57,16 @@ def Process_File_Data(Window_Root , File_Path , Cell_Range , Preview , Data , In
         
         list_of_data = ""
         values = data.values
+        if(Data):
+            Data.set("")
         if __name__ != "__main__":
-            for a in values:
-                list_of_data += " " + str(a[0])
+            if(values.all()):
+                for a in values:
+                    list_of_data += " " + str(a[0])
             Data.set(list_of_data) # Aqui accedo solamente a los valores dentro de las celdas
 
-    except FileNotFoundError as e:
-        Win_err = Frecuences_Error("ERROR NOTFOUNDDILE" , "Archivo no encontrado")
+    except (FileNotFoundError , Exception) as e:
+        Win_err = Frecuences_Error("ERROR" , f"{e}")
         Win_err.Create_Window(Window_Root)
     except Frecuences_Error as e:
         e.Create_Window(Window_Root)
@@ -62,12 +75,14 @@ def Process_File_Data(Window_Root , File_Path , Cell_Range , Preview , Data , In
         Btn_Select_File.config(state="disabled")
         Create_Window_Sucess(Window_Root)
 
-    return data
-
 def Select_File(Path):
     Path_File = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
     if Path_File:
-        Path.set(Path_File)
+        if Path:
+            Path.set("")
+            Path.set(Path_File)
+        else:
+            Path.set(Path_File)
 
 def Create_Window_Select_File(Father_Window , Data , Input_Data , Btn_Select_File_Father_Window):
     if __name__ == "__main__":
@@ -78,13 +93,14 @@ def Create_Window_Select_File(Father_Window , Data , Input_Data , Btn_Select_Fil
     Icon = PhotoImage(file="Images/icon.png")
 
     Window_Root.grab_set()
-    Window_Root.geometry("700x500+400+220")
+    Window_Root.geometry("700x550+400+220")
     Window_Root.title("Seleccionar Archivo")
     Window_Root.config(bg="#d1e7d2")
     Window_Root.iconphoto(False , Icon)
     
     Path = StringVar(Window_Root)
     Cell_Range = StringVar(Window_Root)
+    Sheet_Number = IntVar(Window_Root)
 
     Text_Input_Path_File = Label(Window_Root , text="Ingrese la ruta del archivo: " , bg="#d1e7d2" , font=("Times New Roman" , 12))
     Text_Input_Path_File.place(x=20 , y=20)
@@ -93,13 +109,18 @@ def Create_Window_Select_File(Father_Window , Data , Input_Data , Btn_Select_Fil
     Btn_Select_File = Button(Window_Root , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_File(Path) , width=10 , bg="#ffe3d4")
     Btn_Select_File.place(x=50 , y=50)
 
+    Text_Input_Sheet_Number = Label(Window_Root , text="Numero de Hoja: " , bg="#d1e7d2" , font=("Times New Roman" , 13))
+    Text_Input_Sheet_Number.place(x=20 , y=100)
+    Input_Sheet_Number = Spinbox(Window_Root , font=("Courier New" , 13) , textvariable=Sheet_Number , from_=1 , to=100 , width=4)
+    Input_Sheet_Number.place(x=210 , y=100)
+
     Text_Input_Cells_Range = Label(Window_Root , text="Ingrese el rango de celdas: " , bg="#d1e7d2" , font=("Times New Roman" , 13))
-    Text_Input_Cells_Range.place(x=20 , y=100)
+    Text_Input_Cells_Range.place(x=20 , y=140)
     Cells_Range = Entry(Window_Root , font=("Courier New" , 13) , textvariable=Cell_Range , width=47)
-    Cells_Range.place(x=210 , y=100)
+    Cells_Range.place(x=210 , y=140)
 
     Preview_Data = Frame(Window_Root)
-    Preview_Data.place(x=20 , y=150)
+    Preview_Data.place(x=20 , y=190)
 
     Text_Preview_Data = Text(Preview_Data , wrap=WORD , height=16 , width=72) # Aqui no puedo usar StingVar(), solo usar los metodos get() y set()
     Text_Preview_Data.pack(side=LEFT, fill=BOTH, expand=True)
@@ -111,11 +132,11 @@ def Create_Window_Select_File(Father_Window , Data , Input_Data , Btn_Select_Fil
     Text_Preview_Data.insert(END , "Una vez procesado tu archivo, tus datos se mostraran aqui...")
     Text_Preview_Data.config(font=("Times New Roman" , 13))
 
-    Btn_Process_Data = Button(Window_Root , text="Procesar Archivo" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Window_Root , Path , Cell_Range , Text_Preview_Data , Data , Input_Data , Btn_Select_File_Father_Window))
+    Btn_Process_Data = Button(Window_Root , text="Procesar Archivo" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Window_Root , Path , Sheet_Number.get() , Cell_Range , Text_Preview_Data , Data , Input_Data , Btn_Select_File_Father_Window))
     Btn_Process_Data.pack(side=BOTTOM)
 
     Window_Root.resizable(False,False)
     Window_Root.mainloop()
 
 if __name__ == "__main__":
-    Create_Window_Select_File(None , "" , "")
+    Create_Window_Select_File(None , "" , "" , "")
