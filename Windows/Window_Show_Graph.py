@@ -23,7 +23,9 @@ def Create_Window_Show_Graph(Father_Window , Data , Precision):
     else:
         W_Show_Graph = Toplevel(Father_Window)
         W_Show_Graph.grab_set()
-
+        if(Precision > 3):
+            Precision = 3
+            
     def Display_Graphs():
         if(Checked_According_fi.get()):
             Widgets["bar_hi"][0].get_tk_widget().place_forget()
@@ -114,12 +116,13 @@ def Create_Window_Show_Graph(Father_Window , Data , Precision):
 
     def Generate_Graph(Root_Window , Data):
         New_Data = {}
+        Copy_Data = Data.copy()
 
-        for key,value in Data.items():
+        for key,value in Copy_Data.items():
             if value != None:
                 New_Data[key] = value
 
-        if("Frecuences_Cuant_For_Many_Values" in New_Data):
+        if(("Frecuences_Cuant_For_Many_Values" in New_Data) and not isinstance(New_Data["Frecuences_Cuant_For_Many_Values"]["Intervals"][0][0] , str)):
             for a in range(0 , len(New_Data["Frecuences_Cuant_For_Many_Values"]["Intervals"])):
                 if(a != len(New_Data["Frecuences_Cuant_For_Many_Values"]["Intervals"]) - 1):
                     New_Data["Frecuences_Cuant_For_Many_Values"]["Intervals"][a] = "[ " + str(New_Data["Frecuences_Cuant_For_Many_Values"]["Intervals"][a][0]) +" , " + str(New_Data["Frecuences_Cuant_For_Many_Values"]["Intervals"][a][1]) +" >"
@@ -174,6 +177,7 @@ def Create_Window_Show_Graph(Father_Window , Data , Precision):
             Widgets["pie_hi"][0].draw()
             Widgets["pie_hi_percent"][1].suptitle(f"{Pie_Title}")
             Widgets["pie_hi_percent"][0].draw()
+
             Input_Name_Píe_Graph.delete(0 , END)
         else:
             messagebox.showwarning("Alerta" , "Ningun valor introducido")
@@ -211,27 +215,30 @@ def Create_Window_Show_Graph(Father_Window , Data , Precision):
     Checkbox_Pie_Graph.place(x=20 , y=220)
     Checkbox_Pie_Graph.config(state="disabled")
 
-    Text_Change_Name_Bar_Graph = Label(W_Show_Graph , text="Ingrese un nombre para el grafico de barras: " , font=("Times New Roman" , 13))
+    Text_Change_Name_Bar_Graph = Label(W_Show_Graph , text="Ingrese un nombre para el \ngrafico de barras: " , font=("Times New Roman" , 13) , justify=LEFT)
     Text_Change_Name_Bar_Graph.place(x=20 , y=300)
-    Input_Name_Bar_Graph = Entry(W_Show_Graph , font=("Courier New" , 13) , textvariable=Name_Bar_Graph , width=30)
-    Input_Name_Bar_Graph.place(x=20 , y=330)
+    Input_Name_Bar_Graph = Entry(W_Show_Graph , font=("Courier New" , 13) , textvariable=Name_Bar_Graph , width=28)
+    Input_Name_Bar_Graph.place(x=20 , y=360)
     Input_Name_Bar_Graph.focus()
 
-    Text_Change_Name_Pie_Graph = Label(W_Show_Graph , text="Ingrese un nombre para el grafico de pastel: " , font=("Times New Roman" , 13))
-    Text_Change_Name_Pie_Graph.place(x=20 , y=370)
-    Input_Name_Píe_Graph = Entry(W_Show_Graph , font=("Courier New" , 13) , textvariable=Name_Pie_Graph , width=30)
-    Input_Name_Píe_Graph.place(x=20 , y=400)
+    Text_Change_Name_Pie_Graph = Label(W_Show_Graph , text="Ingrese un nombre para el \ngrafico de pastel: " , font=("Times New Roman" , 13) , justify=LEFT)
+    Text_Change_Name_Pie_Graph.place(x=20 , y=400)
+    Input_Name_Píe_Graph = Entry(W_Show_Graph , font=("Courier New" , 13) , textvariable=Name_Pie_Graph , width=28)
+    Input_Name_Píe_Graph.place(x=20 , y=460)
 
-    Widgets = Generate_Graph(W_Show_Graph , Data)
+    if __name__ != "__main__":
+        Widgets = {}
+        Widgets = Generate_Graph(W_Show_Graph , Data)
+    """ Solucionar error con la visualizacion """
 
-    Btn_Change_Name = Button(W_Show_Graph , text="Cambiar" , font=("Times New Roman" , 13) , width=10 , command= lambda: Change_Title(Name_Bar_Graph.get() , Name_Pie_Graph.get()))
-    Btn_Change_Name.place(x=80 , y=440)
+    Btn_Change_Name = Button(W_Show_Graph , text="Cambiar" , font=("Times New Roman" , 13) , width=15 , command= lambda: Change_Title(Name_Bar_Graph.get() , Name_Pie_Graph.get()))
+    Btn_Change_Name.place(x=70 , y=500)
 
     Btn_Export_Graph = Button(W_Show_Graph , text="Exportar_Grafico" , font=("Times New Roman" , 13) , width=15)
-    Btn_Export_Graph.place(x=65 , y=480)
+    Btn_Export_Graph.place(x=70 , y=580)
 
     W_Show_Graph.resizable(False , False)
     W_Show_Graph.mainloop()
 
 if __name__ == "__main__":
-    Create_Window_Show_Graph(None)
+    Create_Window_Show_Graph(None , None , None)

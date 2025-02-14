@@ -15,6 +15,7 @@ class Draw_Graph_for_Each_Variable:
 
         self.Fig_Height = pixels_to_inches(700)
         self.Fig_Width = pixels_to_inches(680)
+
     def Draw_Graph(self , Variable_Of_Frecuency):
         if(Variable_Of_Frecuency != "fi" and Variable_Of_Frecuency != "hi" and Variable_Of_Frecuency != "hi_percent"):
             raise Exception("Error interno")
@@ -36,10 +37,11 @@ class Draw_Graph_for_Each_Variable:
             Copy_Data = pd.DataFrame(Copy_Data)
 
             ax_Bars = figure_bars.add_subplot(111)
+            figure_bars.subplots_adjust(bottom=0.15)
             Bars = ax_Bars.bar(Copy_Data["Intervals"].astype(str) , Copy_Data[f"{Variable_Of_Frecuency}"] , color="skyblue" , width=0.5)
 
             ax_Bars.set_xticks(range(len(Copy_Data["Intervals"])))
-            ax_Bars.set_xticklabels(Copy_Data["Intervals"] , fontsize=7)
+            ax_Bars.set_xticklabels(Copy_Data["Intervals"] , fontsize=7 , rotation=30 , rotation_mode="anchor" , ha="right")
 
             ax_Bars.set_title(self.Bar_Title)
             ax_Bars.set_xlabel("Intervalos de Clase")
@@ -67,7 +69,11 @@ class Draw_Graph_for_Each_Variable:
             Copy_Data = pd.DataFrame(Copy_Data)
 
             ax_Bars = figure_bars.add_subplot(111)
+            figure_bars.subplots_adjust(bottom=0.15)
             Bars = ax_Bars.bar(Copy_Data["xi"] , Copy_Data[f"{Variable_Of_Frecuency}"] , color="skyblue" , width=0.6)
+
+            ax_Bars.set_xticks(range(len(Copy_Data["xi"])))
+            ax_Bars.set_xticklabels(Copy_Data["xi"] , fontsize=8 , rotation=30 , rotation_mode="anchor" , ha="right")
 
             ax_Bars.set_title(self.Bar_Title)   
             ax_Bars.set_xlabel("Variables Observadas (xi)")
@@ -95,7 +101,11 @@ class Draw_Graph_for_Each_Variable:
             Copy_Data = pd.DataFrame(Copy_Data)
 
             ax_Bars = figure_bars.add_subplot(111)
+            figure_bars.subplots_adjust(bottom=0.15)
             Bars = ax_Bars.bar(Copy_Data["ai"] , Copy_Data[f"{Variable_Of_Frecuency}"] , color="skyblue" , width=0.6)
+
+            ax_Bars.set_xticks(range(len(Copy_Data["ai"])))
+            ax_Bars.set_xticklabels(Copy_Data["ai"] , fontsize=8 , rotation=30 , rotation_mode="anchor" , ha="right")
 
             ax_Bars.set_title(self.Bar_Title)   
             ax_Bars.set_xlabel("Variables Observadas (ai)")
