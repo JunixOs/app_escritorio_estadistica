@@ -21,10 +21,10 @@ def Calc_Median_Me(Data):
     Copy_Data = Data.copy()
     Copy_Data.sort()
     n = len(Copy_Data)
-    if (n // 2 == 1):
-        Me = Copy_Data[(n-1)/2]
+    if (n % 2 == 1):
+        Me = Copy_Data[(n-1)//2]
     else:
-        Me = (Copy_Data[(n/2)-1]+Copy_Data[n/2])/2
+        Me = (Copy_Data[(n//2)-1]+Copy_Data[n//2])/2
     return Me
 
 def Calc_Mode_Mo(Arr_xi , Arr_fi):

@@ -1,11 +1,13 @@
 import sys
 import os
+import copy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Calcs.Exports.Export_Graph import Export_Graph_As_Image
 
 from tkinter import *
 from tkinter import filedialog
+from tkinter import ttk
 
 def Select_Path(Root_Window , Path):
     File_Path = filedialog.askdirectory(title="Seleccione una carpeta")
@@ -18,6 +20,7 @@ def Select_Path(Root_Window , Path):
     Root_Window.lift()
 
 def Create_Window_Export_Graph(Father_Window , Graphs):
+
     if __name__ == "__main__":
         W_Export_Graph = Tk()
     else:
@@ -118,8 +121,11 @@ def Create_Window_Export_Graph(Father_Window , Graphs):
             Name_Pie_Graph.set("")
 
     def Back():
-        Father_Window.state(newstate="normal")
         W_Export_Graph.destroy()
+        Father_Window.state(newstate="normal")
+        Father_Window.lift()
+        Father_Window.lift()
+        Father_Window.grab_set()
     if __name__ != "__main__":
         Father_Window.state(newstate="withdraw")
 
@@ -137,13 +143,10 @@ def Create_Window_Export_Graph(Father_Window , Graphs):
     Name_Bar_Graph.set("")
     File_Name = StringVar(W_Export_Graph)
     Path = StringVar(W_Export_Graph)
-    Image_Format = StringVar(W_Export_Graph)
-    Image_Resolution = IntVar(W_Export_Graph)
+    Path.set("")
 
     Formats = [".jpg" , ".png" , ".svg"]
     Resolutions = [72 , 96 , 150 , 300 , 600 , 1200]
-    Image_Resolution.set(Resolutions[3])
-    Image_Format.set(Formats[0])
 
     Checked_Export_All = BooleanVar(W_Export_Graph)
     Checked_Export_All_Bars = BooleanVar(W_Export_Graph)
@@ -160,8 +163,9 @@ def Create_Window_Export_Graph(Father_Window , Graphs):
     Input_File_Name.place(x=200 , y=20)
     Input_File_Name.focus()
 
-    Input_Format = OptionMenu(W_Export_Graph , Image_Format , *Formats)
+    Input_Format = ttk.Combobox(W_Export_Graph , values=Formats , font=("Times New Roman", 13), state="readonly" , width=4)
     Input_Format.place(x=800 , y=17)
+    Input_Format.set(Formats[0])
 
     Label_Input_Páth = Label(W_Export_Graph , text="Ruta de destino: " , font=("Times New Roman" , 13) , bg="#E4DBD5")
     Label_Input_Páth.place(x=20 , y=60)
@@ -172,8 +176,9 @@ def Create_Window_Export_Graph(Father_Window , Graphs):
 
     Label_Input_dpi = Label(W_Export_Graph ,text="Resolucion de la imagen (DPI): \n96 resolucion estandar \n>300 alta resolucion" , font=("Times New Roman" , 13) , justify=LEFT , bg="#E4DBD5")
     Label_Input_dpi.place(x=20 , y=130)
-    Input_dpi = OptionMenu(W_Export_Graph , Image_Resolution , *Resolutions)
+    Input_dpi = ttk.Combobox(W_Export_Graph , values=Resolutions , font=("Times New Roman", 13), state="readonly")
     Input_dpi.place(x=250 , y=127)
+    Input_dpi.set(Resolutions[0])
 
     Section_2 = Label(W_Export_Graph , bg="#E7E4C1" , width=129 , height=29 , borderwidth=2 , relief="solid")
     Section_2.place(x=0 , y=214)
@@ -219,8 +224,8 @@ def Create_Window_Export_Graph(Father_Window , Graphs):
             Graphs , 
             File_Name.get() , 
             Path.get() , 
-            Image_Resolution.get() , 
-            Image_Format.get() , 
+            Input_dpi.get() , 
+            Input_Format.get() , 
             Name_Bar_Graph.get() , 
             Name_Pie_Graph.get() ,       
             Export_All = Checked_Export_All.get(),

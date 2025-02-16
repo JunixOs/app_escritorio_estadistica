@@ -16,7 +16,8 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
             file_name = f"frecuences_{time}.xlsx"
         elif(not file_name.lower().endswith('.xlsx')):
             file_name += f'_{time}.xlsx'
-
+        if (route == ""):
+            raise Exception("No se ha ingresado ninguna ruta de exportacion.")
         if not route.endswith("/"):
             route += "/"
 
@@ -41,7 +42,7 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
                         workbook = writer.book  #Acceder al excel
                         worksheet_hoja1 = workbook['Hoja1'] #Acceder a Hoja 1
 
-                        # Centrar texto en la columna A de la Hoja1
+                        # Centrar texto de las columnas
                         for col in ["D" , "E" , "F" , "G" , "H" , "I" , "J"]:
                             for row in worksheet_hoja1[col]:
                                 row.alignment = Alignment(horizontal="center", vertical="center")
@@ -65,6 +66,7 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
                                     pass
                             adjusted_width = (max_length + 2)
                             worksheet_hoja1.column_dimensions[column].width = adjusted_width
+
 
                 elif(Data["Frecuences_Cuant_For_Many_Values"] != None):
                     Copy_Data = copy.deepcopy(Data["Frecuences_Cuant_For_Many_Values"])

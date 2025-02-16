@@ -102,11 +102,11 @@ def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , I
     Arr_Hi_percent = Cuant_Many_Values.Calc_Hi_percent(Arr_Hi , N_Decimals_Precision)
 
     """ Modificar esto para mas precision en los siguientes calculos """
-    if(N_Decimals_Precision>=1 and N_Decimals_Precision<3):
+    if(N_Decimals_Precision>=3 and N_Decimals_Precision<5):
         Precision = 2
-    elif(N_Decimals_Precision>=3 and N_Decimals_Precision<5):
+    elif(N_Decimals_Precision>=5 and N_Decimals_Precision<7):
         Precision = 4
-    elif(N_Decimals_Precision>=5 and N_Decimals_Precision<=8):
+    elif(N_Decimals_Precision>=7 and N_Decimals_Precision<=8):
         Precision = 6
     
     X_ = SM_For_Grouped_Data.Calc_Arithmetic_Average(len(Data) , Arr_xi , Arr_fi , Precision)
@@ -139,14 +139,14 @@ def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , I
             Documento=1003882) """
     else:
         Summary_Measures = dict([
-            ("Arithmetic Average" , X_),
-            ("Geomteric Average" , X_g),
-            ("Armonic Average" , X_h),
-            ("Mode" , Mo),
-            ("Median" , Me),
-            ("Variance" , S_2),
-            ("Standard Deviation" , S),
-            ("CV%" , CV_Percent),
+        ("Media Aritmetica (X)" , X_),
+        ("Media Geometrica (X_g)" , X_g),
+        ("Media Armonica (X_h)" , X_h),
+        ("Moda (Mo)" , Mo),
+        ("Mediana (Me)" , Me),
+        ("Varianza (S^2)" , S_2),
+        ("Desviacion Estandar (S)" , S),
+        ("CV%" , CV_Percent),
         ])
         Variables_Value = dict([
             ("V_Max" , V_Max),
@@ -188,11 +188,11 @@ def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
     Arr_hi_percent = Cuant_Normal_Extended.Calc_hi_percent(Arr_hi , N_Decimals_Precision)
     Arr_Hi_percent = Cuant_Normal_Extended.Calc_Hi_percent(Arr_Hi , N_Decimals_Precision)
 
-    if(N_Decimals_Precision>=1 and N_Decimals_Precision<3):
+    if(N_Decimals_Precision>=3 and N_Decimals_Precision<5):
         Precision = 2
-    elif(N_Decimals_Precision>=3 and N_Decimals_Precision<5):
+    elif(N_Decimals_Precision>=5 and N_Decimals_Precision<7):
         Precision = 4
-    elif(N_Decimals_Precision>=5 and N_Decimals_Precision<=8):
+    elif(N_Decimals_Precision>=7 and N_Decimals_Precision<=8):
         Precision = 6
     X_ = SM_For_Not_Grouped_Data.Calc_Arithmetic_Average(Data , Precision)
     Me = SM_For_Not_Grouped_Data.Calc_Median_Me(Data)
@@ -205,13 +205,13 @@ def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
     CV_Percent = SM_For_Not_Grouped_Data.Calc_Percentage_Coefficient_Variation(S , X_ , Precision)
 
     Summary_Measures = dict([
-        ("Arithmetic Average" , X_),
-        ("Geomteric Average" , X_g),
-        ("Armonic Average" , X_h),
-        ("Mode" , Mo),
-        ("Median" , Me),
-        ("Variance" , S_2),
-        ("Standard Deviation" , S),
+        ("Media Aritmetica (X)" , X_),
+        ("Media Geometrica (X_g)" , X_g),
+        ("Media Armonica (X_h)" , X_h),
+        ("Moda (Mo)" , Mo),
+        ("Mediana (Me)" , Me),
+        ("Varianza (S^2)" , S_2),
+        ("Desviacion Estandar (S)" , S),
         ("CV%" , CV_Percent),
     ])
     Variables_Values = dict([
@@ -290,7 +290,7 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
             match (Is_Discrete):
                 case True:
                     if(Is_Float):
-                        raise ValueError("Se ha seleccionado un tipo de variable no adecuado \n para los datos actuales")
+                        raise ValueError("Se ha seleccionado un tipo de variable no adecuado\npara los datos actuales")
                     elif(Calc_For_Classes):
                         Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , Is_Discrete)
                         Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float

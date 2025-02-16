@@ -134,7 +134,7 @@ def Create_Window_Show_Graph(Father_Window , Data , Precision):
             Dictionary_Widgets = dict([
                 ("bar_fi" , [Widget_bar_fi , bar_fi]),
                 ("bar_hi" , [Widget_bar_hi , bar_hi]),
-                ("bar_hi_percent" , [Widget_bar_hi_percent , bar_hi]),
+                ("bar_hi_percent" , [Widget_bar_hi_percent , bar_hi_percent]),
                 ("pie_graph" , [Widget_pie_graph , pie_graph]),
             ])
             return Dictionary_Widgets
@@ -177,7 +177,7 @@ def Create_Window_Show_Graph(Father_Window , Data , Precision):
         Widgets = {}
         Widgets = Generate_Graph(W_Show_Graph , Data)
 
-    Btn_Export_Graph = Button(W_Show_Graph , text="Exportar Graficos" , font=("Times New Roman" , 13) , width=15 , command= lambda: Create_Window_Export_Graph(W_Show_Graph , copy.deepcopy(Widgets)))
+    Btn_Export_Graph = Button(W_Show_Graph , text="Exportar Graficos" , font=("Times New Roman" , 13) , width=15 , command= lambda: Create_Window_Export_Graph(W_Show_Graph , Widgets))
     Btn_Export_Graph.place(x=90 , y=440)
 
     W_Show_Graph.resizable(False , False)

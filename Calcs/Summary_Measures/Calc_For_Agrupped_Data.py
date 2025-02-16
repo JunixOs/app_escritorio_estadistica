@@ -26,6 +26,7 @@ def Calc_Median_Me(n , Arr_fi , Arr_Fi , Arr_Intervals , C , Precision):
     for a in range(0 , len(Arr_Fi)):
         if(Arr_Fi[a] >= Fi):
             position_Fi = a
+            break
     if(position_Fi):
         return round(Arr_Intervals[position_Fi][0] + (((n/2)-Arr_Fi[position_Fi-1])/Arr_fi[position_Fi])*C , Precision)
     else:

@@ -5,10 +5,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Calcs.Calc_Values_Tables import *
 from Window_Export_Excel import Generate_Window_Export_Excel
-from Windows_Errors import Frecuences_Error
 from tkinter import *
 from tkinter import ttk
-import Window_Select_File as W_Select_File
+from tkinter import messagebox
+import Windows.Window_Import_Excel as W_Import_Excel
 import Window_Show_Graph as W_Show_Graph
 
 # Variables Globales
@@ -37,10 +37,11 @@ class TreeviewFrame(ttk.Frame):
                 self.treeview.delete(item)
 
     def Display(self):
-        self.place(x=40 , y=330)
+        self.place(x=40 , y=430)
 
     def Hidden(self):
         self.place_forget()
+
 def Display_Or_Hidden_Tables(Tables , Table_Name , Display):
     if(Display):
         for key,value in Tables.items():
@@ -128,6 +129,7 @@ def Put_Data_On_Table_Cuali_Extended(Table_Extended , Variables , Frecuences):
             Table_Extended.treeview.column(col, anchor="center")
 
 def Delete_Labels(Labels):
+    global Labels_Window_Frecuences_Table
     """ Terminar, mostrar valores como Media, promedio , etc """
     if(len(Labels) != 0):
         for a in range(0 , len(Labels)):
@@ -138,105 +140,150 @@ def Create_Window_Frecuences_Table(Main_Window):
     Main_Window.state(newstate="withdraw")
 
     def Back_to_main_window():
+        Window_Frecuences_Table.destroy()
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("StatApp beta v1.5")
-        Window_Frecuences_Table.destroy()
+        Main_Window.title("StatApp beta v1.6")
+        Main_Window.lift()
 
-    def Create_Table(Precision , Input , Tables):
+    def Create_Table_For_Single_Column(Precision , Input , Tables , ):
+        Is_Discrete = None
+        if(Checked_Cuantitative_Variable.get()):
+            Type_Of_Variable = "Cuantitative"
+            if(Checked_Cuantitative_Continuous.get()):
+                Is_Discrete = False
+            elif(Checked_Cuantitative_Discret.get()):
+                Is_Discrete = True
+            else:
+                raise Exception("No se pudo detectar si la variable Cuantitativa\nes Discreta o Continua.")
+        elif(Checked_Cualitative_Variable.get()):
+            Type_Of_Variable = "Cualitative"
+        else:
+            raise Exception("No se pudo detectar el tipo de variable")
+
+        Dictionary_Values = Main_Function(Precision, Input , Type_Of_Variable , Is_Discrete)
+
+        match(Type_Of_Variable):
+            case "Cuantitative":
+                V_Cuantitative = Dictionary_Values["Variables_Cuant_Normal_Extended"]
+                F_Cuantitative = Dictionary_Values["Frecuences_Cuant_Normal_Extended"]
+                
+                if(V_Cuantitative != None and F_Cuantitative != None):
+                    Put_Data_On_Table_Cuant_Normal(Tables["Cuantitative_Normal"] , V_Cuantitative , F_Cuantitative)
+
+                    Put_Data_On_Table_Cuant_Extended(Tables["Cuantitative_Extended"] , V_Cuantitative , F_Cuantitative)
+                else:
+                    Tables["Cuantitative_Normal"].treeview.insert("" , END , values=(
+                        "None",
+                        "Demasiados Datos",
+                        "Calculo Omitido",
+                        "None",
+                    ))
+                    Tables["Cuantitative_Extended"].treeview.insert("", END , values=(
+                    "None",
+                    "None",
+                    "None",
+                    "Demasiados Datos Calculo Omitido",
+                    "None",
+                    "None",
+                    "None",))
+                
+                V_Cuantitative_For_Many_Values = Dictionary_Values["Variables_Cuant_For_Many_Values"]
+                F_Cuantitative_For_Many_Values = Dictionary_Values["Frecuences_Cuant_For_Many_Values"]
+
+                if(Dictionary_Values["Summary_Measures_For_Grouped_Data"] != None):
+                    S_Measures = Dictionary_Values["Summary_Measures_For_Grouped_Data"]
+                elif(Dictionary_Values["Summary_Measures_For_Not_Grouped_Data"] != None):
+                    S_Measures = Dictionary_Values["Summary_Measures_For_Not_Grouped_Data"]
+                else:
+                    raise Exception("Error al calcular las medidas de resumen.")
+
+                if(V_Cuantitative_For_Many_Values != None and F_Cuantitative_For_Many_Values != None):
+                    Put_Data_On_Table_Cuant_For_Many_Values(Tables["Cuantitative_For_Many_Values"] , V_Cuantitative_For_Many_Values , F_Cuantitative_For_Many_Values)
+                else:
+                    Tables["Cuantitative_For_Many_Values"].treeview.insert("", END , values=(
+                    "None",
+                    "None",
+                    "None",
+                    "None",
+                    "Pocos",
+                    "Datos",
+                    "Calculo Omitido",
+                    "None",
+                    "None",
+                    "None",
+                    "None",))
+                b=0
+                for key,value in S_Measures.items():
+                    String = ""
+                    if(b < 3):
+                        lab = Label(Window_Frecuences_Table , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                        x_pos = 31+(280*b)
+                        lab.place(x=x_pos , y=260)
+                    elif(b == 3):
+                        x_pos = 40+(280*b) - (280*3)
+                        if(len(value) > 1):
+                            sub=1
+                            for a in range(0 , len(value)):
+                                if(a >= 3 or a == len(value) - 1):
+                                    String += f"Mo_{sub}: {value[a]}"
+                                    break
+                                else:
+                                    String += f"Mo_{sub}: {value[a]}\n"
+                                sub += 1
+                            lab = Label(Window_Frecuences_Table , text=f"{key}\n{String}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+
+                        else:
+                            lab = Label(Window_Frecuences_Table , text=f"{key}\nMo_1: {value[0]}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                        lab.place(x=x_pos , y=320)
+                    elif(b < 6):
+                        lab = Label(Window_Frecuences_Table , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                        x_pos = 40 + (280*b) - (280*3)
+                        lab.place(x=x_pos , y=320)
+                    else:
+                        lab = Label(Window_Frecuences_Table , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                        x_pos = 40 + (280*b) - (280*5)
+                        lab.place(x=x_pos , y=380)
+                    Labels_Window_Frecuences_Table.append(lab)
+                    b +=1
+
+            case "Cualitative":
+                V_Cualitative = Dictionary_Values["Variables_Cuali_Normal_Extended"]
+                F_Cualitative = Dictionary_Values["Frecuences_Cuali_Normal_Extended"]
+
+                Put_Data_On_Table_Cuali_Normal(Tables["Cualitative_Normal"] , V_Cualitative , F_Cualitative)
+
+                Put_Data_On_Table_Cuali_Extended(Tables["Cualitative_Extended"] , V_Cualitative , F_Cualitative)
+
+            case _:
+                raise Exception("No se pudo detectar el tipo de variable")
+        return Dictionary_Values , Type_Of_Variable
+
+    def Create_Table_For_Multiple_Columns():
+        pass
+
+    def Create_Table(Precision , Input , Tables , Data_For_Multiple_Columns):
         global Global_Calcs , Global_Type_Of_Variable
         try:
             for a in Tables.values():
                 a.clear_table()
             
             Input = str(Input.get())
+            if(Input == ""):
+                raise Exception("No se han ingresado datos")
             try:
                 Precision = int(Precision.get())
             except Exception:
-                raise ValueError("Valor de precision invalida, intente nuevamente.")
-            Is_Discrete = None
-            """ Delete_Labels(Labels_Window_Frecuences_Table) """
+                raise Exception("Valor de precision invalida, intente nuevamente.")
+            Delete_Labels(Labels_Window_Frecuences_Table)
 
-            if(Checked_Cuantitative_Variable.get()):
-                Type_Of_Variable = "Cuantitative"
-                if(Checked_Cuantitative_Continuous.get()):
-                    Is_Discrete = False
-                elif(Checked_Cuantitative_Discret.get()):
-                    Is_Discrete = True
-                else:
-                    raise Frecuences_Error("NO TYPE DEFINED" , "No se pudo detectar si la variable Cuantitativa \n es Discreta o Continua.")
-            elif(Checked_Cualitative_Variable.get()):
-                Type_Of_Variable = "Cualitative"
+            if(Data_For_Multiple_Columns == {}):
+                Dictionary_Values , Type_Of_Variable = Create_Table_For_Single_Column(Precision , Input , Dictionary_Tables)
             else:
-                raise Frecuences_Error("NO TYPE DEFINED" , "No se pudo detectar el tipo de variable")
+                Create_Table_For_Multiple_Columns()
 
-            Dictionary_Values = Main_Function(Precision, Input , Type_Of_Variable , Is_Discrete)
-
-            match(Type_Of_Variable):
-                case "Cuantitative":
-                    V_Cuantitative = Dictionary_Values["Variables_Cuant_Normal_Extended"]
-                    F_Cuantitative = Dictionary_Values["Frecuences_Cuant_Normal_Extended"]
-                    if(V_Cuantitative != None and F_Cuantitative != None):
-                        Put_Data_On_Table_Cuant_Normal(Tables["Cuantitative_Normal"] , V_Cuantitative , F_Cuantitative)
-
-                        Put_Data_On_Table_Cuant_Extended(Tables["Cuantitative_Extended"] , V_Cuantitative , F_Cuantitative)
-                    else:
-                        Tables["Cuantitative_Normal"].treeview.insert("" , END , values=(
-                            "None",
-                            "Demasiados Datos",
-                            "Calculo Omitido",
-                            "None",
-                        ))
-                        Tables["Cuantitative_Extended"].treeview.insert("", END , values=(
-                        "None",
-                        "None",
-                        "None",
-                        "Demasiados Datos Calculo Omitido",
-                        "None",
-                        "None",
-                        "None",))
-                    
-                    V_Cuantitative_For_Many_Values = Dictionary_Values["Variables_Cuant_For_Many_Values"]
-                    F_Cuantitative_For_Many_Values = Dictionary_Values["Frecuences_Cuant_For_Many_Values"]
-
-                    if(V_Cuantitative_For_Many_Values != None and F_Cuantitative_For_Many_Values != None):
-                        Put_Data_On_Table_Cuant_For_Many_Values(Tables["Cuantitative_For_Many_Values"] , V_Cuantitative_For_Many_Values , F_Cuantitative_For_Many_Values)
-                    else:
-                        Tables["Cuantitative_For_Many_Values"].treeview.insert("", END , values=(
-                        "None",
-                        "None",
-                        "None",
-                        "None",
-                        "Pocos",
-                        "Datos",
-                        "Calculo Omitido",
-                        "None",
-                        "None",
-                        "None",
-                        "None",))
-                case "Cualitative":
-                    V_Cualitative = Dictionary_Values["Variables_Cuali_Normal_Extended"]
-                    F_Cualitative = Dictionary_Values["Frecuences_Cuali_Normal_Extended"]
-
-                    Put_Data_On_Table_Cuali_Normal(Tables["Cualitative_Normal"] , V_Cualitative , F_Cualitative)
-
-                    Put_Data_On_Table_Cuali_Extended(Tables["Cualitative_Extended"] , V_Cualitative , F_Cualitative)
-
-                case _:
-                    raise Frecuences_Error("NO TYPE DEFINED" , "No se pudo detectar el tipo de variable")
-
-            """ b=0
-            for key,value in Variables.items():
-                x_pos = 40+(215*b)
-                lab = Label(Window_Frecuences_Table , text=f"{key} = {value}" , font=("Times New Roman" , 12) , bg="#FEE1AB")
-                lab.place(x=x_pos , y=260)
-                Labels_Window_Frecuences_Table.append(lab)
-                b +=1 """
         except (IndexError , ValueError , NameError , TypeError , Exception) as e:
-            Win_err = Frecuences_Error("ERROR" , e)
-            Win_err.Create_Window(Window_Frecuences_Table)
-        except Frecuences_Error as e:
-            e.Create_Window(Window_Frecuences_Table)
+            messagebox.showerror("Error" , f"{e}")
         else:
             Global_Calcs = Dictionary_Values
             Global_Type_Of_Variable = Type_Of_Variable
@@ -249,7 +296,7 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Generate_Table.config(state="disabled")
             Btn_Generate_Excel.config(state="normal")
             Btn_Show_Graph.config(state="normal")
-            Btn_Select_File.config(state="disabled")
+            Btn_Import_Data_From_File.config(state="disabled")
 
             Checkbox_Cuantitative_Discret.config(state="disabled")
             Checkbox_Cuantitative_Continuous.config(state="disabled")
@@ -394,10 +441,11 @@ def Create_Window_Frecuences_Table(Main_Window):
     def Only_Check_Cuant_Continuous():
         if(Checked_Cuantitative_Continuous.get() and Checked_Cuantitative_Discret.get()):
             Checked_Cuantitative_Discret.set(False)
-    def Calculate_Again(Tables):
+    def Calculate_Again(Tables , Data_For_Multiple_Columns):
         global Global_Calcs , Global_Type_Of_Variable
         for value in Tables.values():
             value.clear_table()
+        Delete_Labels(Labels_Window_Frecuences_Table)
         Btn_Calculate_Again.config(state="disabled")
         Checkbox_Cualitative_Variable.config(state="normal")
         Checkbox_Cuantitative_Variable.config(state="normal")
@@ -417,9 +465,10 @@ def Create_Window_Frecuences_Table(Main_Window):
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
         Precision.set(3)
-        Btn_Select_File.config(state="normal")
+        Btn_Import_Data_From_File.config(state="normal")
         Global_Calcs = {}
         Global_Type_Of_Variable = ""
+        Data_For_Multiple_Columns = {}
 
         Checkbox_Cuantitative_Continuous.config(state="normal")
         Checkbox_Cuantitative_Continuous.place_forget()
@@ -438,13 +487,15 @@ def Create_Window_Frecuences_Table(Main_Window):
             Create_Table(Precision , Data , Tables)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
-    Window_Frecuences_Table.geometry("1240x700+135+100")
+    Window_Frecuences_Table.geometry("1240x800+135+40")
     Window_Frecuences_Table.title("Tabla de frecuencias")
     Window_Frecuences_Table.config(bg="#6C6E72")
     Icon = PhotoImage(file="Images/icon.png")
     Window_Frecuences_Table.iconphoto(False , Icon)
 
     Data = StringVar(Window_Frecuences_Table)
+    Data.set("")
+    Data_For_Multiple_Columns = {}
     Precision = IntVar(Window_Frecuences_Table)
 
     Checked_Cualitative_Variable = BooleanVar(Window_Frecuences_Table)
@@ -466,7 +517,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     Text_Input_Data = Label(Window_Frecuences_Table , text="Ingrese los valores:", font=("Times New Roman" , 13) , bg="#FEE1AB")
     Text_Input_Data.place(x=40 , y=90)
-    Input_Data = Entry(Window_Frecuences_Table , textvariable=Data , border=1 , cursor="xterm" , width=100 , font=("Courier New" , 13) , bg="#ffffff")
+    Input_Data = Entry(Window_Frecuences_Table , textvariable=Data , border=1 , cursor="xterm" , width=100 , font=("Courier New" , 13) , bg="#ffffff" , relief="sunken")
     Input_Data.place(x=180 , y=90)
     Input_Data.focus()
 
@@ -499,20 +550,20 @@ def Create_Window_Frecuences_Table(Main_Window):
     Checkbox_Cuantitative_Continuous = Checkbutton(Window_Frecuences_Table , text="Continua" , font=("Times New Roman" , 13) , bg="#FEE1AB" , variable=Checked_Cuantitative_Continuous , command=Only_Check_Cuant_Continuous)
     Checkbox_Cuantitative_Continuous.config(state="disabled")
 
-    Btn_Select_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Select_File.Create_Window_Select_File(Window_Frecuences_Table , Data , Input_Data , Btn_Select_File))
-    Btn_Select_File.place(x=860 , y=170)
+    Section_Frecuences_Table = Label(Window_Frecuences_Table , width=168 , height=32 , bg="#CBEFE3" , highlightthickness=2 , highlightbackground="#000000")
+    Section_Frecuences_Table.place(x=29 , y=255)
 
-    Btn_Calculate_Again = Button(Window_Frecuences_Table , text="Calcular con otros valores" , font=("Times New Roman" , 13) , width=20 , bg="#F4B0C0" , command= lambda: Calculate_Again(Dictionary_Tables))
+    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data , Input_Data , Btn_Import_Data_From_File , Data_For_Multiple_Columns))
+    Btn_Import_Data_From_File.place(x=860 , y=170)
+
+    Btn_Calculate_Again = Button(Window_Frecuences_Table , text="Calcular con otros valores" , font=("Times New Roman" , 13) , width=20 , bg="#F4B0C0" , command= lambda: Calculate_Again(Dictionary_Tables , Data_For_Multiple_Columns))
     Btn_Calculate_Again.place(x=780 , y=210)
     Btn_Calculate_Again.config(state="disabled")
 
-    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Dictionary_Tables)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
+    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Dictionary_Tables , Data_For_Multiple_Columns)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
     Btn_Generate_Table.place(x=1020 , y=210)
 
-    Section_Frecuences_Table = Label(Window_Frecuences_Table , width=168 , height=25 , bg="#FEE1AB" , highlightthickness=2 , highlightbackground="#000000")
-    Section_Frecuences_Table.place(x=29 , y=255)
-
-    Btn_Generate_Excel = Button(Window_Frecuences_Table , text="Exportar tabla en Excel" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Generate_Window_Export_Excel(Window_Frecuences_Table , Global_Calcs , Global_Type_Of_Variable))
+    Btn_Generate_Excel = Button(Window_Frecuences_Table , text="Exportar tabla a Excel" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Generate_Window_Export_Excel(Window_Frecuences_Table , Global_Calcs , Global_Type_Of_Variable))
     Btn_Generate_Excel.place(x=800 , y=275)
     Btn_Generate_Excel.config(state="disabled")
 
@@ -618,7 +669,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     )
 
     Btn_Back = Button(Window_Frecuences_Table , text="Volver", font=("Times New Roman" , 12) , command=Back_to_main_window , width=134 , bg="#F4B0C0")
-    Btn_Back.place(x=10 , y=660)
+    Btn_Back.place(x=10 , y=760)
 
     Window_Frecuences_Table.protocol("WM_DELETE_WINDOW" , Back_to_main_window)
     Window_Frecuences_Table.resizable(False,False)
