@@ -58,13 +58,13 @@ def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C , Precision):
     else:
         Pos = Position_Modal_Class[0]
         if(Pos == len(Arr_fi) - 1):
-            d1 = Arr_fi[a] - Arr_fi[a - 1]
-            d2 = Arr_fi[a]
+            d1 = Arr_fi[Pos] - Arr_fi[a - 1]
+            d2 = Arr_fi[Pos]
             Mo.append(round(Arr_Intervals[Pos][0]+(d1/(d1 + d2))*C , Precision))
         elif(Pos == 0):
-            d1 = Arr_fi[a]
-            d2 = Arr_fi[a] - Arr_fi[a + 1]
-            Mo.append(round(Arr_Intervals[a][0] + (d1/(d1 + d2))*C , Precision))
+            d1 = Arr_fi[Pos]
+            d2 = Arr_fi[Pos] - Arr_fi[Pos + 1]
+            Mo.append(round(Arr_Intervals[Pos][0] + (d1/(d1 + d2))*C , Precision))
         else:
             d1 = Arr_fi[Pos] - Arr_fi[Pos - 1]
             d2 = Arr_fi[Pos] - Arr_fi[Pos + 1]
