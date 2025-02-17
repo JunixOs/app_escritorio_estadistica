@@ -8,6 +8,10 @@ import Calc_Frecuences_Cualitative_Normal_Extended as Cuali_Normal_Extended
 import Calc_Frecuences_Cuantitative_Normal_Extended as Cuant_Normal_Extended
 import Summary_Measures.Calc_For_Not_Agrupped_Data as SM_For_Not_Grouped_Data
 import Summary_Measures.Calc_For_Agrupped_Data as SM_For_Grouped_Data
+
+def Contains_Letters(Data):
+    return not any(caracter.isalpha() for caracter in Data)
+
 def Separate_Data(a):
     Value = ""
     Data = []
@@ -38,57 +42,47 @@ def Conv_Data_To_Numbers(Data):
 
     if(len(Data_Converted)<2):
         raise ValueError("Se ingresaron muy pocos datos")
-    Is_Float = False
-    for n in range(0,len(Data)):
-        Bool = "." in Data_Converted[n]
-        try:
-            match Bool:
-                case True:
-                    Data_Converted[n] = float(Data_Converted[n])
-                    Is_Float = True
-                case False:
-                    Data_Converted[n] = int(Data_Converted[n])
-        except ValueError:
-            raise ValueError("Error al procesar un tipo de dato incorrecto")
-        
-        if (Data_Converted[n]<0):
-            raise ValueError("Error al convertir los datos")
-    return Data_Converted , Is_Float
 
-def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , Is_Discrete):
+    for n in range(0,len(Data_Converted)):
+        Bool = "." in Data_Converted[n]        
+        match Bool:
+            case True:
+                Data_Converted[n] = float(Data_Converted[n])
+            case False:
+                Data_Converted[n] = int(Data_Converted[n])
+    return Data_Converted
+
+def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data):
     V_Min = Cuant_Many_Values.Calc_Min(Data)
     V_Max = Cuant_Many_Values.Calc_Max(Data)
 
     n = len(Data)
     R = round(Cuant_Many_Values.Calc_Range(V_Min,V_Max) , 3)
     m = round(1+(3.3*log10(n)))
-    if(Is_Discrete):
+
+    There_Are_Floats = False
+    for a in Data:
+        if(int(a) != a):
+            There_Are_Floats = True
+            break
+
+    if(not There_Are_Floats):
         C = round(R/m , 1)
         Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , 1)
         Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , 1)
     else:
-        int_count = 0
-        for a in Data:
-            if(int(a) == a):
-                int_count += 1
-
-        if(int_count == len(Data)):
-            C = round(R/m , 1)
-            Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , 1)
-            Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , 1)
-        else:
-            C = round(R/m , 3)
-            C_N_Decimals = Cuant_Many_Values.Calc_Decimals_Number(C) # N de decimales de la amplitud (C)
-            if(C - round(C)==0):
-                C = round(C)
-                C_N_Decimals = 0
-            elif(C_N_Decimals>=1 and C_N_Decimals<=3):
-                C = round(C , C_N_Decimals)
-            elif(C_N_Decimals>3):
-                C = round(C , 3)
-                C_N_Decimals = 3
-            Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-            Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , C_N_Decimals)
+        C = round(R/m , 3)
+        C_N_Decimals = Cuant_Many_Values.Calc_Decimals_Number(C) # N de decimales de la amplitud (C)
+        if(C - round(C)==0):
+            C = round(C)
+            C_N_Decimals = 0
+        elif(C_N_Decimals>=1 and C_N_Decimals<=3):
+            C = round(C , C_N_Decimals)
+        elif(C_N_Decimals>3):
+            C = round(C , 3)
+            C_N_Decimals = 3
+        Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Groups = Cuant_Many_Values.Calc_Groups(Arr_Intervals , m , C_N_Decimals)
 
     Arr_xi = Cuant_Many_Values.Calc_xi(Arr_Intervals , m , N_Decimals_Precision)
 
@@ -119,59 +113,40 @@ def Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , I
     S = SM_For_Grouped_Data.Calc_Standard_Deviation(S_2 , Precision)
     CV_Percent = SM_For_Grouped_Data.Calc_Percentage_Coefficient_Variation(S , X_ , Precision)
 
-    if(__name__ == "__main__"):
-        print(f"Datos Ingresados: \n")
-        for a in Data:
-            print(f"{a} ")
-        print(f"Intervalos: {Arr_Intervals}")
-        print(f"Grupos: {Arr_Groups}")
-        print(f"xi: {Arr_xi}")
-        print(f"fi: {Arr_fi}")
-        print(f"Fi: {Arr_Fi}")
-        print(f"hi: {Arr_hi}")
-        print(f"Hi: {Arr_Hi}")
+    Summary_Measures = dict([
+    ("Media Aritmetica (X)" , X_),
+    ("Media Geometrica (X_g)" , X_g),
+    ("Media Armonica (X_h)" , X_h),
+    ("Moda (Mo)" , Mo),
+    ("Mediana (Me)" , Me),
+    ("Varianza (S^2)" , S_2),
+    ("Desviacion Estandar (S)" , S),
+    ("CV%" , CV_Percent),
+    ])
+    Variables_Value = dict([
+        ("V_Max" , V_Max),
+        ("V_Min" , V_Min),
+        ("n" , n),
+        ("R" , R),
+        ("m" , m),
+        ("C" , C),
+        ("Is_Float" , False),
+    ])
 
-        print(f"hi%: {Arr_hi_percent}")
-        print(f"Hi%: {Arr_Hi_percent}")
+    Frecuences_Value = dict(
+        Intervals = Arr_Intervals,
+        Groups = Arr_Groups,
+        xi = Arr_xi,
+        fi = Arr_fi,
+        Fi = Arr_Fi,
+        hi = Arr_hi,
+        Hi = Arr_Hi,
+        hi_percent = Arr_hi_percent,
+        Hi_percent = Arr_Hi_percent,
+    )
 
-        """ d3 = dict(Nombre='Sara',
-            Edad=27,
-            Documento=1003882) """
-    else:
-        Summary_Measures = dict([
-        ("Media Aritmetica (X)" , X_),
-        ("Media Geometrica (X_g)" , X_g),
-        ("Media Armonica (X_h)" , X_h),
-        ("Moda (Mo)" , Mo),
-        ("Mediana (Me)" , Me),
-        ("Varianza (S^2)" , S_2),
-        ("Desviacion Estandar (S)" , S),
-        ("CV%" , CV_Percent),
-        ])
-        Variables_Value = dict([
-            ("V_Max" , V_Max),
-            ("V_Min" , V_Min),
-            ("n" , n),
-            ("R" , R),
-            ("m" , m),
-            ("C" , C),
-            ("Is_Float" , False),
-        ])
-
-        Frecuences_Value = dict(
-            Intervals = Arr_Intervals,
-            Groups = Arr_Groups,
-            xi = Arr_xi,
-            fi = Arr_fi,
-            Fi = Arr_Fi,
-            hi = Arr_hi,
-            Hi = Arr_Hi,
-            hi_percent = Arr_hi_percent,
-            Hi_percent = Arr_Hi_percent,
-        )
-
-        # print(Frecuences["Intervals"][0][0])    <--- Ingreso a Intervalos y busco el primer valor del primer intervalo
-        return Variables_Value , Frecuences_Value , Summary_Measures
+    # print(Frecuences["Intervals"][0][0])    <--- Ingreso a Intervalos y busco el primer valor del primer intervalo
+    return Variables_Value , Frecuences_Value , Summary_Measures
 
 def Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data):
     n = len(Data)
@@ -262,7 +237,7 @@ def Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data):
 
     return Variables_Values , Frecuences_Values
 
-def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
+def Main_Function(N_Decimals_Precision , In):
     Variables_Cuant_For_Many_Values = None
     Frecuences_Cuant_For_Many_Values = None
     Summary_Measures_For_Grouped_Data = None
@@ -273,42 +248,29 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
 
     Variables_Cuali_Normal_Extended = None
     Frecuences_Cuali_Normal_Extended = None
-    if(not Type_Of_Variable):
-        raise ValueError("No se puede proceder con el analisis")
+    if(not In):
+        raise ValueError("No se ingresaron datos")
     else:
-        if (Type_Of_Variable == "Cuantitative"):
-            Data = Separate_Data(In)
-            Data , Is_Float = Conv_Data_To_Numbers(Data)
+        In = In.replace("\n" , "")
+        Is_Cualitative = Contains_Letters(In)
+        Data = Separate_Data(In)
 
-            n = len(Data)
-            m = round(1 + 3.222*log10(n))
-            if(m<5):
-                Calc_For_Classes = False
-            else:
-                Calc_For_Classes = True
-
-            match (Is_Discrete):
-                case True:
-                    if(Is_Float):
-                        raise ValueError("Se ha seleccionado un tipo de variable no adecuado\npara los datos actuales")
-                    elif(Calc_For_Classes):
-                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , Is_Discrete)
-                        Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float
-                    else:
-                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
-                case False: 
-                    if(Calc_For_Classes):
-                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data , Is_Discrete)
-                        Variables_Cuant_For_Many_Values["Is_Float"] = Is_Float
-                    else:
-                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data = Calculate_Table_Cuantitative_Normal_Extended(N_Decimals_Precision , Data)
-                case _:
-                    raise ValueError("No se ha seleccionado un tipo de variable adecuado.")
-        elif(Type_Of_Variable == "Cualitative"):
-            In = In.replace("\n" , "") #Elimina todo salto de linea no intencional
-            Data = Separate_Data(In)
-
-            Variables_Cuali_Normal_Extended , Frecuences_Cuali_Normal_Extended = Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data)
+        match(Is_Cualitative):
+            case True:
+                Data = Conv_Data_To_Numbers(Data)
+                n = len(Data)
+                m = round(1 + 3.222*log10(n))
+                if(m<5):
+                    Calc_For_Classes = False
+                else:
+                    Calc_For_Classes = True
+                
+                if(Calc_For_Classes):
+                    Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(N_Decimals_Precision , Data)
+                else:
+                    Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data = Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data)
+            case False:
+                Variables_Cuali_Normal_Extended , Frecuences_Cuali_Normal_Extended = Calculate_Table_Cualitative_Normal_Extended(N_Decimals_Precision , Data)
 
     Dictionary_Results = dict([
         ("Variables_Cuant_For_Many_Values" , Variables_Cuant_For_Many_Values),
@@ -324,14 +286,9 @@ def Main_Function(N_Decimals_Precision , In , Type_Of_Variable , Is_Discrete):
 
 if (__name__ == "__main__"):
     Data = "Casa Casa Trabajo Trabajo Trabajo Casa Casa Cibercafe Otros Cibercafe Trabajo Trabajo Otros Cibercafe Cibercafe Cibercafe Casa Cibercafe Otros Cibercafe Casa Casa Cibercafe Trabajo Otros Otros Cibercafe Cibercafe Cibercafe Cibercafe "
-    Arr_Data = Separate_Data(Data)
-    Arr_xi = Cuali_Normal_Extended.Find_Character_Modalities(Arr_Data)
-    Arr_fi = Cuali_Normal_Extended.Calc_fi(Arr_Data , Arr_xi)
-    Arr_Fi = Cuali_Normal_Extended.Calc_Fi(Arr_fi)
-    print(Arr_Data)
-    print(Arr_xi)
-    print(Arr_fi)
-    print(Arr_Fi)
+    Data_2 = "118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582  "
+    Results = Main_Function(4 , Data_2)
+    print(Results)
     """ 
         Error en la funcion  Cuant_Normal_Extended.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
         Solucion, usar el metodo copy() para crear una copia del objeto. No usar otras variables, colo copy()
