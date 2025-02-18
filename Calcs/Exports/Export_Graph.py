@@ -34,62 +34,62 @@ def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Pa
 
         if(kwargs["Export_All"]):
             Full_Path = File_Path + File_Name + "_" + "fi" + "_" + time + Format
-            Graphs["bar_fi"][1].suptitle(f"{Bar_Title} fi")
-            Graphs["bar_fi"][1].savefig(Full_Path , dpi=dpi)
+            Graphs["bar_fi"].suptitle(f"{Bar_Title} fi")
+            Graphs["bar_fi"].savefig(Full_Path , dpi=dpi)
 
             Full_Path = File_Path + File_Name + "_" + "hi" + "_" + time + Format
-            Graphs["bar_hi"][1].suptitle(f"{Bar_Title} hi")
-            Graphs["bar_hi"][1].savefig(Full_Path , dpi=dpi)
+            Graphs["bar_hi"].suptitle(f"{Bar_Title} hi")
+            Graphs["bar_hi"].savefig(Full_Path , dpi=dpi)
             Full_Path = File_Path + File_Name + "_" + "hi%" + "_" + time + Format
-            Graphs["bar_hi_percent"][1].suptitle(f"{Bar_Title} hi%")
-            Graphs["bar_hi_percent"][1].savefig(Full_Path , dpi=dpi)
+            Graphs["bar_hi_percent"].suptitle(f"{Bar_Title} hi%")
+            Graphs["bar_hi_percent"].savefig(Full_Path , dpi=dpi)
 
             Full_Path = File_Path + File_Name + "_" + "pie" + "_" + time + Format
-            Graphs["pie_graph"][1].suptitle(f"{Pie_Title}")
-            Graphs["pie_graph"][1].savefig(Full_Path , dpi=dpi)
+            Graphs["pie_graph"].suptitle(f"{Pie_Title}")
+            Graphs["pie_graph"].savefig(Full_Path , dpi=dpi)
 
         elif(kwargs["Export_All_Bars"]):
             Full_Path = File_Path + File_Name + "_" + "fi" + "_" + time + Format
-            Graphs["bar_fi"][1].suptitle(f"{Bar_Title} fi")
-            Graphs["bar_fi"][1].savefig(Full_Path , dpi=dpi)
+            Graphs["bar_fi"].suptitle(f"{Bar_Title} fi")
+            Graphs["bar_fi"].savefig(Full_Path , dpi=dpi)
 
             Full_Path = File_Path + File_Name + "_" + "hi" + "_" + time + Format
-            Graphs["bar_hi"][1].suptitle(f"{Bar_Title} hi")
-            Graphs["bar_hi"][1].savefig(Full_Path , dpi=dpi)
+            Graphs["bar_hi"].suptitle(f"{Bar_Title} hi")
+            Graphs["bar_hi"].savefig(Full_Path , dpi=dpi)
 
             Full_Path = File_Path + File_Name + "_" + "hi%" + "_" + time + Format
-            Graphs["bar_hi_percent"][1].suptitle(f"{Bar_Title} hi%")
-            Graphs["bar_hi_percent"][1].savefig(Full_Path , dpi=dpi)
+            Graphs["bar_hi_percent"].suptitle(f"{Bar_Title} hi%")
+            Graphs["bar_hi_percent"].savefig(Full_Path , dpi=dpi)
             
             if(kwargs["Export_Pie"]):
                 Full_Path = File_Path + File_Name + "_" + "pie" + "_" + time + Format
-                Graphs["pie_graph"][1].suptitle(f"{Pie_Title}")
-                Graphs["pie_graph"][1].savefig(Full_Path , dpi=dpi)      
+                Graphs["pie_graph"].suptitle(f"{Pie_Title}")
+                Graphs["pie_graph"].savefig(Full_Path , dpi=dpi)      
         else:
             if(kwargs["Export_Bar_fi"]):
                 Full_Path = File_Path + File_Name + "_" + "fi" + "_" + time + Format
-                Graphs["bar_fi"][1].suptitle(f"{Bar_Title} fi")
-                Graphs["bar_fi"][1].savefig(Full_Path , dpi=dpi)
+                Graphs["bar_fi"].suptitle(f"{Bar_Title} fi")
+                Graphs["bar_fi"].savefig(Full_Path , dpi=dpi)
             if(kwargs["Export_Bar_hi"]):
                 Full_Path = File_Path + File_Name + "_" + "hi" + "_" + time + Format
-                Graphs["bar_hi"][1].suptitle(f"{Bar_Title} hi")
-                Graphs["bar_hi"][1].savefig(Full_Path , dpi=dpi)
+                Graphs["bar_hi"].suptitle(f"{Bar_Title} hi")
+                Graphs["bar_hi"].savefig(Full_Path , dpi=dpi)
             if(kwargs["Export_Bar_hi_percent"]):
                 Full_Path = File_Path + File_Name + "_" + "hi%" + "_" + time + Format
-                Graphs["bar_hi_percent"][1].suptitle(f"{Bar_Title} hi%")
-                Graphs["bar_hi_percent"][1].savefig(Full_Path , dpi=dpi)
+                Graphs["bar_hi_percent"].suptitle(f"{Bar_Title} hi%")
+                Graphs["bar_hi_percent"].savefig(Full_Path , dpi=dpi)
             if(kwargs["Export_Pie"]):
                 Full_Path = File_Path + File_Name + "_" + "pie" + "_" + time + Format
-                Graphs["pie_graph"][1].suptitle(f"{Pie_Title}")
-                Graphs["pie_graph"][1].savefig(Full_Path , dpi=dpi)
+                Graphs["pie_graph"].suptitle(f"{Pie_Title}")
+                Graphs["pie_graph"].savefig(Full_Path , dpi=dpi)
 
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
     else:
-        Graphs["bar_fi"][1].suptitle("")
-        Graphs["bar_hi"][1].suptitle("")
-        Graphs["bar_hi_percent"][1].suptitle("")
-        Graphs["pie_graph"][1].suptitle("")
+        Graphs["bar_fi"].suptitle("")
+        Graphs["bar_hi"].suptitle("")
+        Graphs["bar_hi_percent"].suptitle("")
+        Graphs["pie_graph"].suptitle("")
 
         Reply = messagebox.askquestion("Success" , f"Las imagenes fueron exportadas con exito a\n{File_Path}\n¿Desea salir de la ventana de exportacion?")
         if(Reply == "yes"):

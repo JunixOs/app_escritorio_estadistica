@@ -8,8 +8,13 @@ import pandas as pd
 def Change_Key(dictionary, old_key, new_key):
     """ No modifica el diccionarrio, sino que genera uno nuevo , pero con las claves moficiadas """
     return {clave if clave != old_key else new_key: valor for clave, valor in dictionary.items()}
+def Export_Table_In_Excel(Main_Window , Data_From_Single_Column , Data_From_Multiple_Columns , Type_Of_Variable , route , file_name = ""):
+    if(Data_From_Single_Column != {}):
+        For_Single_Column_Data(Main_Window , Data_From_Single_Column , Type_Of_Variable , route , file_name)
+    elif(Data_From_Multiple_Columns != {}):
+        pass
 
-def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_name = ""):
+def For_Single_Column_Data(Main_Window , Data_From_Single_Column , Type_Of_Variable , route , file_name = ""):
     try:
         time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
         if(file_name == ""):
@@ -28,8 +33,8 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
         
         match(Type_Of_Variable):
             case "Cuantitative":
-                if(Data["Frecuences_Cuant_Normal_Extended"] != None):
-                    Copy_Data = Data["Frecuences_Cuant_Normal_Extended"]
+                if(Data_From_Single_Column["Frecuences_Cuant_Normal_Extended"] != None):
+                    Copy_Data = Data_From_Single_Column["Frecuences_Cuant_Normal_Extended"]
 
                     Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
                     Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
@@ -68,8 +73,8 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
                             worksheet_hoja1.column_dimensions[column].width = adjusted_width
 
 
-                elif(Data["Frecuences_Cuant_For_Many_Values"] != None):
-                    Copy_Data = copy.deepcopy(Data["Frecuences_Cuant_For_Many_Values"])
+                elif(Data_From_Single_Column["Frecuences_Cuant_For_Many_Values"] != None):
+                    Copy_Data = copy.deepcopy(Data_From_Single_Column["Frecuences_Cuant_For_Many_Values"])
 
                     Copy_Data = Change_Key(Copy_Data , "Intervals" , "[ Li - Ls >")
                     Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
@@ -120,7 +125,7 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
                 else:
                     raise Exception("Error al exportar el archivo, No hay datos que mostrar")
             case "Cualitative":
-                Copy_Data = Data["Frecuences_Cuali_Normal_Extended"]
+                Copy_Data = Data_From_Single_Column["Frecuences_Cuali_Normal_Extended"]
 
                 Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
                 Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
@@ -166,3 +171,6 @@ def Export_Table_In_Excel(Main_Window , Data , Type_Of_Variable , route , file_n
     else:
         messagebox.showinfo("Sucess" , f"Los datos fueron exportados correctamente a {route}")
         Main_Window.destroy()
+
+def For_Multiple_Column_Data():
+    pass

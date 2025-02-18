@@ -13,7 +13,8 @@ import Window_Show_Graph as W_Show_Graph
 
 # Variables Globales
 Labels_Window_Frecuences_Table = []
-Global_Calcs = {}
+Global_Calcs_From_Single_Column = {}
+Global_Calcs_From_Multiple_Columns = {}
 Global_Type_Of_Variable_Single_Column = "" # Obtiene el tipo de variable, solo para analisis que involucren una columna de datos
 Global_Type_Of_Variable_Multiple_Column = {} # Obtiene el tipo de variable, solo para analisis que involucren multiples columnas de datos
 Global_Tables = {} # Se encarga de almacenar todos los calculos y tablas que resultan de cada columna analizada
@@ -52,8 +53,10 @@ class Process_Column_Of_Data:
         self.Table = Table # de la clase TreeviewFrame
         self.Labels = []
         self.Input = Input
+        self.Precision = 3
 
     def Calc_Results(self , Precision):
+        self.Precision = Precision
         self.Results = Main_Function(Precision , self.Input)
 
         if(self.Results["Frecuences_Cuant_For_Many_Values"] != None or self.Results["Frecuences_Cuant_Normal_Extended"] != None):
@@ -311,7 +314,7 @@ def Create_Window_Frecuences_Table(Main_Window):
             t.Hidden_Table()
         Global_Tables[f"{Selection}"].Display_Labels()
         Global_Tables[f"{Selection}"].Display_Table()
-        Precision.set(3)
+        Precision.set(Global_Tables[f"{Selection}"].Precision)
 
     def Create_Table_For_Single_Column(Precision , Input):
         global Global_Tables
@@ -326,7 +329,6 @@ def Create_Window_Frecuences_Table(Main_Window):
             Table_Single_Column.Display_Table()
 
             Global_Tables["S_Column"] = Table_Single_Column
-
         else:
             Global_Tables["S_Column"].Calc_Results(Precision)
             Global_Tables["S_Column"].Create_Labels_Summary_Measures()
@@ -336,12 +338,12 @@ def Create_Window_Frecuences_Table(Main_Window):
 
         return Global_Tables["S_Column"].Results , Global_Tables["S_Column"].Type_Of_Variable
 
-    def Create_Table_For_Multiple_Columns(Precision , Data_For_Multiple_Columns):
+    def Create_Table_For_Multiple_Columns(Precision , Data_From_Multiple_Columns):
         global Global_Tables
         Results_For_Multiple_Columns = {}
         Type_Of_Variable_For_Multiple_Columns = {}
         if(Global_Tables == {}):
-            for key,values in Data_For_Multiple_Columns.items():
+            for key,values in Data_From_Multiple_Columns.items():
                 Table_Multiple_Columns = None
                 Table = None
                 Table = TreeviewFrame(Window_Frecuences_Table)
@@ -356,15 +358,12 @@ def Create_Window_Frecuences_Table(Main_Window):
                 Type_Of_Variable_For_Multiple_Columns[f"{key}"] = Table_Multiple_Columns.Type_Of_Variable
                 Columns_Name.append(f"{key}")
 
-                Text_Column_Selection.place(x=40 , y=130)
-                Column_Selection.place(x=300 , y=130)
-                Column_Selection.config(values=Columns_Name)
-                Column_Selection.set(Columns_Name[0])
-                print(Data_For_Multiple_Columns)
-                print(Columns_Name)
-                print(Column_Selection['values'])
+            Text_Column_Selection.place(x=40 , y=130)
+            Column_Selection.place(x=300 , y=130)
+            Column_Selection.set(Columns_Name[0])
+            Column_Selection["values"] = Columns_Name
 
-                Display_Table_For_Column_Name(None)
+            Display_Table_For_Column_Name(None)
         else:
             Selection = Column_Selection.get()
             Global_Tables[f"{Selection}"].Calc_Results(Precision)
@@ -376,13 +375,10 @@ def Create_Window_Frecuences_Table(Main_Window):
             Results_For_Multiple_Columns[f"{Selection}"] = Global_Tables[f"{Selection}"].Results
             Type_Of_Variable_For_Multiple_Columns[f"{Selection}"] = Global_Tables[f"{Selection}"].Type_Of_Variable
 
-            print(Data_For_Multiple_Columns)
-            print(Columns_Name)
-            print(Column_Selection['values'])
-
         return Results_For_Multiple_Columns , Type_Of_Variable_For_Multiple_Columns
-    def Create_Table(Precision , Input , Data_For_Multiple_Columns):
-        global Global_Calcs , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column
+
+    def Create_Table(Precision , Input , Data_From_Multiple_Columns):
+        global Global_Calcs_From_Single_Column , Global_Calcs_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column
         try:
             
             Input = str(Input.get())
@@ -393,18 +389,18 @@ def Create_Window_Frecuences_Table(Main_Window):
             except Exception:
                 raise Exception("Valor de precision invalida, intente nuevamente.")
 
-            if(Data_For_Multiple_Columns == {}):
+            if(Data_From_Multiple_Columns == {}):
                 Dictionary_Values , Type_Of_Variable = Create_Table_For_Single_Column(Precision , Input)
                 Global_Type_Of_Variable_Single_Column = Type_Of_Variable
+                Global_Calcs_From_Single_Column = Dictionary_Values
             else:
-                Dictionary_Values , Type_Of_Variable = Create_Table_For_Multiple_Columns(Precision , Data_For_Multiple_Columns)
+                Dictionary_Values , Type_Of_Variable = Create_Table_For_Multiple_Columns(Precision , Data_From_Multiple_Columns)
                 Global_Type_Of_Variable_Multiple_Column = Type_Of_Variable
+                Global_Calcs_From_Multiple_Columns = Dictionary_Values
 
         except (IndexError , ValueError , NameError , TypeError , Exception) as e:
             messagebox.showerror("Error" , f"{e}")
         else:
-            Global_Calcs = Dictionary_Values
-
             Btn_Calculate_Again.config(state="normal")
             Input_Data.config(state="disabled")
 
@@ -413,15 +409,16 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Show_Graph.config(state="normal")
             Btn_Import_Data_From_File.config(state="disabled")
 
-    def Calculate_Again(Columns_Name , Column_Selection , Data_For_Multiple_Columns):
-        global Global_Calcs , Global_Type_Of_Variable , Global_Tables
+    def Calculate_Again(Columns_Name , Column_Selection , Data_From_Multiple_Columns):
+        global Global_Calcs_From_Single_Column , Global_Calcs_From_Multiple_Columns , Global_Type_Of_Variable , Global_Tables
         Btn_Calculate_Again.config(state="disabled")
 
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
         Precision.set(3)
         Btn_Import_Data_From_File.config(state="normal")
-        Global_Calcs = {}
+        Global_Calcs_From_Single_Column.clear()
+        Global_Calcs_From_Multiple_Columns.clear()
         Global_Type_Of_Variable = ""
         Column_Selection.set("")
         Column_Selection['values'] = tuple([])
@@ -429,7 +426,8 @@ def Create_Window_Frecuences_Table(Main_Window):
         Column_Selection.update()
         Text_Column_Selection.place_forget()
         Column_Selection.place_forget()
-        Data_For_Multiple_Columns.clear()
+        Data_From_Multiple_Columns.clear()
+        Graphs.clear()
 
         for t in Global_Tables.values():
             t.Destroy_Labels()
@@ -443,8 +441,8 @@ def Create_Window_Frecuences_Table(Main_Window):
         Btn_Show_Graph.config(state="disabled")
 
     def Interact_Precision():
-        if(Global_Calcs != {}):
-            Create_Table(Precision , Data , Data_For_Multiple_Columns)
+        if(Global_Calcs_From_Single_Column != {} or Global_Calcs_From_Multiple_Columns != {}):
+            Create_Table(Precision , Data , Data_From_Multiple_Columns)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
     Window_Frecuences_Table.geometry("1240x800+135+40")
@@ -457,7 +455,8 @@ def Create_Window_Frecuences_Table(Main_Window):
     Data.set("")
     Precision = IntVar(Window_Frecuences_Table)
     Columns_Name = []
-    Data_For_Multiple_Columns = {}
+    Data_From_Multiple_Columns = {}
+    Graphs = {}
 
     Title = Label(Window_Frecuences_Table , text="Calculo de Tablas de Frecuencia" , font=("Times New Roman" , 22), foreground="#ffffff", justify=CENTER , width=76 , bg="#9DAEC6" , highlightthickness=1 ,highlightbackground="#ffffff")
     Title.place(x=9 , y=10)
@@ -473,7 +472,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Input_Data.focus()
 
     Text_Column_Selection = Label(Window_Frecuences_Table , text="Seleccione el nombre de la columna: " , font=("Times New Roman", 13) , bg="#FEE1AB")
-    Column_Selection = ttk.Combobox(Window_Frecuences_Table , font=("Courier New" , 13), state="readonly" , width=40)
+    Column_Selection = ttk.Combobox(Window_Frecuences_Table , font=("Courier New" , 13) , values=Columns_Name , state="readonly" , width=40)
     Column_Selection.bind('<<ComboboxSelected>>', Display_Table_For_Column_Name)
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
@@ -484,21 +483,21 @@ def Create_Window_Frecuences_Table(Main_Window):
     Section_Frecuences_Table = Label(Window_Frecuences_Table , width=168 , height=32 , bg="#CBEFE3" , highlightthickness=2 , highlightbackground="#000000")
     Section_Frecuences_Table.place(x=29 , y=255)
 
-    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data , Input_Data , Btn_Import_Data_From_File , Data_For_Multiple_Columns))
+    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data , Input_Data , Btn_Import_Data_From_File , Data_From_Multiple_Columns))
     Btn_Import_Data_From_File.place(x=860 , y=170)
 
-    Btn_Calculate_Again = Button(Window_Frecuences_Table , text="Calcular con otros valores" , font=("Times New Roman" , 13) , width=20 , bg="#F4B0C0" , command= lambda: Calculate_Again(Columns_Name , Column_Selection , Data_For_Multiple_Columns))
+    Btn_Calculate_Again = Button(Window_Frecuences_Table , text="Calcular con otros valores" , font=("Times New Roman" , 13) , width=20 , bg="#F4B0C0" , command= lambda: Calculate_Again(Columns_Name , Column_Selection , Data_From_Multiple_Columns))
     Btn_Calculate_Again.place(x=780 , y=210)
     Btn_Calculate_Again.config(state="disabled")
 
-    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Data_For_Multiple_Columns)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
+    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Data_From_Multiple_Columns)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
     Btn_Generate_Table.place(x=1020 , y=210)
 
-    Btn_Generate_Excel = Button(Window_Frecuences_Table , text="Exportar tabla a Excel" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Generate_Window_Export_Excel(Window_Frecuences_Table , Global_Calcs , Global_Type_Of_Variable))
+    Btn_Generate_Excel = Button(Window_Frecuences_Table , text="Exportar tabla a Excel" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Generate_Window_Export_Excel(Window_Frecuences_Table , Global_Calcs_From_Single_Column , Global_Calcs_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column))
     Btn_Generate_Excel.place(x=800 , y=275)
     Btn_Generate_Excel.config(state="disabled")
 
-    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Calcs , Precision.get()))
+    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Windows_Show_Graphs(Window_Frecuences_Table , Global_Calcs_From_Single_Column , Global_Calcs_From_Multiple_Columns , Precision.get() , Graphs))
     Btn_Show_Graph.place(x=1051 , y=275)
     Btn_Show_Graph.config(state="disabled")
 

@@ -18,8 +18,13 @@ def Select_Path(Root_Window , Path):
         else:
             Path.set(File_Path)
     Root_Window.lift()
+def Create_Windows_Export_Graphs(Father_Window , Graphs , Data_From_Single_Column , Data_From_Multiple_Columns):
+    if(Data_From_Single_Column != {}):
+        W_For_Single_Column_Data(Father_Window , Graphs)
+    elif(Data_From_Multiple_Columns != {}):
+        W_For_Mutiple_Column_Data(Father_Window , Graphs)
 
-def Create_Window_Export_Graph(Father_Window , Graphs):
+def W_For_Single_Column_Data(Father_Window , Graphs):
 
     if __name__ == "__main__":
         W_Export_Graph = Tk()
@@ -240,5 +245,7 @@ def Create_Window_Export_Graph(Father_Window , Graphs):
     W_Export_Graph.resizable(False , False)
     W_Export_Graph.mainloop()
 
+def W_For_Mutiple_Column_Data(Father_Window , Graphs):
+    pass
 if __name__ == "__main__":
-    Create_Window_Export_Graph(None , None)
+    Create_Windows_Export_Graphs(None , None)

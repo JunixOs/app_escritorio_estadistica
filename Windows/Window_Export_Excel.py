@@ -16,7 +16,7 @@ def Select_File(Path):
         else:
             Path.set(Path_File)
 
-def Generate_Window_Export_Excel(Father_Window , Data , Type_Of_Variable):
+def Generate_Window_Export_Excel(Father_Window , Data_From_Single_Column , Data_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
     if __name__== "__main__":
         W_Export_Excel = Tk()
     else:
