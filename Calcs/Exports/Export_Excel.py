@@ -39,9 +39,8 @@ class Export_Data:
         Full_Route = self.Route + self.File_Name
         return Full_Route
 
-    def Create_Row_Total(self , Worksheet , Col_Total_Text , Col_fi , Col_hi , Col_hi_percent , new_row = None):
-        if(new_row == None):
-            new_row = Worksheet.max_row + 1
+    def Create_Row_Total(self , Worksheet , Col_Total_Text , Col_fi , Col_hi , Col_hi_percent):
+        new_row = Worksheet.max_row + 1
 
         Worksheet[f"{Col_Total_Text}{new_row}"] = "Total"
         Worksheet[f"{Col_Total_Text}{new_row}"].font = Font(bold=True , )
@@ -209,7 +208,7 @@ class Export_Data:
             Workbook = writer.book
             Worksheet_1 = Workbook.create_sheet("Hoja1")
             Start_Row = 3
-            
+            b = 1
             for key , value in Copy_Data.items():
                 if(not Columns_To_Export[key].get()):
                     continue
@@ -248,11 +247,11 @@ class Export_Data:
                 match(self.Type_Of_Variable[key]):
                     case "Cuantitative_Grouped":
                         self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable[key] , Start_Row)
-                        self.Create_Row_Total(Worksheet_1 , "D" , ["G" , value["fi"]] , ["I" , value["hi"]] , ["K" , value["hi%"]] , Rows_In_Table + 1)
+                        self.Create_Row_Total(Worksheet_1 , "D" , ["G" , value["fi"]] , ["I" , value["hi"]] , ["K" , value["hi%"]])
                         self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
                     case "Cuantitative_Not_Grouped":
                         self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable[key] , Start_Row)
-                        self.Create_Row_Total(Worksheet_1 , "D" , ["E" , value["fi"]] , ["G" , value["hi"]] , ["I" , value["hi%"]] , Rows_In_Table + 1)
+                        self.Create_Row_Total(Worksheet_1 , "D" , ["E" , value["fi"]] , ["G" , value["hi"]] , ["I" , value["hi%"]])
                         self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
                     case "Cualitative":
                         self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable[key] , Start_Row)

@@ -299,9 +299,9 @@ class Process_Column_Of_Data:
         if(self.Precision >=3 and self.Precision<5):
             Precision = 2
         elif(self.Precision>=5 and self.Precision<7):
-            Precision = 4
+            Precision = 5
         elif(self.Precision>=7 and self.Precision<=8):
-            Precision = 6
+            Precision = 7
         b=0
         for key,value in S_Measures.items():
             if(b < 3):
@@ -375,7 +375,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Window_Frecuences_Table.destroy()
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("StatApp beta v1.6")
+        Main_Window.title("StatPhi beta v1.7")
         Main_Window.lift()
 
     def Display_Table_For_Column_Name(Event):
@@ -461,7 +461,7 @@ def Create_Window_Frecuences_Table(Main_Window):
                 raise Exception("Valor de precision invalida, intente nuevamente.")
 
             if(Data_From_Multiple_Columns == {}):
-                if(Global_Calcs_From_Single_Column == {} and Global_Type_Of_Variable_Single_Column == {}):
+                if(Global_Calcs_From_Single_Column == {} and Global_Type_Of_Variable_Single_Column == ""):
                     Dictionary_Values , Type_Of_Variable = Create_Table_For_Single_Column(Precision , Input , Data_From_Single_Column)
                     Global_Type_Of_Variable_Single_Column = Type_Of_Variable
                     Global_Calcs_From_Single_Column = Dictionary_Values
@@ -520,7 +520,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     def Interact_Precision():
         if(Global_Calcs_From_Single_Column != {} or Global_Calcs_From_Multiple_Columns != {}):
-            Create_Table(Precision , Data , Data_From_Multiple_Columns)
+            Create_Table(Precision , Data , Data_From_Single_Column , Data_From_Multiple_Columns)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
     Window_Frecuences_Table.geometry("1240x800+135+40") # Hacer mas ancha la ventana

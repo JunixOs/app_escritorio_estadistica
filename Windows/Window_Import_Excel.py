@@ -146,7 +146,7 @@ def Import_Data_From_Multiple_Columns(File_Path , Sheet_Number , start_column , 
         Data.set("")
     text = "columnas importadas: "
     for Column in Excel.columns:
-        Data_From_Multiple_Columns[Column] = [value[0] for value in data[Column].dropna()]
+        Data_From_Multiple_Columns[Column] = [value for value in data[Column].dropna()]
         text = text + Column + "  "
 
     Load_Excel.close()

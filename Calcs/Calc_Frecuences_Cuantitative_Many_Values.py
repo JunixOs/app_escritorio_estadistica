@@ -47,7 +47,23 @@ def Calc_Intervals(Min , C , Max , m , Precision):
 
     return Arr_Intervals
 
-def Calc_Groups(Intervals , m , Precision):
+def Calc_Groups_For_Integer_Numbers(Intervals , m , Precision):
+    Arr_Groups = []
+    for a in range (0 , m):
+        Ls = Intervals[a][1]
+
+        if(a==m-1):
+            Arr_Groups.append(Intervals[a][1])
+        else:
+            if(Precision==0):
+                Arr_Groups.append(Ls - Decimal(1))
+            else:
+                Subs = 10 ** (-Precision)
+                Group = Ls - Subs
+                Arr_Groups.append(round(Group , Precision))
+    return Arr_Groups
+
+def Calc_Groups_For_Decimal_Numbers(Intervals , m , Precision):
     getcontext().prec = 50
     Arr_Groups = []
     for a in range (0 , m):
