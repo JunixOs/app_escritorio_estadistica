@@ -1,38 +1,30 @@
 import math
-def Calc_Arithmetic_Average(n , arr_xi , arr_fi , Precision):
-    Summa = 0
-    for a in range(0 , len(arr_xi)):
-        Summa += (arr_xi[a] * arr_fi[a])
+import numpy as np
 
-    return round(Summa/n , Precision)
+def Calc_Arithmetic_Average(n , arr_xi , arr_fi):
+    return np.sum(arr_xi[pos]*arr_fi[pos] for pos in range(0 , len(arr_xi)))/n
 
-def Calc_Geometric_Average(n , Arr_xi , Arr_fi , Precision):
-    Summa = 0
-    for a in range(0 , len(Arr_xi)):
-        Summa += (Arr_fi[a] * math.log10(Arr_xi[a]))
+def Calc_Geometric_Average(n , Arr_xi , Arr_fi):
+    return 10**(np.sum(Arr_fi[pos] * math.log10(Arr_xi[pos]) for pos in range(0 , len(Arr_xi)))/n)
 
-    return round(math.pow(10 , (Summa/n)) , Precision)
+def Calc_Armonic_Average(n , Arr_xi , Arr_fi):
+    return n/np.sum(Arr_fi[pos]/Arr_xi[pos] for pos in range(0 , len(Arr_xi)))
 
-def Calc_Armonic_Average(n , Arr_xi , Arr_fi , Precision):
-    Inv_Summa = 0
-    for a in range(0 , len(Arr_xi)):
-        Inv_Summa += Arr_fi[a]/Arr_xi[a]
-    
-    return round(n/Inv_Summa , Precision)
-
-def Calc_Median_Me(n , Arr_fi , Arr_Fi , Arr_Intervals , C , Precision):
+def Calc_Median_Me(n , Arr_fi , Arr_Fi , Arr_Intervals , C):
     Fi = n/2
     position_Fi = None
     for a in range(0 , len(Arr_Fi)):
         if(Arr_Fi[a] >= Fi):
             position_Fi = a
             break
-    if(position_Fi):
-        return round(Arr_Intervals[position_Fi][0] + (((n/2)-Arr_Fi[position_Fi-1])/Arr_fi[position_Fi])*C , Precision)
+    if(position_Fi == 0):
+        return Arr_Intervals[position_Fi][0] + (((n/2)-Arr_Fi[position_Fi])/Arr_fi[position_Fi])*C
+    elif(position_Fi > 0):
+        return Arr_Intervals[position_Fi][0] + (((n/2)-Arr_Fi[position_Fi-1])/Arr_fi[position_Fi])*C
     else:
         raise Exception("No se pudo calcular la Mediana para los datos agrupados.")
     
-def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C , Precision):
+def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C):
     Max_fi = max(Arr_fi)
     Position_Modal_Class = []
     Mo = []
@@ -44,15 +36,15 @@ def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C , Precision):
             if(a == len(Arr_fi) - 1):
                 d1 = Arr_fi[a] - Arr_fi[a - 1]
                 d2 = Arr_fi[a]
-                Mo.append(round(Arr_Intervals[a][0] + (d1/(d1 + d2))*C , Precision))
+                Mo.append(Arr_Intervals[a][0] + (d1/(d1 + d2))*C)
             elif(a == 0):
                 d1 = Arr_fi[a]
                 d2 = Arr_fi[a] - Arr_fi[a + 1]
-                Mo.append(round(Arr_Intervals[a][0] + (d1/(d1 + d2))*C , Precision))
+                Mo.append(Arr_Intervals[a][0] + (d1/(d1 + d2))*C)
             else:
                 d1 = Arr_fi[a] - Arr_fi[a - 1]
                 d2 = Arr_fi[a] - Arr_fi[a + 1]
-                Mo.append(round(Arr_Intervals[a][0] + (d1/(d1 + d2))*C , Precision))
+                Mo.append(Arr_Intervals[a][0] + (d1/(d1 + d2))*C)
 
         return Mo
     else:
@@ -60,27 +52,24 @@ def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C , Precision):
         if(Pos == len(Arr_fi) - 1):
             d1 = Arr_fi[Pos] - Arr_fi[a - 1]
             d2 = Arr_fi[Pos]
-            Mo.append(round(Arr_Intervals[Pos][0]+(d1/(d1 + d2))*C , Precision))
+            Mo.append(Arr_Intervals[Pos][0]+(d1/(d1 + d2))*C)
         elif(Pos == 0):
             d1 = Arr_fi[Pos]
             d2 = Arr_fi[Pos] - Arr_fi[Pos + 1]
-            Mo.append(round(Arr_Intervals[Pos][0] + (d1/(d1 + d2))*C , Precision))
+            Mo.append(Arr_Intervals[Pos][0] + (d1/(d1 + d2))*C)
         else:
             d1 = Arr_fi[Pos] - Arr_fi[Pos - 1]
             d2 = Arr_fi[Pos] - Arr_fi[Pos + 1]
-            Mo.append(round(Arr_Intervals[Pos][0]+(d1/(d1 + d2))*C , Precision))
+            Mo.append(Arr_Intervals[Pos][0]+(d1/(d1 + d2))*C)
 
         return Mo
     
 ##### Medidas de Variabilidad o de dispresion Muestral
-def Calc_Variance(n , Arr_xi , Arr_fi , Arith_Average , Precision):
-    Summa = 0
-    for a in range(0 , len(Arr_xi)):
-        Summa += (math.pow(Arr_xi[a] - Arith_Average , 2)*Arr_fi[a])
-    return round(Summa/(n-1) , Precision)
+def Calc_Variance(n , Arr_xi , Arr_fi , Arith_Average):
+    return np.sum(math.pow(Arr_xi[pos] - Arith_Average , 2)*Arr_fi[pos] for pos in range (0 , len(Arr_xi)))/(n-1)
 
-def Calc_Standard_Deviation(Variance , Precision):
-    return round(math.pow(Variance , 1/2) , Precision)
+def Calc_Standard_Deviation(Variance):
+    return math.pow(Variance , 1/2)
 
-def Calc_Percentage_Coefficient_Variation(Standart_Deviation , Arith_Average , Precision):
-    return round((Standart_Deviation/Arith_Average)*100 , Precision)
+def Calc_Percentage_Coefficient_Variation(Standart_Deviation , Arith_Average):
+    return (Standart_Deviation/Arith_Average)*100

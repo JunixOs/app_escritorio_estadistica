@@ -1,12 +1,19 @@
 from math import *
-def Calc_Decimals_Number(Number):
-    Temp = str(Number)
-    Count = 0
-    for a in range(len(Temp)-1,0,-1):
-        if(Temp[a] == "."):
-            return Count
-        else:
-            Count = Count + 1
+import numpy as np
+import collections
+from decimal import Decimal , getcontext
+import decimal
+
+def Calc_Max_Decimal_Number(Numbers):
+    N_Decimals = []
+    for Number in Numbers:
+
+        Temp = str(Number)
+        if "." in Temp:
+            N_Decimals.append(len(Temp.split(".")[1]))
+
+    Ocurrences = collections.Counter(N_Decimals)
+    return Ocurrences.most_common(1)
 
 def Calc_Max(Data):
     return max(Data)
@@ -41,25 +48,30 @@ def Calc_Intervals(Min , C , Max , m , Precision):
     return Arr_Intervals
 
 def Calc_Groups(Intervals , m , Precision):
+    getcontext().prec = 50
     Arr_Groups = []
     for a in range (0 , m):
+        Ls = Decimal(Intervals[a][1])
+
         if(a==m-1):
             Arr_Groups.append(Intervals[a][1])
         else:
             if(Precision==0):
-                Arr_Groups.append(Intervals[a][1] - 1)
+                Arr_Groups.append(Ls - Decimal(1))
             else:
-                Arr_Groups.append(round(Intervals[a][1] - 1*pow(10,-1*Precision) , Precision))
-
+                Subs = Decimal(1) * Decimal(10) ** (-Precision)
+                Group = Ls - Subs
+                try:
+                    Round = Group.quantize(Decimal(10) ** -Precision)
+                    Arr_Groups.append(Round)
+                except decimal.InvalidOperation:
+                    Arr_Groups.append(f"{Group:.0f}")
     return Arr_Groups
 
-def Calc_xi(Intervals , m , Precision):
+def Calc_xi(Intervals , m):
     Arr_xi = []
     for a in range (0 , m):
-        if(Precision == 0):
-            Arr_xi.append(round((Intervals[a][1]+Intervals[a][0])/2))
-        else:
-            Arr_xi.append(round((Intervals[a][1]+Intervals[a][0])/2 , Precision))
+        Arr_xi.append((Intervals[a][1]+Intervals[a][0])/2)
 
     return Arr_xi
 
@@ -79,51 +91,16 @@ def Calc_fi(Data , Intervals , m):
     return Arr_fi
 
 def Calc_Fi(fi):
-    Arr_Fi = []
-    Acumulate = 0
-    for a in fi:
-        Acumulate += a
-        Arr_Fi.append(Acumulate)
-    return Arr_Fi
+    return np.cumsum(fi)
 
-def Calc_hi(Data , fi , Precision):
-    Arr_hi = []
-    N = len(Data)
-    for a in fi:
-        if(Precision != 0):
-            Arr_hi.append(round(a/N , Precision))
-        else:
-            Arr_hi.append(round(a/N))
-    return Arr_hi
+def Calc_hi(Data , fi):
+    return [value/len(Data) for value in fi]
 
-def Calc_Hi(hi , Precision):
-    Arr_Hi = []
-    Acumulate = 0
-    for a in hi:
-        Acumulate += a
-        if(Acumulate+0.001>=1):
-            Acumulate=1
-        if(Precision != 0):
-            Arr_Hi.append(round(Acumulate , Precision))
-        else:
-            Arr_Hi.append(round(Acumulate))
-    return Arr_Hi
+def Calc_Hi(hi):
+    return np.cumsum(hi)
 
-def Calc_hi_percent(hi , Precision):
-    Arr_hi_percent = []
-    for a in hi:
-        if(Precision !=0):
-            Arr_hi_percent.append(round(a*100 , Precision))
-        else:
-            Arr_hi_percent.append(round(a*100))
-            
-    return Arr_hi_percent
+def Calc_hi_percent(hi):
+    return [value*100 for value in hi]
 
-def Calc_Hi_percent(Hi , Precision):
-    Arr_Hi_percent = []
-    for a in Hi:
-        if(Precision != 0 ):
-            Arr_Hi_percent.append(round(a*100 , Precision))
-        else:
-            Arr_Hi_percent.append(round(a*100))
-    return Arr_Hi_percent
+def Calc_Hi_percent(Hi):
+    return [value*100 for value in Hi]

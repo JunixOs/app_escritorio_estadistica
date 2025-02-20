@@ -1,73 +1,21 @@
-def Find_Character_Modalities(Data):
-    Arr_ai = []
-    Ref_Data = Data.copy()
-    while Ref_Data:
-        element = Ref_Data[0]
-        count = Ref_Data.count(element)
-        
-        if count > 0:
-            Arr_ai.append(element)
-            Ref_Data = [x for x in Ref_Data if x != element]
-    Arr_ai.sort()
-    return Arr_ai
+import numpy as np
+import collections
 
-def Calc_fi(Data , Arr_Char_Mod):
-    Arr_fi = []
-    count = 0
-    for a in Arr_Char_Mod:
-        for b in Data:
-            if(a == b):
-                count += 1
-        Arr_fi.append(count)
-        count = 0
-
-    return Arr_fi
+def Calc_fi_And_ai(Data):
+    Counts = collections.Counter(Data)
+    return [ai for ai in Counts.keys()] , [fi for fi in Counts.values()]
 
 def Calc_Fi(Arr_fi):
-    Arr_Fi = []
-    Acumulate = 0
-    for a in Arr_fi:
-        Acumulate += a
-        Arr_Fi.append(Acumulate)
-    return Arr_Fi
+    return np.cumsum(Arr_fi)
 
-def Calc_hi(Data , Arr_fi, Precision):
-    Arr_hi = []
-    n = len(Data)
-    for a in Arr_fi:
-        if(Precision != 0):
-            Arr_hi.append(round(a/n , Precision))
-        else:
-            Arr_hi.append(round(a/n))
-    return Arr_hi
+def Calc_hi(Data , Arr_fi):
+    return [value/len(Data) for value in Arr_fi]
 
-def Calc_Hi(Arr_hi , Precision):
-    Arr_Hi = []
-    Acumulate = 0
-    for a in Arr_hi:
-        Acumulate += a
-        if(Acumulate+0.001>=1):
-            Acumulate=1
-        if(Precision != 0):
-            Arr_Hi.append(round(Acumulate , Precision))
-        else:
-            Arr_Hi.append(round(Acumulate))
-    return Arr_Hi
+def Calc_Hi(Arr_hi):
+    return np.cumsum(Arr_hi)
 
-def Calc_hi_percent(Arr_hi , Precision):
-    Arr_hi_percent = []
-    for a in Arr_hi:
-        if(Precision != 0):
-            Arr_hi_percent.append(round(a*100 , Precision))
-        else:
-            Arr_hi_percent.append(round(a*100))
-    return Arr_hi_percent
+def Calc_hi_percent(Arr_hi):
+    return [value*100 for value in Arr_hi]
 
-def Calc_Hi_percent(Arr_Hi , Precision):
-    Arr_Hi_percent = []
-    for a in Arr_Hi:
-        if(Precision != 0):
-            Arr_Hi_percent.append(round(a*100 , Precision))
-        else:
-            Arr_Hi_percent.append(round(a*100))
-    return Arr_Hi_percent
+def Calc_Hi_percent(Arr_Hi):
+    return [value*100 for value in Arr_Hi]
