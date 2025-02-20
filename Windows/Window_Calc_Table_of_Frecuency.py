@@ -1,5 +1,6 @@
 import sys
 import os
+import numpy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -57,14 +58,29 @@ class Process_Column_Of_Data:
 
     def Calc_Results(self , Precision):
         self.Precision = Precision
-        self.Results = Main_Function(Precision , self.Input)
+        if(isinstance(self.Input , dict)):
+            Results = Main_Function(self.Input["S_Column"])
+        else:
+            Results = Main_Function(self.Input)
 
-        if(self.Results["Frecuences_Cuant_For_Many_Values"] != None or self.Results["Frecuences_Cuant_Normal_Extended"] != None):
-            self.Type_Of_Variable = "Cuantitative"
-        elif(self.Results["Frecuences_Cuali_Normal_Extended"] != None):
+        if(Results["Frecuences_Cuant_For_Many_Values"] != None):
+            self.Type_Of_Variable = "Cuantitative_Grouped"
+        elif(Results["Frecuences_Cuant_Normal_Extended"] != None):
+            self.Type_Of_Variable = "Cuantitative_Not_Grouped"
+        elif(Results["Frecuences_Cuali_Normal_Extended"] != None):
             self.Type_Of_Variable = "Cualitative"
 
+        Without_None = {}
+        for key,value in Results.items():
+            if(value != None):
+                Without_None[key] = value
+
+        self.Results = Without_None
+
     def Table_For_Cuant_Grouped_Data(self):
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Arial", 10, "bold") , background="lightblue")
+
         self.Table.treeview.config(columns=("1", "2" ,"3", "4", "5", "6", "7", "8", "9", "10", "11") , show="headings")
         self.Table.treeview.heading("1" , text="m")
         self.Table.treeview.heading("2" , text="Li")
@@ -88,6 +104,8 @@ class Process_Column_Of_Data:
         Frecuences = self.Results["Frecuences_Cuant_For_Many_Values"]
 
         if(not self.Table.Has_Rows()):
+            self.Table.treeview.tag_configure("font_arial_10", font=("Arial", 10))
+
             for a in range(0 , Variables["m"]):
                 self.Table.treeview.insert(
                     "", END , values=(
@@ -95,16 +113,38 @@ class Process_Column_Of_Data:
                         Frecuences["Intervals"][a][0], 
                         Frecuences["Intervals"][a][1], 
                         Frecuences["Groups"][a], 
-                        Frecuences["xi"][a],
+                        round(Frecuences["xi"][a] , self.Precision),
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],
-                        Frecuences["hi"][a],
-                        Frecuences["Hi"][a],
-                        f"{Frecuences['hi_percent'][a]}%",
-                        f"{Frecuences['Hi_percent'][a]}%",)
-                )
+                        round(Frecuences["hi"][a] , self.Precision),
+                        round(Frecuences["Hi"][a] , self.Precision),
+                        f"{round(Frecuences['hi_percent'][a] , self.Precision)}%",
+                        f"{round(Frecuences['Hi_percent'][a] , self.Precision)}%",)
+                ,tags=("font_arial_10",))
+
+            self.Table.treeview.insert(
+                "" , END , values=(
+                    "Total",
+                    "",
+                    "",
+                    "",
+                    "",
+                    numpy.sum(Frecuences["fi"]),
+                    "",
+                    round(numpy.sum(Frecuences["hi"])),
+                    "",
+                    f"{round(numpy.sum(Frecuences['hi_percent']))}%",
+                    "",
+                ),tags=("font_arial_10",))
+
+            # Crear un tag para aplicar la negrita
+            self.Table.treeview.tag_configure("last_row", font=("Arial", 10, "bold") , background="lightgreen")
+
+            last_item = self.Table.treeview.get_children()[-1]  # Obtener la última fila
+            self.Table.treeview.item(last_item, tags=("last_row",))
+
             for col in self.Table.treeview["columns"]:
-                self.Table.treeview.column(col, anchor="center")
+                    self.Table.treeview.column(col, anchor="center")
 
     def Table_For_Cuant_Not_Grouped_Data(self):
         self.Table.treeview.config(columns=("1", "2" ,"3", "4", "5", "6", "7") , show="headings")
@@ -118,24 +158,45 @@ class Process_Column_Of_Data:
 
         self.Table.treeview.config(height=13)
 
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
+
         for a in range(1 , 8):
             self.Table.treeview.column(f"{a}" , anchor="center" , width=163)
         
     def Put_Data_On_Table_For_Cuant_Not_Grouped_Data(self):
         Variables = self.Results["Variables_Cuant_Normal_Extended"]
-        Frecuences = self.Results["Frecuences_Cuali_Normal_Extended"]
+        Frecuences = self.Results["Frecuences_Cuant_Normal_Extended"]
         if(not self.Table.Has_Rows()):
+            self.Table.treeview.tag_configure("font_arial_10", font=("Arial", 10))
+
             for a in range(0 , Variables["Number_Statistic_Variables"]):
                 self.Table.treeview.insert(
                     "", END , values=(
                         Frecuences["xi"][a],
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],
-                        Frecuences["hi"][a],
-                        Frecuences["Hi"][a],
-                        f"{Frecuences['hi_percent'][a]}%",
-                        f"{Frecuences['Hi_percent'][a]}%",)
+                        round(Frecuences["hi"][a] , self.Precision),
+                        round(Frecuences["Hi"][a] , self.Precision),
+                        f"{round(Frecuences['hi_percent'][a] , self.Precision)}%",
+                        f"{round(Frecuences['Hi_percent'][a] , self.Precision)}%",) , tags=("font_arial_10",))
+            self.Table.treeview.insert(
+                "" , END , values=(
+                    "Total",
+                    numpy.sum(Frecuences["fi"]),
+                    "",
+                    round(numpy.sum(Frecuences["hi"])),
+                    "",
+                    f"{round(numpy.sum(Frecuences['hi_percent']))}%",
+                    "",
                 )
+            )
+
+            self.Table.treeview.tag_configure("last_row", font=("Arial", 10, "bold") , background="lightgreen")
+
+            last_item = self.Table.treeview.get_children()[-1]  # Obtener la última fila
+            self.Table.treeview.item(last_item, tags=("last_row",))
+
             for col in self.Table.treeview["columns"]:
                 self.Table.treeview.column(col, anchor="center")
 
@@ -158,30 +219,45 @@ class Process_Column_Of_Data:
         Variables = self.Results["Variables_Cuali_Normal_Extended"]
         Frecuences = self.Results["Frecuences_Cuali_Normal_Extended"]
         if(not self.Table.Has_Rows()):
+            self.Table.treeview.tag_configure("font_arial_10", font=("Arial", 10))
             for a in range(0 , Variables["N_Character_Modalities"]):
                 self.Table.treeview.insert(
                     "", END , values=(
                         Frecuences["ai"][a],
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],
-                        Frecuences["hi"][a],
-                        Frecuences["Hi"][a],
-                        f"{Frecuences['hi_percent'][a]}%",
-                        f"{Frecuences['Hi_percent'][a]}%",)
+                        round(Frecuences["hi"][a] , self.Precision),
+                        round(Frecuences["Hi"][a] , self.Precision),
+                        f"{round(Frecuences['hi_percent'][a] , self.Precision)}%",
+                        f"{round(Frecuences['Hi_percent'][a] , self.Precision)}%",) , tags=("font_arial_10",))
+            self.Table.treeview.insert(
+                "" , END , values=(
+                    "Total",
+                    numpy.sum(Frecuences["fi"]),
+                    "",
+                    round(numpy.sum(Frecuences["hi"])),
+                    "",
+                    f"{round(numpy.sum(Frecuences['hi_percent']))}%",
+                    "",
                 )
+            )
+
+            self.Table.treeview.tag_configure("last_row", font=("Arial", 10, "bold") , background="lightgreen")
+
+            last_item = self.Table.treeview.get_children()[-1]  # Obtener la última fila
+            self.Table.treeview.item(last_item, tags=("last_row",))
+
             for col in self.Table.treeview["columns"]:
                 self.Table.treeview.column(col, anchor="center")
 
     def Create_Tables(self):
         match(self.Type_Of_Variable):
-            case "Cuantitative":
-                if(self.Results["Variables_Cuant_For_Many_Values"] != None):
-                    self.Table_For_Cuant_Grouped_Data()
-                elif(self.Results["Variables_Cuant_Normal_Extended"] != None):
-                    self.Table_For_Cuant_Not_Grouped_Data()
+            case "Cuantitative_Grouped":
+                self.Table_For_Cuant_Grouped_Data()
+            case "Cuantitative_Not_Grouped":
+                self.Table_For_Cuant_Not_Grouped_Data()
             case "Cualitative":
-                if(self.Results["Variables_Cuali_Normal_Extended"] != None):
-                    self.Table_For_Cualitative_Data()
+                self.Table_For_Cualitative_Data()
             case _:
                 raise Exception("No se pudo identificar el tipo de variable.")
 
@@ -195,12 +271,12 @@ class Process_Column_Of_Data:
     def Put_Data_On_Tables(self):
         if(self.Table.Has_Rows()):
             self.Table.clear_table()
+
         match(self.Type_Of_Variable):
-            case "Cuantitative":
-                if(self.Results["Variables_Cuant_For_Many_Values"] != None):
-                    self.Put_Data_On_Table_For_Cuant_Grouped_Data()
-                elif(self.Results["Variables_Cuant_Normal_Extended"] != None):
-                    self.Put_Data_On_Table_For_Cuant_Not_Grouped_Data()
+            case "Cuantitative_Grouped":
+                self.Put_Data_On_Table_For_Cuant_Grouped_Data()
+            case "Cuantitative_Not_Grouped":
+                self.Put_Data_On_Table_For_Cuant_Not_Grouped_Data()
             case "Cualitative":
                 if(self.Results["Variables_Cuali_Normal_Extended"] != None):
                     self.Put_Data_On_Table_For_Cualitative_Data()
@@ -220,40 +296,45 @@ class Process_Column_Of_Data:
     
     def Label_SM_For_Grouped_Data(self , S_Measures):
         self.Destroy_Labels()
+        if(self.Precision >=3 and self.Precision<5):
+            Precision = 2
+        elif(self.Precision>=5 and self.Precision<7):
+            Precision = 4
+        elif(self.Precision>=7 and self.Precision<=8):
+            Precision = 6
         b=0
         for key,value in S_Measures.items():
-            String = ""
             if(b < 3):
-                lab = Label(self.Root_Window , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Root_Window , text=f"{key}\n{round(value , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
             elif(b == 3):
                 if(len(value) > 1):
                     sub=1
+                    String = ""
                     for a in range(0 , len(value)):
                         if(a >= 3 or a == len(value) - 1):
-                            String += f"Mo_{sub}: {value[a]}"
+                            String += f"Mo_{sub}: {round(value[a] , Precision)}"
                             break
                         else:
-                            String += f"Mo_{sub}: {value[a]}\n"
+                            String += f"Mo_{sub}: {round(value[a] , Precision)}\n"
                         sub += 1
                     lab = Label(self.Root_Window , text=f"{key}\n{String}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
 
                 else:
-                    lab = Label(self.Root_Window , text=f"{key}\nMo_1: {value[0]}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                    lab = Label(self.Root_Window , text=f"{key}\nMo: {round(value[0] , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
 
             elif(b < 6):
-                lab = Label(self.Root_Window , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Root_Window , text=f"{key}\n{round(value , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
             else:
-                lab = Label(self.Root_Window , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Root_Window , text=f"{key}\n{round(value , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
             self.Labels.append(lab)
             b +=1
 
     def Create_Labels_Summary_Measures(self):
         match(self.Type_Of_Variable):
-            case "Cuantitative":
-                if(self.Results["Summary_Measures_For_Grouped_Data"] != None):
+            case "Cuantitative_Grouped":
                     S_Measures = self.Results["Summary_Measures_For_Grouped_Data"]
                     self.Label_SM_For_Grouped_Data(S_Measures)
-                elif(self.Results["Summary_Measures_For_Not_Grouped_Data"] != None):
+            case "Cuantitative_Not_Grouped":
                     S_Measures = self.Results["Summary_Measures_For_Not_Grouped_Data"]
                     self.Label_SM_For_Grouped_Data(S_Measures)
             case "Cualitative":
@@ -262,37 +343,27 @@ class Process_Column_Of_Data:
                 raise Exception("No se pudo identificar el tipo de variable.")
 
     def Display_Labels(self):
-        match(self.Type_Of_Variable):
-            case "Cuantitative":
-                b = 0
-                for lab in self.Labels:
-                    if(b < 3):
-                        x_pos = 31+(280*b)
-                        lab.place(x=x_pos , y=260)
-                    elif(b == 3):
-                        x_pos = 40+(280*b) - (280*3)
-                        lab.place(x=x_pos , y=320)
-                    elif(b < 6):
-                        x_pos = 40 + (280*b) - (280*3)
-                        lab.place(x=x_pos , y=320)
-                    else:
-                        x_pos = 40 + (280*b) - (280*5)
-                        lab.place(x=x_pos , y=380)
-                    b += 1
-            case "Cualitative":
-                pass
-            case _:
-                raise Exception("No se pudo identificar el tipo de variable.")
+        if(self.Type_Of_Variable == "Cuantitative_Grouped" or self.Type_Of_Variable == "Cuantitative_Not_Grouped"):
+            b = 0
+            for lab in self.Labels:
+                if(b < 3):
+                    x_pos = 31+(280*b)
+                    lab.place(x=x_pos , y=260)
+                elif(b == 3):
+                    x_pos = 40+(280*b) - (280*3)
+                    lab.place(x=x_pos , y=320)
+                elif(b < 6):
+                    x_pos = 40 + (280*b) - (280*3)
+                    lab.place(x=x_pos , y=320)
+                else:
+                    x_pos = 40 + (280*b) - (280*5)
+                    lab.place(x=x_pos , y=380)
+                b += 1
 
     def Hidden_Labels(self):
-        match(self.Type_Of_Variable):
-            case "Cuantitative":
-                for lab in self.Labels:
-                    lab.place_forget()
-            case "Cualitative":
-                pass
-            case _:
-                raise Exception("No se pudo identificar el tipo de variable.")
+        if(self.Type_Of_Variable == "Cuantitative_Grouped" or self.Type_Of_Variable == "Cuantitative_Not_Grouped"):
+            for lab in self.Labels:
+                lab.place_forget()
             
     def Destroy_Tables(self):
         self.Table.destroy()
@@ -316,11 +387,14 @@ def Create_Window_Frecuences_Table(Main_Window):
         Global_Tables[f"{Selection}"].Display_Table()
         Precision.set(Global_Tables[f"{Selection}"].Precision)
 
-    def Create_Table_For_Single_Column(Precision , Input):
+    def Create_Table_For_Single_Column(Precision , Input , Data_From_Single_Column):
         global Global_Tables
         if(Global_Tables == {}):
             Table_For_Data_Column = TreeviewFrame(Window_Frecuences_Table)
-            Table_Single_Column = Process_Column_Of_Data(Window_Frecuences_Table , Table_For_Data_Column , Input)
+            if(Data_From_Single_Column != {}):
+                Table_Single_Column = Process_Column_Of_Data(Window_Frecuences_Table , Table_For_Data_Column , Data_From_Single_Column["S_Column"])
+            else:
+                Table_Single_Column = Process_Column_Of_Data(Window_Frecuences_Table , Table_For_Data_Column , Input)
             Table_Single_Column.Calc_Results(Precision)
             Table_Single_Column.Create_Tables()
             Table_Single_Column.Create_Labels_Summary_Measures()
@@ -329,14 +403,14 @@ def Create_Window_Frecuences_Table(Main_Window):
             Table_Single_Column.Display_Table()
 
             Global_Tables["S_Column"] = Table_Single_Column
+
+            return Global_Tables["S_Column"].Results , Global_Tables["S_Column"].Type_Of_Variable
         else:
-            Global_Tables["S_Column"].Calc_Results(Precision)
+            Global_Tables["S_Column"].Precision = Precision
             Global_Tables["S_Column"].Create_Labels_Summary_Measures()
             Global_Tables["S_Column"].Put_Data_On_Tables()
 
             Global_Tables["S_Column"].Display_Labels()
-
-        return Global_Tables["S_Column"].Results , Global_Tables["S_Column"].Type_Of_Variable
 
     def Create_Table_For_Multiple_Columns(Precision , Data_From_Multiple_Columns):
         global Global_Tables
@@ -364,20 +438,17 @@ def Create_Window_Frecuences_Table(Main_Window):
             Column_Selection["values"] = Columns_Name
 
             Display_Table_For_Column_Name(None)
+
+            return Results_For_Multiple_Columns , Type_Of_Variable_For_Multiple_Columns
         else:
             Selection = Column_Selection.get()
-            Global_Tables[f"{Selection}"].Calc_Results(Precision)
+            Global_Tables[f"{Selection}"].Precision = Precision
             Global_Tables[f"{Selection}"].Create_Labels_Summary_Measures()
             Global_Tables[f"{Selection}"].Put_Data_On_Tables()
 
             Global_Tables[f"{Selection}"].Display_Labels()
 
-            Results_For_Multiple_Columns[f"{Selection}"] = Global_Tables[f"{Selection}"].Results
-            Type_Of_Variable_For_Multiple_Columns[f"{Selection}"] = Global_Tables[f"{Selection}"].Type_Of_Variable
-
-        return Results_For_Multiple_Columns , Type_Of_Variable_For_Multiple_Columns
-
-    def Create_Table(Precision , Input , Data_From_Multiple_Columns):
+    def Create_Table(Precision , Input , Data_From_Single_Column , Data_From_Multiple_Columns):
         global Global_Calcs_From_Single_Column , Global_Calcs_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column
         try:
             
@@ -390,13 +461,19 @@ def Create_Window_Frecuences_Table(Main_Window):
                 raise Exception("Valor de precision invalida, intente nuevamente.")
 
             if(Data_From_Multiple_Columns == {}):
-                Dictionary_Values , Type_Of_Variable = Create_Table_For_Single_Column(Precision , Input)
-                Global_Type_Of_Variable_Single_Column = Type_Of_Variable
-                Global_Calcs_From_Single_Column = Dictionary_Values
+                if(Global_Calcs_From_Single_Column == {} and Global_Type_Of_Variable_Single_Column == {}):
+                    Dictionary_Values , Type_Of_Variable = Create_Table_For_Single_Column(Precision , Input , Data_From_Single_Column)
+                    Global_Type_Of_Variable_Single_Column = Type_Of_Variable
+                    Global_Calcs_From_Single_Column = Dictionary_Values
+                else:
+                    Create_Table_For_Single_Column(Precision , Input , Data_From_Single_Column)
             else:
-                Dictionary_Values , Type_Of_Variable = Create_Table_For_Multiple_Columns(Precision , Data_From_Multiple_Columns)
-                Global_Type_Of_Variable_Multiple_Column = Type_Of_Variable
-                Global_Calcs_From_Multiple_Columns = Dictionary_Values
+                if(Global_Calcs_From_Multiple_Columns == {} and Global_Type_Of_Variable_Multiple_Column == {}):
+                    Dictionary_Values , Type_Of_Variable = Create_Table_For_Multiple_Columns(Precision , Data_From_Multiple_Columns)
+                    Global_Type_Of_Variable_Multiple_Column = Type_Of_Variable
+                    Global_Calcs_From_Multiple_Columns = Dictionary_Values
+                else:
+                    Create_Table_For_Multiple_Columns(Precision , Data_From_Multiple_Columns)
 
         except (IndexError , ValueError , NameError , TypeError , Exception) as e:
             messagebox.showerror("Error" , f"{e}")
@@ -427,6 +504,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Text_Column_Selection.place_forget()
         Column_Selection.place_forget()
         Data_From_Multiple_Columns.clear()
+        Data_From_Single_Column.clear()
         Graphs.clear()
 
         for t in Global_Tables.values():
@@ -445,17 +523,18 @@ def Create_Window_Frecuences_Table(Main_Window):
             Create_Table(Precision , Data , Data_From_Multiple_Columns)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
-    Window_Frecuences_Table.geometry("1240x800+135+40")
+    Window_Frecuences_Table.geometry("1240x800+135+40") # Hacer mas ancha la ventana
     Window_Frecuences_Table.title("Tabla de frecuencias")
     Window_Frecuences_Table.config(bg="#6C6E72")
     Icon = PhotoImage(file="Images/icon.png")
     Window_Frecuences_Table.iconphoto(False , Icon)
 
-    Data = StringVar(Window_Frecuences_Table)
+    Data = StringVar(Window_Frecuences_Table) # Estos datos se introducen como texto en el campo de texto de la ventana
     Data.set("")
     Precision = IntVar(Window_Frecuences_Table)
     Columns_Name = []
     Data_From_Multiple_Columns = {}
+    Data_From_Single_Column = {}
     Graphs = {}
 
     Title = Label(Window_Frecuences_Table , text="Calculo de Tablas de Frecuencia" , font=("Times New Roman" , 22), foreground="#ffffff", justify=CENTER , width=76 , bg="#9DAEC6" , highlightthickness=1 ,highlightbackground="#ffffff")
@@ -483,14 +562,14 @@ def Create_Window_Frecuences_Table(Main_Window):
     Section_Frecuences_Table = Label(Window_Frecuences_Table , width=168 , height=32 , bg="#CBEFE3" , highlightthickness=2 , highlightbackground="#000000")
     Section_Frecuences_Table.place(x=29 , y=255)
 
-    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Seleccionar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data , Input_Data , Btn_Import_Data_From_File , Data_From_Multiple_Columns))
+    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Importar datos de un Excel" , font=("Times New Roman" , 13) , width=24 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns))
     Btn_Import_Data_From_File.place(x=860 , y=170)
 
     Btn_Calculate_Again = Button(Window_Frecuences_Table , text="Calcular con otros valores" , font=("Times New Roman" , 13) , width=20 , bg="#F4B0C0" , command= lambda: Calculate_Again(Columns_Name , Column_Selection , Data_From_Multiple_Columns))
     Btn_Calculate_Again.place(x=780 , y=210)
     Btn_Calculate_Again.config(state="disabled")
 
-    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Data_From_Multiple_Columns)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
+    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Generar Tabla" , font=("Times New Roman" , 13) , width=16 , bg="#F4B0C0" , command= lambda: Create_Table(Precision , Data , Data_From_Single_Column , Data_From_Multiple_Columns)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
     Btn_Generate_Table.place(x=1020 , y=210)
 
     Btn_Generate_Excel = Button(Window_Frecuences_Table , text="Exportar tabla a Excel" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Generate_Window_Export_Excel(Window_Frecuences_Table , Global_Calcs_From_Single_Column , Global_Calcs_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column))
