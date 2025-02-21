@@ -42,29 +42,25 @@ def Conv_Data_To_Numbers(Data):
 
     if(len(Data_Converted)<2):
         raise ValueError("Se ingresaron muy pocos datos")
-
+    
+    Is_Float = False
     for n in range(0,len(Data_Converted)):
         Bool = "." in Data_Converted[n]        
         match Bool:
             case True:
+                Is_Float = True
                 Data_Converted[n] = float(Data_Converted[n])
             case False:
                 Data_Converted[n] = int(Data_Converted[n])
-    return Data_Converted
+    return Data_Converted , Is_Float
 
-def Calculate_Table_Cuantitative_For_Many_Values(Data):
+def Calculate_Table_Cuantitative_For_Many_Values(Data , There_Are_Floats):
     V_Min = Cuant_Many_Values.Calc_Min(Data)
     V_Max = Cuant_Many_Values.Calc_Max(Data)
 
     n = len(Data)
     R = round(Cuant_Many_Values.Calc_Range(V_Min,V_Max) , 3)
     m = round(1+(3.3*log10(n)))
-
-    There_Are_Floats = False
-    for a in Data:
-        if(int(a) != a):
-            There_Are_Floats = True
-            break
 
     if(not There_Are_Floats):
         C = round(R/m , 1)
@@ -244,7 +240,14 @@ def Main_Function(In):
         match(Is_Cuantitative):
             case True:
                 if(not isinstance(In , list)):
-                    Data = Conv_Data_To_Numbers(Data)
+                    Data , Is_Float = Conv_Data_To_Numbers(Data)
+                else:
+                    Is_Float = False
+                    for a in Data:
+                        if(int(a) != a):
+                            Is_Float = True
+                            break
+
                 n = len(Data)
                 m = round(1 + 3.222*log10(n))
                 if(m<5):
@@ -252,10 +255,15 @@ def Main_Function(In):
                 else:
                     Calc_For_Classes = True
                 
-                if(Calc_For_Classes):
-                    Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(Data)
-                else:
-                    Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data = Calculate_Table_Cuantitative_Normal_Extended(Data)
+                match(Calc_For_Classes):
+                    case True:
+                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(Data , Is_Float)
+                    case False:
+                        if(Is_Float):
+                            Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data = Calculate_Table_Cuantitative_For_Many_Values(Data , Is_Float)
+                        else:
+                            Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data = Calculate_Table_Cuantitative_Normal_Extended(Data)
+
             case False:
                 Variables_Cuali_Normal_Extended , Frecuences_Cuali_Normal_Extended = Calculate_Table_Cualitative_Normal_Extended(Data)
             case _:
@@ -277,7 +285,7 @@ if (__name__ == "__main__"):
     Data = "Casa Casa Trabajo Trabajo Trabajo Casa Casa Cibercafe Otros Cibercafe Trabajo Trabajo Otros Cibercafe Cibercafe Cibercafe Casa Cibercafe Otros Cibercafe Casa Casa Cibercafe Trabajo Otros Otros Cibercafe Cibercafe Cibercafe Cibercafe "
     Data_2 = "118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582  "
     Results = Main_Function(Data_2)
-    print(Contains_Only_Numbers(Data_2))
+    print(Results)
     
     """ 
         Error en la funcion  Cuant_Normal_Extended.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
