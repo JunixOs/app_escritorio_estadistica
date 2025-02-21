@@ -14,7 +14,8 @@ StatPhi es una aplicacion de escritorio que permite a los usuarios realizar calc
 ## Descripcion
 
 StatPhi es un programa desarrollado en el lenguaje de programacion Python, usando la libreria tkinter como base desarrollar la UI y la libreria numpy y pandas para los calculos y exportacion de archivos. 
-Este proyecto es el producto final del curso de Estadistica General 2025-0 el cual tiene por objetivo brindar una forma facil y amigable de calcular y analizar datos a personas que no estan familiarizadas con software avanzado como RStudio.  
+Este proyecto es el producto final del curso de Estadistica General 2025-0 el cual tiene por objetivo brindar una forma facil y amigable de calcular y analizar datos a personas que no estan familiarizadas con software avanzado como RStudio.
+
 Con StatPhi, podras ingresar todos los datos obtenidos correspondientes a una o varias variables y obtener informacion relevante sobre esta, como la distribucion de frecuencias , graficos y medidas de resumen. 
  
 Tienes la posibilidad de ingresar datos por tu cuenta, o de importarlos de un archivo .xlsx (Excel) externo, ten en cuenta que solo podras importar datos correspondientes a 5 columnas como maximo. 
@@ -25,7 +26,7 @@ Al importar multiples columnas de un archivo .xlsx y al calcular la tabla de fre
 ![Interfaz de Calculo de Tablas de Frecuencias y Medidas de Resumen](./Images/DEMO/Calc_Table_Frecuences_DEMO_1.png)
 ![Calculo con Variables Cuantitativas](./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Table.png)
 ![Grafico de las Frecuencias Obtenidas](./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph.png)
-## Features
+## Caracteristicas
 Algunas caracteristicas importantes de StatPhi son:
 * Trabaja con variables cuantitativas y cualitativas.
 * Posibilidad de importar datos de un archivo Excel (.xlsx) externo, desde datos correspondientes a una sola columna hasta un maximo de 5 columnas de datos.
@@ -33,12 +34,12 @@ Algunas caracteristicas importantes de StatPhi son:
 * Muestra un grafico sobre la distribucion de frecuencias.
 * Obten las imagenes de los graficos en baja o alta calidad (hasta 1200 DPI).
 
-## Features To Add
-    - [x] Posibilidad de importar multiples columnas de un Excel (v1.7)
-    - [] Calculo de cuartiles.
-    - [] Visualizacion de grafico de cajas.
-    - [] Importacion de datos de archivos .csv .txt .sql
-    - [] Implementacion de librerias para acelerar la importacion y analisis de miles de datos.
+## Caracteristicas proximas
+- [x] Posibilidad de importar multiples columnas de un Excel (v1.7)
+- [] Calculo de cuartiles.
+- [] Visualizacion de grafico de cajas.
+- [] Importacion de datos de archivos .csv .txt .sql
+- [] Implementacion de librerias para acelerar la importacion y analisis de miles de datos.
 ## Estructura del proyecto
 
 ## Instalacion
@@ -88,9 +89,9 @@ Ademas, deberas contar con las siguientes librerias de python (puedes usar pip o
 ## Uso
 ### Pantalla de Inicio
 
-En la pantalla de inicio te encontraras con 
+En la pantalla de inicio te encontraras con 2 botones, uno para dirigirte a la seccion de calculo de tablas de frecuencias y otro para abrir una pequeña ventana donde podras calcular el tamaño de muestra usando el Muestreo Aleatorio Simple.
 
-### Calculo de Tablas de Frecuencias
+#### Calculo de Tablas de Frecuencias
 
 Aqui te encontraras con los siguientes elementos:
 - Campo de texto: 
@@ -101,5 +102,5 @@ Aqui te encontraras con los siguientes elementos:
 
 - Importar datos de un Excel:
     Permite importar datos de una o varias columnas de un archivo .xlsx externo.
-    
-### Calculo de Tamaño de Muestra por M.A.S.
+
+#### Calculo de Tamaño de Muestra por M.A.S.
