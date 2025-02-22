@@ -4,7 +4,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import Calcs.MAS_Calc as MAS
-from Windows_Errors import Frecuences_Error
 from tkinter import *
 
 def Validate():
@@ -128,11 +127,7 @@ def Create_Window_MAS(Father_Window=None):
     Input_Precision.place(x=230 , y=260)
     Input_Precision.config(state="disabled")
 
-    try:
-        Btn_Calculate = Button(Window_MAS , text="Cacular tamaño de muestra" , font=("Times New Roman" , 13) , width=25 , command= lambda: MAS.Calc_Samplings(e.get() , Confidence_Level.get() , N.get() , n_o , n_f , Checked_Finite_Population.get() , Precision.get() , p.get()))
-    except (ValueError, TypeError) as e:
-        Win = Frecuences_Error("ERROR" , f"{e}")
-        Win.Create_Window(Window_MAS)
+    Btn_Calculate = Button(Window_MAS , text="Cacular tamaño de muestra" , font=("Times New Roman" , 13) , width=25 , command= lambda: MAS.Calc_Samplings(e.get() , Confidence_Level.get() , N.get() , n_o , n_f , Checked_Finite_Population.get() , Precision.get() , p.get()))
 
     Btn_Calculate.place(x=170 , y=300)
 

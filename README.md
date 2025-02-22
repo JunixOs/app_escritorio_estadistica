@@ -36,7 +36,7 @@ Algunas caracteristicas importantes de StatPhi son:
 
 ## Caracteristicas proximas
 - [x] Posibilidad de importar multiples columnas de un Excel (v1.7)
-- [] Calculo de cuartiles.
+- [] Calculo de cuantiles.
 - [] Visualizacion de grafico de cajas.
 - [] Importacion de datos de archivos .csv .txt .sql
 - [] Implementacion de librerias para acelerar la importacion y analisis de miles de datos.

@@ -94,7 +94,7 @@ def Import_Data_From_Single_Column(File_Path , Sheet_Number , column , start_row
 
     if data.isnull().all().all():
         raise Exception("Los datos seleccionados están vacíos o contienen solo valores nulos.")
-    Data_From_Single_Column["S_Column"] = [value[0] for value in data.values]
+    Data_From_Single_Column[f"{Excel.columns[0]}"] = [value[0] for value in data.values]
 
     if(Data):
         Data.set("")
@@ -189,7 +189,7 @@ def Process_File_Data(Window_Root , File_Path , Sheet_Number , Cell_Range , Prev
                 if column_start == column_end:  # Verificar si la selección es una sola columna
                     if start_row == end_row:  # Verificar si la selección es una sola fila
                         raise Exception("Seleccionaste una celda individual, no es un rango válido.")
-                    raise Exception("Seleccionaste solo una columna individual.")
+                    raise Exception("No se permite seleccionar datos de una sola columna.")
                 
                 Import_Data_From_Multiple_Columns(File_Path , Sheet_Number , column_start , column_end , start_row , end_row , Preview , Data , Data_From_Multiple_Columns)
             case False:
@@ -197,7 +197,7 @@ def Process_File_Data(Window_Root , File_Path , Sheet_Number , Cell_Range , Prev
                     if start_row == end_row:
                         raise Exception("Seleccionaste una celda individual, no es un rango válido.")
                 else:
-                    raise Exception("Solo se permite seleccionar datos de una sola fila.")
+                    raise Exception("Solo se permite seleccionar datos de una sola columna.")
                 Import_Data_From_Single_Column(File_Path , Sheet_Number , column_start , start_row , end_row , Preview , Data , Data_From_Single_Column)
             case _:
                 raise Exception("Hubo un error al realizar la importacion")

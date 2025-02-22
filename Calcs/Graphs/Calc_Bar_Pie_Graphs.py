@@ -5,20 +5,21 @@ def pixels_to_inches(pixels, dpi=96):
     return pixels / dpi
 
 class Draw_Graph_for_Each_Variable:
-    def __init__(self , Data , Precision):
+    def __init__(self , Data , Precision , Axis_x_Title):
         self.Data = Data
         self.Precision = Precision
 
         self.Bar_Title = "Grafico de Barras"
 
         self.Pie_Title = "Grafico de Pastel"
+        self.Axis_x_Title = Axis_x_Title
 
         self.Fig_Height = pixels_to_inches(700)
         self.Fig_Width = pixels_to_inches(680)
 
     def Draw_Graph(self , Variable_Of_Frecuency):
         if(Variable_Of_Frecuency != "fi" and Variable_Of_Frecuency != "hi" and Variable_Of_Frecuency != "hi_percent"):
-            raise Exception("Error interno")
+            raise Exception("Error al verificar la frecuencia.")
 
         figure_bars = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
         
@@ -43,7 +44,11 @@ class Draw_Graph_for_Each_Variable:
             ax_Bars.set_xticklabels(Copy_Data["Intervals"] , fontsize=7 , rotation=30 , rotation_mode="anchor" , ha="right")
 
             ax_Bars.set_title(self.Bar_Title)
-            ax_Bars.set_xlabel("Intervalos de Clase")
+            if(self.Axis_x_Title):
+                ax_Bars.set_xlabel(f"{self.Axis_x_Title}")
+            else:
+                ax_Bars.set_xlabel("Intervalos de Clase")
+            
             ax_Bars.set_ylabel(f"{Axis_y_Title}")
             
             for Bar in Bars:
@@ -77,8 +82,11 @@ class Draw_Graph_for_Each_Variable:
             ax_Bars.set_xticks(range(len(Copy_Data["xi"])))
             ax_Bars.set_xticklabels(Copy_Data["xi"] , fontsize=8 , rotation=30 , rotation_mode="anchor" , ha="right")
 
-            ax_Bars.set_title(self.Bar_Title)   
-            ax_Bars.set_xlabel("Variables Observadas (xi)")
+            ax_Bars.set_title(self.Bar_Title)
+            if(self.Axis_x_Title):
+                ax_Bars.set_xlabel(f"{self.Axis_x_Title}")
+            else:
+                ax_Bars.set_xlabel("Variables Observadas (xi)")
             ax_Bars.set_ylabel(f"{Axis_y_Title}")
 
             for Bar in Bars:
@@ -111,8 +119,11 @@ class Draw_Graph_for_Each_Variable:
             ax_Bars.set_xticks(range(len(Copy_Data["ai"])))
             ax_Bars.set_xticklabels(Copy_Data["ai"] , fontsize=8 , rotation=30 , rotation_mode="anchor" , ha="right")
 
-            ax_Bars.set_title(self.Bar_Title)   
-            ax_Bars.set_xlabel("Variables Observadas (ai)")
+            ax_Bars.set_title(self.Bar_Title)
+            if(self.Axis_x_Title):
+                ax_Bars.set_xlabel(f"{self.Axis_x_Title}")
+            else:
+                ax_Bars.set_xlabel("Variables Observadas (ai)")
             ax_Bars.set_ylabel(f"{Axis_y_Title}")
 
             for Bar in Bars:

@@ -1,16 +1,11 @@
-import matplotlib.pyplot as plt
 from datetime import datetime
 import os
 from tkinter import messagebox
 
-def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Path , dpi , Format , Bar_Title , Pie_Title , **kwargs):
+def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Path , dpi , Format , Bar_Title , Pie_Title , Boxplot_Title , **kwargs):
     dpi = int(dpi)
     time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     Is_Checked = False
-    if(Bar_Title == ""):
-        Bar_Title = "Grafico de barras sobre la distribucion de los valores"
-    if(Pie_Title == ""):
-        Pie_Title = "Grafico de pastel sobre la distribucion de los valores"
 
     for a in kwargs.values():
         if(a):
@@ -22,13 +17,12 @@ def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Pa
 
         if(File_Name == ""):
             File_Name = "grafico"
-        
-        if not File_Path.endswith("/"):
-            File_Path += "/"
 
         if(File_Path == ""):
             raise Exception("No se ha ingresado ninguna ruta de exportacion")
-        
+        elif not File_Path.endswith("/"):
+            File_Path += "/"
+
         if(not os.path.exists(File_Path) or not os.path.isdir(File_Path)):
             raise Exception("Ruta de exportacion no valida")
 
@@ -48,6 +42,11 @@ def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Pa
             Graphs["pie_graph"].suptitle(f"{Pie_Title}")
             Graphs["pie_graph"].savefig(Full_Path , dpi=dpi)
 
+            if("boxplot_graph" in Graphs):
+                File_Path + File_Name + "_" + "boxplot" + "_" + time + Format
+                Graphs["boxplot_graph"].suptitle(f"{Boxplot_Title}")
+                Graphs["boxplot_graph"].savefig(Full_Path , dpi=dpi)
+
         elif(kwargs["Export_All_Bars"]):
             Full_Path = File_Path + File_Name + "_" + "fi" + "_" + time + Format
             Graphs["bar_fi"].suptitle(f"{Bar_Title} fi")
@@ -64,7 +63,11 @@ def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Pa
             if(kwargs["Export_Pie"]):
                 Full_Path = File_Path + File_Name + "_" + "pie" + "_" + time + Format
                 Graphs["pie_graph"].suptitle(f"{Pie_Title}")
-                Graphs["pie_graph"].savefig(Full_Path , dpi=dpi)      
+                Graphs["pie_graph"].savefig(Full_Path , dpi=dpi)
+            if(kwargs["Export_Boxplot"] and "boxplot_graph" in Graphs):
+                Full_Path = File_Path + File_Name + "_" + "boxplot" + "_" + time + Format
+                Graphs["boxplot_graph"].suptitle(f"{Boxplot_Title}")
+                Graphs["boxplot_graph"].savefig(Full_Path , dpi=dpi)
         else:
             if(kwargs["Export_Bar_fi"]):
                 Full_Path = File_Path + File_Name + "_" + "fi" + "_" + time + Format
@@ -82,6 +85,10 @@ def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Pa
                 Full_Path = File_Path + File_Name + "_" + "pie" + "_" + time + Format
                 Graphs["pie_graph"].suptitle(f"{Pie_Title}")
                 Graphs["pie_graph"].savefig(Full_Path , dpi=dpi)
+            if(kwargs["Export_Boxplot"] and "boxplot_graph" in Graphs):
+                Full_Path = File_Path + File_Name + "_" + "boxplot" + "_" + time + Format
+                Graphs["boxplot_graph"].suptitle(f"{Boxplot_Title}")
+                Graphs["boxplot_graph"].savefig(Full_Path , dpi=dpi)
 
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
@@ -90,6 +97,8 @@ def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Pa
         Graphs["bar_hi"].suptitle("")
         Graphs["bar_hi_percent"].suptitle("")
         Graphs["pie_graph"].suptitle("")
+        if("boxplot_graph" in Graphs):
+            Graphs["boxplot_graph"].suptitle("")
 
         Reply = messagebox.askquestion("Success" , f"Las imagenes fueron exportadas con exito a\n{File_Path}\n¿Desea salir de la ventana de exportacion?")
         if(Reply == "yes"):

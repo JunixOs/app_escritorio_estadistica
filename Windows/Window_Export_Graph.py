@@ -18,10 +18,10 @@ def Select_Path(Root_Window , Path):
         else:
             Path.set(File_Path)
     Root_Window.lift()
-def Create_Windows_Export_Graphs(Father_Window , Graphs , Data_From_Single_Column , Data_From_Multiple_Columns):
-    if(Data_From_Single_Column != {}):
+def Create_Windows_Export_Graphs(Father_Window , Graphs , Results_From_Single_Column , Results_From_Multiple_Columns):
+    if(Results_From_Single_Column != {}):
         W_For_Single_Column_Data(Father_Window , Graphs)
-    elif(Data_From_Multiple_Columns != {}):
+    elif(Results_From_Multiple_Columns != {}):
         W_For_Mutiple_Column_Data(Father_Window , Graphs)
 
 def W_For_Single_Column_Data(Father_Window , Graphs):
@@ -48,6 +48,9 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
             Export_pie.config(state="disabled")
             Checked_Export_Pie.set(True)
 
+            Export_Boxplot.config(state="disabled")
+            Checked_Export_Boxplot.set(True)
+
             Input_Name_Bar_Graph.config(state="normal")
             Input_Name_Píe_Graph.config(state="normal")
         else:
@@ -65,6 +68,9 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
 
             Export_pie.config(state="normal")
             Checked_Export_Pie.set(False)
+
+            Export_Boxplot.config(state="normal")
+            Checked_Export_Boxplot.set(False)
 
             Input_Name_Bar_Graph.config(state="disabled")
             Name_Bar_Graph.set("")
@@ -99,7 +105,14 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
             Input_Name_Bar_Graph.config(state="disabled")
             Name_Bar_Graph.set("")
 
-    def Checked_Bar_And_Pie():
+        if(Checked_Export_All_Bars.get() and Checked_Export_Pie.get() and Checked_Export_Boxplot.get()):
+            Checked_Export_All.set(True)
+            Export_All.config(state="disabled")
+        else:
+            Checked_Export_All.set(False)
+            Export_All.config(state="normal")
+
+    def Checked_Bars():
         if(Checked_Export_Bar_fi.get() and Checked_Export_Bar_hi.get() and Checked_Export_Bar_hi_percent.get()):
             Checked_Export_All_Bars.set(True)
             Export_All_Bar_Graphs.config(state="disabled")
@@ -107,7 +120,7 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
             Checked_Export_All_Bars.set(False)
             Export_All_Bar_Graphs.config(state="normal")
 
-        if(Checked_Export_All_Bars.get() and Checked_Export_Pie.get()):
+        if(Checked_Export_All_Bars.get() and Checked_Export_Pie.get() and Checked_Export_Boxplot.get()):
             Checked_Export_All.set(True)
             Export_All.config(state="disabled")
         else:
@@ -119,11 +132,31 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
         else:
             Input_Name_Bar_Graph.config(state="disabled")
             Name_Bar_Graph.set("")
+
+    def Checked_Pie():
         if(Checked_Export_Pie.get()):
             Input_Name_Píe_Graph.config(state="normal")
         else:
             Input_Name_Píe_Graph.config(state="disabled")
             Name_Pie_Graph.set("")
+        if(Checked_Export_All_Bars.get() and Checked_Export_Pie.get() and Checked_Export_Boxplot.get()):
+            Checked_Export_All.set(True)
+            Export_All.config(state="disabled")
+        else:
+            Checked_Export_All.set(False)
+            Export_All.config(state="normal")
+    def Checked_Boxplot():
+        if(Checked_Export_Boxplot.get()):
+            Input_Name_Boxplot_Graph.config(state="normal")
+        else:
+            Input_Name_Boxplot_Graph.config(state="disabled")
+            Name_Boxplot_Graph.set("")
+        if(Checked_Export_All_Bars.get() and Checked_Export_Pie.get() and Checked_Export_Boxplot.get()):
+            Checked_Export_All.set(True)
+            Export_All.config(state="disabled")
+        else:
+            Checked_Export_All.set(False)
+            Export_All.config(state="normal")
 
     def Back():
         W_Export_Graph.destroy()
@@ -146,6 +179,8 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
     Name_Bar_Graph.set("")
     Name_Pie_Graph = StringVar(W_Export_Graph)
     Name_Bar_Graph.set("")
+    Name_Boxplot_Graph = StringVar(W_Export_Graph)
+    Name_Boxplot_Graph.set("")
     File_Name = StringVar(W_Export_Graph)
     Path = StringVar(W_Export_Graph)
     Path.set("")
@@ -159,6 +194,7 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
     Checked_Export_Bar_hi = BooleanVar(W_Export_Graph)
     Checked_Export_Bar_hi_percent = BooleanVar(W_Export_Graph)
     Checked_Export_Pie = BooleanVar(W_Export_Graph)
+    Checked_Export_Boxplot = BooleanVar(W_Export_Graph)
 
     Section_1 = Label(W_Export_Graph , bg="#E4DBD5" , width=128 , height=14 , borderwidth=2 , relief="solid")
     Section_1.place(x=0 , y=0)
@@ -191,19 +227,26 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
     Texto_Exportar_Graficos = Label(W_Export_Graph , text="Seleccione los graficos que exportara" , font=("Times New Roman" , 13) , bg="#E7E4C1")
     Texto_Exportar_Graficos.place(x=310 , y=219)
     Export_All = Checkbutton(W_Export_Graph , text="Exportar todo" , font=("Times New Roman" , 13) , variable=Checked_Export_All , command=Check_Export_All , bg="#E7E4C1")
-    Export_All.place(x=310 , y=250)
+    Export_All.place(x=310 , y=240)
 
     Export_All_Bar_Graphs = Checkbutton(W_Export_Graph , text="Exportar todos los graficos de barras" , font=("Times New Roman" , 13) , variable=Checked_Export_All_Bars , command=Check_Export_All_Bars , bg="#E7E4C1")
-    Export_All_Bar_Graphs.place(x=350 , y=290)
-    Export_bar_fi = Checkbutton(W_Export_Graph , text="Exportar grafico de barras de fi" , font=("Times New Roman" , 13) , variable=Checked_Export_Bar_fi , bg="#E7E4C1" , command=Checked_Bar_And_Pie)
-    Export_bar_fi.place(x=380 , y=330)
-    Export_bar_hi = Checkbutton(W_Export_Graph , text="Exportar grafico de barras de hi" , font=("Times New Roman" , 13) , variable=Checked_Export_Bar_hi , bg="#E7E4C1" , command=Checked_Bar_And_Pie)
-    Export_bar_hi.place(x=380 , y=365)
-    Export_bar_hi_percent = Checkbutton(W_Export_Graph , text="Exportar grafico de barras de hi%" , font=("Times New Roman" , 13) , variable=Checked_Export_Bar_hi_percent , bg="#E7E4C1" , command=Checked_Bar_And_Pie)
-    Export_bar_hi_percent.place(x=380 , y=400)
+    Export_All_Bar_Graphs.place(x=350 , y=270)
+    Export_bar_fi = Checkbutton(W_Export_Graph , text="Exportar grafico de barras de fi" , font=("Times New Roman" , 13) , variable=Checked_Export_Bar_fi , bg="#E7E4C1" , command=Checked_Bars)
+    Export_bar_fi.place(x=380 , y=300)
+    Export_bar_hi = Checkbutton(W_Export_Graph , text="Exportar grafico de barras de hi" , font=("Times New Roman" , 13) , variable=Checked_Export_Bar_hi , bg="#E7E4C1" , command=Checked_Bars)
+    Export_bar_hi.place(x=380 , y=330)
+    Export_bar_hi_percent = Checkbutton(W_Export_Graph , text="Exportar grafico de barras de hi%" , font=("Times New Roman" , 13) , variable=Checked_Export_Bar_hi_percent , bg="#E7E4C1" , command=Checked_Bars)
+    Export_bar_hi_percent.place(x=380 , y=360)
 
-    Export_pie = Checkbutton(W_Export_Graph , text="Exportar grafico de pastel" , font=("Times New Roman" , 13) , variable=Checked_Export_Pie , bg="#E7E4C1" , command=Checked_Bar_And_Pie)
-    Export_pie.place(x=350 , y=450)
+    Export_pie = Checkbutton(W_Export_Graph , text="Exportar grafico de pastel" , font=("Times New Roman" , 13) , variable=Checked_Export_Pie , bg="#E7E4C1" , command=Checked_Pie)
+    Export_pie.place(x=350 , y=410)
+
+    if("boxplot_graph" in Graphs):
+        Checked_Export_Boxplot.set(False)
+        Export_Boxplot = Checkbutton(W_Export_Graph , text="Exportar grafico de cajas" , font=("Times New Roman" , 13) , variable=Checked_Export_Boxplot , command=Checked_Boxplot)
+        Export_Boxplot.place(x=350 , y=440)
+    else:
+        Checked_Export_Boxplot.set(True)
 
     Text_Change_Name_Bar_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de barras: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
     Text_Change_Name_Bar_Graph.place(x=20 , y=490)
@@ -212,10 +255,16 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
     Input_Name_Bar_Graph.config(state="disabled")
 
     Text_Change_Name_Pie_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de pastel: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
-    Text_Change_Name_Pie_Graph.place(x=20 , y=560)
+    Text_Change_Name_Pie_Graph.place(x=20 , y=540)
     Input_Name_Píe_Graph = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=Name_Pie_Graph , width=58)
-    Input_Name_Píe_Graph.place(x=200 , y=570)
+    Input_Name_Píe_Graph.place(x=200 , y=550)
     Input_Name_Píe_Graph.config(state="disabled")
+
+    Text_Change_Name_Boxplot = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de cajas: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
+    Text_Change_Name_Boxplot.place(x=20 , y=590)
+    Input_Name_Boxplot_Graph = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=Name_Boxplot_Graph , width=58)
+    Input_Name_Boxplot_Graph.place(x=200 , y=600)
+    Input_Name_Boxplot_Graph.config(state="disabled")
 
     Btn_Export_Graph = Button(
         W_Export_Graph , 
@@ -231,15 +280,16 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
             Path.get() , 
             Input_dpi.get() , 
             Input_Format.get() , 
-            Name_Bar_Graph.get() , 
-            Name_Pie_Graph.get() ,       
+            Name_Bar_Graph.get() ,
+            Name_Pie_Graph.get() ,
+            Name_Boxplot_Graph.get(),
             Export_All = Checked_Export_All.get(),
             Export_All_Bars = Checked_Export_All_Bars.get(),
             Export_Bar_fi = Checked_Export_Bar_fi.get(),
             Export_Bar_hi = Checked_Export_Bar_hi.get(),
             Export_Bar_hi_percent = Checked_Export_Bar_hi_percent.get(),
             Export_Pie = Checked_Export_Pie.get(),
-            ))
+            Export_Boxplot = Checked_Export_Boxplot.get()))
     Btn_Export_Graph.place(x=300 , y=610)
 
     W_Export_Graph.resizable(False , False)
