@@ -36,8 +36,9 @@ Algunas caracteristicas importantes de StatPhi son:
 
 ## Caracteristicas proximas
 - [x] Posibilidad de importar multiples columnas de un Excel (v1.7)
-- [] Calculo de cuantiles.
-- [] Visualizacion de grafico de cajas.
+- [x] Calculo de cuantiles.
+- [x] Visualizacion de grafico de cajas.
+- [] Creacion y exportacion de multiples graficos en una sola imagen.
 - [] Importacion de datos de archivos .csv .txt .sql
 - [] Implementacion de librerias para acelerar la importacion y analisis de miles de datos.
 ## Estructura del proyecto
@@ -77,7 +78,7 @@ Ademas, deberas contar con las siguientes librerias de python (puedes usar pip o
     python -m venv venv
 4. Activar el entorno virtual:
     ```bash
-    .\\venv\\Scripts\\activate
+    .\venv\Scripts\activate
     ```
 3. Instalar las librerias.
 4. Ejecutar el programa con el comando:

@@ -47,7 +47,7 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
     Btn_Search_Route.place(x=100 , y=90)
 
     Columns_To_Export = {}
-    Label_Columns_To_Export = Label(W_Export_Excel , text="Seleccione la columna a exportar: " , font=("Times New Roman" , 13))
+    Label_Columns_To_Export = Label(W_Export_Excel , text="Seleccione las columnas a exportar: " , font=("Times New Roman" , 13) , justify="center")
 
     Btn_Generate = Button(W_Export_Excel , text="Exportar" , font=("Times New Roman" , 13) , width=20 , command=lambda: Export_Table_In_Excel(W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column , Path.get() , Columns_To_Export , File_Name.get()))
     Btn_Generate.pack(side=BOTTOM)
@@ -60,7 +60,7 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
             Checkbox_1.place(x=20 , y=y_pos)
             Columns_To_Export[key] = Checked_Checkbox_1
 
-        Label_Columns_To_Export.place(x=240 , y=130)
+        Label_Columns_To_Export.place(x=200 , y=130 , width=300)
         W_Export_Excel.geometry(f"700x450+430+270")
 
     W_Export_Excel.resizable(False , False)

@@ -280,7 +280,7 @@ def Change_Key(dictionary, old_key, new_key):
     return {clave if clave != old_key else new_key: valor for clave, valor in dictionary.items()}
 
 def Export_Table_In_Excel(
-        Main_Window , Results_From_Single_Column , Results_From_Multiple_Columns , Type_Of_Variable_Single_Column , Type_Of_Variable_Multiple_Column, 
+        W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Columns , Type_Of_Variable_Single_Column , Type_Of_Variable_Multiple_Column, 
         Route , Columns_To_Export , File_Name = ""
     ):
     try:
@@ -296,7 +296,8 @@ def Export_Table_In_Excel(
         messagebox.showerror("Error" , f"Hubo un error al exportar el Excel\n{e}")
     else:
         messagebox.showinfo("Sucess" , f"Excel exportado correctamente a {Route}")
-        Main_Window.destroy()
+        W_Export_Excel.quit()
+        W_Export_Excel.destroy()
 
 def For_Single_Column_Data(Results_From_Single_Column , Type_Of_Variable , Route , File_Name = ""):
     Export = Export_Data(Results_From_Single_Column , Type_Of_Variable , Route , File_Name)

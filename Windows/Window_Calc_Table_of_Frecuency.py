@@ -498,6 +498,8 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     def Back_to_main_window():
         Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
+        Window_Frecuences_Table.grab_release()
+        Window_Frecuences_Table.quit()
         Window_Frecuences_Table.destroy()
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")

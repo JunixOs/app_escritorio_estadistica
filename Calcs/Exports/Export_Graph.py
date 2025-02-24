@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 from tkinter import messagebox
 
-def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Path , dpi , Format , Bar_Title , Pie_Title , Boxplot_Title , **kwargs):
+def Export_Graph_As_Image(W_S_Graph , W_Export_Graph , Graphs , File_Name , File_Path , dpi , Format , Bar_Title , Pie_Title , Boxplot_Title , **kwargs):
     dpi = int(dpi)
     time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     Is_Checked = False
@@ -102,7 +102,8 @@ def Export_Graph_As_Image(W_S_Graph , Root_Window , Graphs , File_Name , File_Pa
 
         Reply = messagebox.askquestion("Success" , f"Las imagenes fueron exportadas con exito a\n{File_Path}\n¿Desea salir de la ventana de exportacion?")
         if(Reply == "yes"):
-            Root_Window.destroy()
+            W_Export_Graph.quit()
+            W_Export_Graph.destroy()
 
             W_S_Graph.state(newstate="normal")
             W_S_Graph.lift()

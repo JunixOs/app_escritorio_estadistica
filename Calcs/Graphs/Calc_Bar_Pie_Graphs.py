@@ -146,4 +146,4 @@ class Draw_Graph_for_Each_Variable:
 
             return figure_bars
         else:
-            raise Exception("Error al procesar los datos")
+            raise Exception("Error al procesar los datos.")
