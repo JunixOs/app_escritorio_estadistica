@@ -29,7 +29,7 @@ Al importar multiples columnas de un archivo .xlsx y al calcular la tabla de fre
 ## Caracteristicas
 Algunas caracteristicas importantes de StatPhi son:
 * Trabaja con variables cuantitativas y cualitativas.
-* Posibilidad de importar datos de un archivo Excel (.xlsx) externo, desde datos correspondientes a una sola columna hasta un maximo de 5 columnas de datos.
+* Posibilidad de importar datos de un archivo Excel (.xlsx) externo, correspondientes a una o varias columnas.
 * Obten un archivo Excel con la(s) tabla(s) de frecuencias generada.
 * Muestra un grafico sobre la distribucion de frecuencias.
 * Obten las imagenes de los graficos en baja o alta calidad (hasta 1200 DPI).

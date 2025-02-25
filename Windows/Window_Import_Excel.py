@@ -1,3 +1,5 @@
+from Window_Progress_Bar import W_Progress_Bar
+
 from tkinter import *
 import os
 from tkinter import filedialog
@@ -5,11 +7,12 @@ from tkinter import messagebox
 from tkinter import ttk
 import pandas as pd # type: ignore
 import openpyxl
-from openpyxl.utils import column_index_from_string , get_column_letter
+from openpyxl.utils import column_index_from_string
+import threading
 import string
 
 class TreeviewFrame(ttk.Frame):
-    def __init__(self, *args, **kwargs):
+    def __init__(self , *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hscrollbar = ttk.Scrollbar(self, orient=HORIZONTAL)
         self.vscrollbar = ttk.Scrollbar(self, orient=VERTICAL)
@@ -23,6 +26,9 @@ class TreeviewFrame(ttk.Frame):
         self.vscrollbar.config(command=self.treeview.yview)
         self.vscrollbar.pack(side=RIGHT, fill=Y)
         self.treeview.pack(fill="both" , expand=True)
+
+        self.Progress_Bar = None
+        self.Root_Window = None
 
     def Has_Rows(self):
         return len(self.treeview.get_children()) > 0
@@ -70,6 +76,10 @@ class TreeviewFrame(ttk.Frame):
                     values = tuple([index + 1] + row.tolist())
                     self.treeview.insert("" , "end" , values=values)
 
+        self.Progress_Bar.Close_Progress_Bar()
+
+        messagebox.showinfo("Success" , "Datos procesados con exito.\nYa puede salir de la ventana de importacion.")
+
     def Load_Excel_File(self , File_Path , Sheet_Number):
         if(File_Path):
             self.data = pd.ExcelFile(File_Path)
@@ -104,7 +114,9 @@ class TreeviewFrame(ttk.Frame):
         for (index, row) in data.iterrows():
             values = tuple([index + 2] + row.tolist())
             self.treeview.insert("", "end", values=values)
-        
+
+        self.Progress_Bar.Close_Progress_Bar()
+    
 def Select_File(Path , Preview , Sheet_Number):
     Path_File = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
     if Path_File:
@@ -113,11 +125,14 @@ def Select_File(Path , Preview , Sheet_Number):
             Path.set(Path_File)
         else:
             Path.set(Path_File)
+
         Load_Excel_To_Preview(Path , Sheet_Number , Preview)
 
 def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
     if(Path):
         try:
+            Preview.Progress_Bar.Start_Progress_Bar("Cargando excel, esto podria tomar un momento...")
+
             if (not os.path.exists(Path.get())):
                 Path.set("")
                 raise Exception("El archivo Excel no existe en la ruta especificada.")
@@ -126,8 +141,9 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
                 Sheet_Number.set(1)
                 raise Exception("Numero de hoja no valido, solo valores enteros")
 
-            Preview.Load_Excel_File(Path.get() , Sheet_Number)
+            threading.Thread(target= lambda: Preview.Load_Excel_File(Path.get() , Sheet_Number)).start()
         except Exception as e:
+            Preview.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
 def Import_Data_From_Single_Column(File_Path , Widget_Sheet_Number , column , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Single_Column):
@@ -197,7 +213,6 @@ def Import_Data_From_Single_Column(File_Path , Widget_Sheet_Number , column , st
     Data_From_Widget_Entry.set(f"Columna Importada: {Excel.columns[0]}")
 
 def Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , start_column , end_column , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Multiple_Columns):
-    
     if(Data_From_Widget_Entry):
         Data_From_Widget_Entry.set("")
 
@@ -261,9 +276,11 @@ def Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , start_co
 
     Data_From_Widget_Entry.set(text)
 
-def Process_File_Data(W_Import_Excel , File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Input_Data , Checked_Import_Multiple_Columns , Data_From_Single_Column , Data_From_Multiple_Columns):
+def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Input_Data , Checked_Import_Multiple_Columns , Data_From_Single_Column , Data_From_Multiple_Columns):
     """ Separar en diferentes ventanas, uno para importar de un .xlsx y otro para importar de un .txt """
     try:
+        Preview.Progress_Bar.Start_Progress_Bar()
+
         Sheet_Number = Widget_Sheet_Number.get()
         if(not File_Path.get()):
             raise Exception("No se ha ingresado la ruta del archivo.")
@@ -297,25 +314,22 @@ def Process_File_Data(W_Import_Excel , File_Path , Widget_Sheet_Number , Cell_Ra
                         raise Exception("Seleccionaste una celda individual, no es un rango válido.")
                     raise Exception("No se permite seleccionar datos de una sola columna.")
                 
-                Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , column_start , column_end , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Multiple_Columns)
+                threading.Thread(target= lambda: Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , column_start , column_end , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Multiple_Columns)).start()
             case False:
                 if column_start == column_end:
                     if start_row == end_row:
                         raise Exception("Seleccionaste una celda individual, no es un rango válido.")
                 else:
                     raise Exception("Solo se permite seleccionar datos de una sola columna.")
-                Import_Data_From_Single_Column(File_Path , Widget_Sheet_Number , column_start , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Single_Column)
+                threading.Thread(target= lambda: Import_Data_From_Single_Column(File_Path , Widget_Sheet_Number , column_start , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Single_Column)).start()
             case _:
                 raise Exception("Hubo un error al realizar la importacion.")
 
     except (FileNotFoundError , Exception) as e:
+        Preview.Progress_Bar.Close_Progress_Bar()
         messagebox.showerror("Error" , f"{e}")
     else:
         Input_Data.config(state="disabled")
-        Reply = messagebox.askquestion("Success" , "Datos procesados con exito.\n¿Deseea salir de la ventana de importacion? ")
-        if(Reply == "yes"):
-            W_Import_Excel.quit()
-            W_Import_Excel.destroy()
 
 def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns):
     if __name__ == "__main__":
@@ -335,6 +349,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     Cell_Range = StringVar(W_Import_Excel)
     Sheet_Number = IntVar(W_Import_Excel)
     Import_Multiple_Colums = BooleanVar(W_Import_Excel)
+    Progress_Bar = W_Progress_Bar(W_Import_Excel)
 
     Text_Input_Path_File = Label(W_Import_Excel , text="Ingrese la ruta del archivo: " , bg="#d1e7d2" , font=("Times New Roman" , 12))
     Text_Input_Path_File.place(x=20 , y=340)
@@ -359,6 +374,8 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     Cells_Range.place(x=210 , y=440)
 
     Table_Preview_Data = TreeviewFrame(W_Import_Excel)
+    Table_Preview_Data.Progress_Bar = Progress_Bar
+    Table_Preview_Data.Root_Window = W_Import_Excel
     Table_Preview_Data.pack(fill=BOTH)
     Table_Preview_Data.treeview.config(height=13)
     Table_Preview_Data.treeview.config(columns=("1", "2" ,"3", "4", "5" , "6") , show="headings")
@@ -371,7 +388,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     for a in range(1 , 7):
         Table_Preview_Data.treeview.column(f"{a}" , anchor="center" , width=106 , stretch=True)
 
-    Btn_Process_Data = Button(W_Import_Excel , text="Procesar Archivo" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(W_Import_Excel , Path , Sheet_Number , Cell_Range , Table_Preview_Data , Data_From_Widget_Entry , Input_Data , Import_Multiple_Colums.get() , Data_From_Single_Column , Data_From_Multiple_Columns))
+    Btn_Process_Data = Button(W_Import_Excel , text="Procesar Archivo" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Path , Sheet_Number , Cell_Range , Table_Preview_Data , Data_From_Widget_Entry , Input_Data , Import_Multiple_Colums.get() , Data_From_Single_Column , Data_From_Multiple_Columns))
     Btn_Process_Data.pack(side=BOTTOM)
 
     W_Import_Excel.resizable(False,False)

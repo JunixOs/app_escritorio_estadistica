@@ -210,7 +210,7 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
 
     Label_Input_Páth = Label(W_Export_Graph , text="Ruta de destino: " , font=("Times New Roman" , 13) , bg="#E4DBD5")
     Label_Input_Páth.place(x=20 , y=60)
-    Input_Path = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=Path , width=58)
+    Input_Path = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=Path , width=58 , state="readonly")
     Input_Path.place(x=200 , y=60)
     Btn_Examine = Button(W_Export_Graph , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_Path(W_Export_Graph , Path) , bg="#F3F3E9")
     Btn_Examine.place(x=40 , y=90)
@@ -243,7 +243,7 @@ def W_For_Single_Column_Data(Father_Window , Graphs):
 
     if("boxplot_graph" in Graphs):
         Checked_Export_Boxplot.set(False)
-        Export_Boxplot = Checkbutton(W_Export_Graph , text="Exportar grafico de cajas" , font=("Times New Roman" , 13) , variable=Checked_Export_Boxplot , command=Checked_Boxplot)
+        Export_Boxplot = Checkbutton(W_Export_Graph , text="Exportar grafico de cajas" , font=("Times New Roman" , 13) , variable=Checked_Export_Boxplot , command=Checked_Boxplot , bg="#E7E4C1")
         Export_Boxplot.place(x=350 , y=440)
     else:
         Checked_Export_Boxplot.set(True)
