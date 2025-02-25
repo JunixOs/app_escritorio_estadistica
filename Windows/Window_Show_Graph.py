@@ -11,6 +11,7 @@ from tkinter import ttk
 from Calcs.Graphs.Calc_Bar_Pie_Graphs import Draw_Graph_for_Each_Variable
 from Calcs.Graphs.Calc_Boxplot import Draw_Boxplot_For_Single_Column_Data
 from Window_Export_Graph import Create_Windows_Export_Graphs
+from Window_Create_Multiple_Graphs import Create_Window_Multiple_Graphs
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def Change_Key(dictionary, old_key, new_key):
@@ -278,11 +279,12 @@ def W_For_Single_Colum_Data(Father_Window , Results_From_Single_Column , Precisi
     if("boxplot_graph" in Widgets):
         Checkbox_Boxplot_Graph = Checkbutton(W_Show_Graph , text="Grafico de cajas" , font=("Times New Roman" , 13) , variable=Checked_Boxplot_Graph , command=Only_Check_Boxplot_Graph)
         Checkbox_Boxplot_Graph.place(x=60 , y=380)
+        
 
     Btn_Export_Graph = Button(W_Show_Graph , text="Exportar Graficos" , font=("Times New Roman" , 13) , width=15 , command= lambda: Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Column , {}))
     Btn_Export_Graph.place(x=90 , y=440)
 
-    Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24 , justify="center")
+    Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24 , justify="center" , command= lambda: Create_Window_Multiple_Graphs(W_Show_Graph))
     Btn_Create_And_Export_Multiple_Graphs.place(x=50 , y=480)
 
     W_Show_Graph.resizable(False , False)
@@ -409,12 +411,12 @@ def W_For_Multiple_Column_Data(Father_Window , Results_From_Multiple_Columns , P
     Checkbox_Pie_Graph.place(x=60 , y=320)
 
     Checkbox_Boxplot_Graph = Checkbutton(W_Show_Graph , text="Grafico de cajas" , font=("Times New Roman" , 13) , variable=Checked_Boxplot_Graph , command=Only_Check_Boxplot_Graph)
-
+    Display_Checkbox_Boxplot(Column_Name[0])
 
     Btn_Export_Graph = Button(W_Show_Graph , text="Exportar Graficos" , font=("Times New Roman" , 13) , width=15 , command= lambda: Create_Windows_Export_Graphs(W_Show_Graph , Graphs , {} , Results_From_Multiple_Columns))
     Btn_Export_Graph.place(x=90 , y=440)
 
-    Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24 , justify="center")
+    Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24 , justify="center" , command= lambda: Create_Window_Multiple_Graphs(W_Show_Graph))
     Btn_Create_And_Export_Multiple_Graphs.place(x=50 , y=500)
 
     W_Show_Graph.resizable(False , False)

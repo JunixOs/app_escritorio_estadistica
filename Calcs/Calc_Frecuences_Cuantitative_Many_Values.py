@@ -39,11 +39,8 @@ def Calc_Intervals(Min , C , Max , m , Precision):
                 Acumulate=Max
             if(Acumulate<Max and a==m-1 and b==1):
                 Acumulate=Max
-            
-            if(Precision!=0):
-                Arr_Intervals[a][b] = round(Acumulate , Precision)
-            else:
-                Arr_Intervals[a][b] = round(Acumulate)
+
+            Arr_Intervals[a][b] = round(Acumulate , Precision)
 
     return Arr_Intervals
 

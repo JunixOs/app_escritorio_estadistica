@@ -18,13 +18,20 @@ def Calc_Median_Me(n , Arr_fi , Arr_Fi , Arr_Intervals , C):
             position_Fi = a
             break
     if(position_Fi == 0):
-        return Arr_Intervals[position_Fi][0] + (((n/2)-Arr_Fi[position_Fi])/Arr_fi[position_Fi])*C
+        return Arr_Intervals[position_Fi][0] + (((n/2)- 0 )/Arr_fi[position_Fi])*C
     elif(position_Fi > 0):
         return Arr_Intervals[position_Fi][0] + (((n/2)-Arr_Fi[position_Fi-1])/Arr_fi[position_Fi])*C
     else:
         raise Exception("No se pudo calcular la Mediana para los datos agrupados.")
     
 def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C):
+    """ 
+        ==============================================================================================
+        La moda para datos agrupados se calcula en base al mayor fi (frecuencia relativa simple), si 
+        en caso este estuviera en uno de los extremos de la tabla de frecuencias, al inicio o al
+        ultimo, el valor del fi posterior o siguiente se considera como 0 (cero).
+        ==============================================================================================
+    """
     Max_fi = max(Arr_fi)
     Position_Modal_Class = []
     Mo = []
@@ -35,10 +42,10 @@ def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C):
         for a in Position_Modal_Class:
             if(a == len(Arr_fi) - 1):
                 d1 = Arr_fi[a] - Arr_fi[a - 1]
-                d2 = Arr_fi[a]
+                d2 = Arr_fi[a] - 0
                 Mo.append(Arr_Intervals[a][0] + (d1/(d1 + d2))*C)
             elif(a == 0):
-                d1 = Arr_fi[a]
+                d1 = Arr_fi[a] - 0
                 d2 = Arr_fi[a] - Arr_fi[a + 1]
                 Mo.append(Arr_Intervals[a][0] + (d1/(d1 + d2))*C)
             else:

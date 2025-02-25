@@ -49,7 +49,7 @@ class Draw_Graph_for_Each_Variable:
         return figure_bars
 
     def Draw_Pie(self , Copy_Data , Variable_Of_Frecuency , Variable_To_Access):
-
+        """ Modificar para que los datos se muestren de mejor manera. """
         figure_pie = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
         ax_pie = figure_pie.add_subplot(111)
 
@@ -68,10 +68,6 @@ class Draw_Graph_for_Each_Variable:
             pctdistance=0.85,   # Distancia de los porcentajes del centro
             wedgeprops={"edgecolor": "black"},
         )
-
-        for i, text in enumerate(texts):
-            angle = angles[i] - (values[i] / 2)  # Ajustar la posición de la etiqueta
-            text.set_rotation(angle)  # Rotar la etiqueta según su ángulo
 
         ax_pie.set_facecolor('lightgray')
         ax_pie.set_title(self.Pie_Title)

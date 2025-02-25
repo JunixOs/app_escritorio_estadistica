@@ -26,7 +26,7 @@ class TreeviewFrame(ttk.Frame):
         self.vscrollbar = ttk.Scrollbar(self, orient=VERTICAL)
         self.treeview = ttk.Treeview(
             self,
-            yscrollcommand=self.vscrollbar.set
+            yscrollcommand=self.vscrollbar.set,
         )
         self.vscrollbar.config(command=self.treeview.yview)
         self.vscrollbar.pack(side=RIGHT, fill=Y)
@@ -100,8 +100,17 @@ class Process_Column_Of_Data:
         self.Table_Frecuences.treeview.config(height=13)
 
         for a in range(1 , 12):
-            self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=118)
-
+            if(a == 1):
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=60 , stretch=False)
+            elif(a > 1 and a < 5):
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=145 , stretch=False)
+            elif(a == 6):
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=90 , stretch=False)
+            elif(a >= 10 and a <= 11):
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=118 , stretch=False)
+            else:
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=118 , stretch=False)
+    
     def Put_Data_On_Table_For_Cuant_Grouped_Data(self):
         Variables = self.Results["Variables_Cuant_For_Many_Values"]
         Frecuences = self.Results["Frecuences_Cuant_For_Many_Values"]
@@ -116,13 +125,13 @@ class Process_Column_Of_Data:
                         Frecuences["Intervals"][a][0], 
                         Frecuences["Intervals"][a][1], 
                         Frecuences["Groups"][a], 
-                        round(Frecuences["xi"][a] , self.Precision),
+                        f"{Frecuences['xi'][a]:.{self.Precision}f}",
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],
-                        round(Frecuences["hi"][a] , self.Precision),
-                        round(Frecuences["Hi"][a] , self.Precision),
-                        f"{round(Frecuences['hi_percent'][a] , self.Precision)}%",
-                        f"{round(Frecuences['Hi_percent'][a] , self.Precision)}%",)
+                        f"{Frecuences['hi'][a]:.{self.Precision}f}",
+                        f"{Frecuences['Hi'][a]:.{self.Precision}f}",
+                        f"{Frecuences['hi_percent'][a]:.{self.Precision}f}%",
+                        f"{Frecuences['Hi_percent'][a]:.{self.Precision}f}%",)
                 ,tags=("font_arial_10",))
 
             self.Table_Frecuences.treeview.insert(
@@ -147,7 +156,7 @@ class Process_Column_Of_Data:
             self.Table_Frecuences.treeview.item(last_item, tags=("last_row",))
 
             for col in self.Table_Frecuences.treeview["columns"]:
-                    self.Table_Frecuences.treeview.column(col, anchor="center")
+                    self.Table_Frecuences.treeview.column(col, anchor="center" , stretch=False)
 
     def Table_For_Cuant_Not_Grouped_Data(self):
         self.Table_Frecuences.treeview.config(columns=("1", "2" ,"3", "4", "5", "6", "7") , show="headings")
@@ -179,10 +188,10 @@ class Process_Column_Of_Data:
                         Frecuences["xi"][a],
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],
-                        round(Frecuences["hi"][a] , self.Precision),
-                        round(Frecuences["Hi"][a] , self.Precision),
-                        f"{round(Frecuences['hi_percent'][a] , self.Precision)}%",
-                        f"{round(Frecuences['Hi_percent'][a] , self.Precision)}%",) , tags=("font_arial_10",))
+                        f"{Frecuences['hi'][a]:.{self.Precision}f}",
+                        f"{Frecuences['Hi'][a]:.{self.Precision}f}",
+                        f"{Frecuences['hi_percent'][a]:.{self.Precision}f}%",
+                        f"{Frecuences['Hi_percent'][a]:.{self.Precision}f}%",) , tags=("font_arial_10",))
             self.Table_Frecuences.treeview.insert(
                 "" , END , values=(
                     "Total",
@@ -229,10 +238,10 @@ class Process_Column_Of_Data:
                         Frecuences["ai"][a],
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],
-                        round(Frecuences["hi"][a] , self.Precision),
-                        round(Frecuences["Hi"][a] , self.Precision),
-                        f"{round(Frecuences['hi_percent'][a] , self.Precision)}%",
-                        f"{round(Frecuences['Hi_percent'][a] , self.Precision)}%",) , tags=("font_arial_10",))
+                        f"{Frecuences['hi'][a]:.{self.Precision}f}",
+                        f"{Frecuences['Hi'][a]:.{self.Precision}f}",
+                        f"{Frecuences['hi_percent'][a]:.{self.Precision}f}%",
+                        f"{Frecuences['Hi_percent'][a]:.{self.Precision}f}%",) , tags=("font_arial_10",))
             self.Table_Frecuences.treeview.insert(
                 "" , END , values=(
                     "Total",
@@ -299,36 +308,31 @@ class Process_Column_Of_Data:
     
     def Label_SM_For_Grouped_Data(self , S_Measures):
         self.Destroy_Labels()
-        if(self.Precision >=3 and self.Precision<5):
-            Precision = 2
-        elif(self.Precision>=5 and self.Precision<7):
-            Precision = 5
-        elif(self.Precision>=7 and self.Precision<=8):
-            Precision = 7
+
         b=0
         for key,value in S_Measures.items():
             if(b < 3):
-                lab = Label(self.Root_Window , text=f"{key}\n{round(value , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Root_Window , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
             elif(b == 3):
                 if(len(value) > 1):
                     sub=1
                     String = ""
                     for a in range(0 , len(value)):
                         if(a >= 3 or a == len(value) - 1):
-                            String += f"Mo_{sub}: {round(value[a] , Precision)}"
+                            String += f"Mo_{sub}: {value[a]:.{self.Precision}f}"
                             break
                         else:
-                            String += f"Mo_{sub}: {round(value[a] , Precision)}\n"
+                            String += f"Mo_{sub}: {value[a]:.{self.Precision}f}\n"
                         sub += 1
                     lab = Label(self.Root_Window , text=f"{key}\n{String}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
 
                 else:
-                    lab = Label(self.Root_Window , text=f"{key}\nMo: {round(value[0] , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                    lab = Label(self.Root_Window , text=f"{key}\nMo: {value[0]:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
 
             elif(b < 6):
-                lab = Label(self.Root_Window , text=f"{key}\n{round(value , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Root_Window , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
             else:
-                lab = Label(self.Root_Window , text=f"{key}\n{round(value , Precision)}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Root_Window , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
             self.Labels.append(lab)
             b +=1
 
@@ -393,7 +397,7 @@ class Process_Column_Of_Data:
                 for a in range(0 , 3):
                     self.Table_Quartil.treeview.insert(
                         "", END , values=(
-                            f"Q_{a+1} = {round(Quantiles['Cuartil'][a] , self.Precision)}",
+                            f"Q_{a+1} = {Quantiles['Cuartil'][a]:.{self.Precision}f}",
                         ))
 
             for col in self.Table_Quartil.treeview["columns"]:
@@ -401,7 +405,7 @@ class Process_Column_Of_Data:
 
     def Table_For_Deciles(self):
         self.Table_Decil.treeview.config(columns=("1") , show="headings")
-        self.Table_Decil.treeview.heading("1" , text="Deciles (Q_k)")
+        self.Table_Decil.treeview.heading("1" , text="Deciles (D_k)")
 
         self.Table_Decil.treeview.config(height=6)
 
@@ -421,7 +425,7 @@ class Process_Column_Of_Data:
                 for a in range(0 , 9):
                     self.Table_Decil.treeview.insert(
                         "", END , values=(
-                            f"Q_{a+1} = {round(Quantiles['Decil'][a] , self.Precision)}",
+                            f"D_{a+1} = {Quantiles['Decil'][a]:.{self.Precision}f}",
                         ))
 
             for col in self.Table_Decil.treeview["columns"]:
@@ -429,7 +433,7 @@ class Process_Column_Of_Data:
 
     def Table_For_Percentiles(self):
         self.Table_Percentil.treeview.config(columns=("1") , show="headings")
-        self.Table_Percentil.treeview.heading("1" , text="Percentiles (Q_k)")
+        self.Table_Percentil.treeview.heading("1" , text="Percentiles (P_k)")
 
         self.Table_Percentil.treeview.config(height=6)
 
@@ -449,7 +453,7 @@ class Process_Column_Of_Data:
                 for a in range(0 , 99):
                     self.Table_Percentil.treeview.insert(
                         "", END , values=(
-                            f"Q_{a+1} = {round(Quantiles['Percentil'][a] , self.Precision)}",
+                            f"P_{a+1} = {Quantiles['Percentil'][a]:.{self.Precision}f}",
                         ))
 
             for col in self.Table_Percentil.treeview["columns"]:

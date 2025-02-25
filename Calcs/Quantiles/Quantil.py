@@ -7,13 +7,17 @@ def Calc_Quantile_For_Grouped_Data(N_Quantile , Data , Intervals , Arr_fi , Arr_
     n = len(Data)
     for k in range(1 , N_Quantile):
         P = (k*n)/N_Quantile
+
         pos = None
         for a in range(0 , len(Arr_Fi)):
             if(Arr_Fi[a] >= P):
                 pos = a
                 break
 
-        Arr_Quantile.append(Intervals[pos][0] + ((P - Arr_Fi[pos - 1])/Arr_fi[pos])*C)
+        if(pos == 0):
+            Arr_Quantile.append(Intervals[pos][0] + ((P - 0)/Arr_fi[pos])*C)
+        else:
+            Arr_Quantile.append(Intervals[pos][0] + ((P - Arr_Fi[pos - 1])/Arr_fi[pos])*C)
 
     return Arr_Quantile
 
