@@ -179,6 +179,9 @@ def W_For_Single_Colum_Data(Father_Window , Results_From_Single_Column , Precisi
     def Back(W_Show_Graph):
         Widgets.clear()
         W_Show_Graph.grab_release()
+        for widget in W_Show_Graph.winfo_children():
+            widget.destroy()
+    
         W_Show_Graph.quit()
         W_Show_Graph.destroy()
 
@@ -294,6 +297,8 @@ def W_For_Multiple_Column_Data(Father_Window , Results_From_Multiple_Columns , P
 
     def Back(W_Show_Graph):
         Widgets.clear()
+        for widget in W_Show_Graph.winfo_children():
+            widget.destroy()
         W_Show_Graph.grab_release()
         W_Show_Graph.quit()
         W_Show_Graph.destroy()
@@ -346,7 +351,7 @@ def W_For_Multiple_Column_Data(Father_Window , Results_From_Multiple_Columns , P
     def Only_Check_Pie_Graph():
         if((Checked_Pie_Graph.get() and Checked_Bar_fi.get()) or (Checked_Pie_Graph.get() and Checked_Bar_hi.get()) or (Checked_Pie_Graph.get() and Checked_Bar_hi_percent.get()) or (Checked_Pie_Graph.get() and Checked_Boxplot_Graph.get())):
             Checked_Bar_fi.set(False)
-            Checked_Bar_fi.set(False)
+            Checked_Bar_hi.set(False)
             Checked_Bar_hi_percent.set(False)
             Checked_Boxplot_Graph.set(False)
         Display_Graphs(None)

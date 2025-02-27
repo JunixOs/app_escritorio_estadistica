@@ -6,8 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Calcs.Exports.Export_Excel import Export_Table_In_Excel
 from tkinter import *
 from tkinter import filedialog
-from tkinter import ttk
-
+    
 def Select_File(Path):
     Path_File = filedialog.askdirectory(title="Seleccione una carpeta")
     if Path_File:
