@@ -35,12 +35,12 @@ class Widget_Input_Name_For_Graphs:
             self.Input_Name_Boxplot_Graph = None
     
     def Display_Widgets(self):
-        self.Input_Name_Bar_Graph.place(x=200 , y=500)
+        self.Input_Name_Bar_Graph.place(x=200 , y=520)
 
-        self.Input_Name_Píe_Graph.place(x=200 , y=550)
+        self.Input_Name_Píe_Graph.place(x=200 , y=570)
 
         if(self.Input_Name_Boxplot_Graph):
-            self.Input_Name_Boxplot_Graph.place(x=200 , y=600)
+            self.Input_Name_Boxplot_Graph.place(x=200 , y=620)
 
     def Hidden_Widgets(self):
         self.Input_Name_Bar_Graph.place_forget()
@@ -169,7 +169,7 @@ class Checkboxes_For_Export_Graphs(Widget_Input_Name_For_Graphs):
             self.Checkbox_Export_Boxplot = Checkbutton(self.W_Export_Graph , text="Exportar grafico de cajas" , font=("Times New Roman" , 13) , variable=self.Checked_Export_Boxplot , command=self.Check_Boxplot , bg="#E7E4C1")
         else:
             self.Checkbox_Export_Boxplot = None
-            self.Checked_Export_Boxplot.set(False)
+            self.Checked_Export_Boxplot.set(True)
 
         self.Dictionary_Checkboxes = dict([
             ("All" , [self.Checkbox_Export_All , self.Checked_Export_All]),
@@ -182,17 +182,17 @@ class Checkboxes_For_Export_Graphs(Widget_Input_Name_For_Graphs):
         ])
 
     def Display_Widgets(self):
-        self.Checkbox_Export_All.place(x=310 , y=240)
-        self.Checkbox_Export_All_Bar_Graphs.place(x=350 , y=270)
+        self.Checkbox_Export_All.place(x=310 , y=260)
+        self.Checkbox_Export_All_Bar_Graphs.place(x=350 , y=290)
 
-        self.Checkbox_Export_bar_fi.place(x=380 , y=300)
-        self.Checkbox_Export_bar_hi.place(x=380 , y=330)
-        self.Checkbox_Export_bar_hi_percent.place(x=380 , y=360)
+        self.Checkbox_Export_bar_fi.place(x=380 , y=320)
+        self.Checkbox_Export_bar_hi.place(x=380 , y=350)
+        self.Checkbox_Export_bar_hi_percent.place(x=380 , y=380)
 
-        self.Checkbox_Export_pie.place(x=350 , y=410)
+        self.Checkbox_Export_pie.place(x=350 , y=430)
 
         if(self.Checkbox_Export_Boxplot):
-            self.Checkbox_Export_Boxplot.place(x=350 , y=440)
+            self.Checkbox_Export_Boxplot.place(x=350 , y=460)
 
         Widget_Input_Name_For_Graphs.Display_Widgets(self)
 
@@ -224,8 +224,8 @@ class Widget_Combobox_For_DPI_And_Format():
         self.Input_Format.set(self.Formats[0])
 
     def Display_Widgets(self):
-        self.Input_dpi.place(x=250 , y=127)
-        self.Input_Format.place(x=800 , y=17)
+        self.Input_dpi.place(x=250 , y=147)
+        self.Input_Format.place(x=800 , y=37)
 
     def Hidden_Widgets(self):
         self.Input_dpi.place_forget()
@@ -309,35 +309,35 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
     Section_1.place(x=0 , y=0)
 
     Label_Input_File_Name = Label(W_Export_Graph , text="Nombre de la Imagen: " , font=("Times New Roman" , 13) , bg="#E4DBD5")
-    Label_Input_File_Name.place(x=20 , y=20)
+    Label_Input_File_Name.place(x=20 , y=40)
     Input_File_Name = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=File_Name , width=58)
-    Input_File_Name.place(x=200 , y=20)
+    Input_File_Name.place(x=200 , y=40)
     Input_File_Name.focus()
 
     Label_Input_Páth = Label(W_Export_Graph , text="Ruta de destino: " , font=("Times New Roman" , 13) , bg="#E4DBD5")
-    Label_Input_Páth.place(x=20 , y=60)
+    Label_Input_Páth.place(x=20 , y=80)
     Input_Path = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=Path , width=58 , state="readonly")
-    Input_Path.place(x=200 , y=60)
+    Input_Path.place(x=200 , y=80)
     Btn_Examine = Button(W_Export_Graph , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_Path(W_Export_Graph , Path , Btn_Examine) , bg="#F3F3E9")
-    Btn_Examine.place(x=40 , y=90)
+    Btn_Examine.place(x=40 , y=110)
 
     Label_Input_dpi = Label(W_Export_Graph ,text="Resolucion de la imagen (DPI): \n96 resolucion estandar \n>300 alta resolucion" , font=("Times New Roman" , 13) , justify=LEFT , bg="#E4DBD5")
-    Label_Input_dpi.place(x=20 , y=130)
+    Label_Input_dpi.place(x=20 , y=150)
 
     Section_2 = Label(W_Export_Graph , bg="#E7E4C1" , width=129 , height=32 , borderwidth=2 , relief="solid")
     Section_2.place(x=0 , y=214)
 
     Texto_Exportar_Graficos = Label(W_Export_Graph , text="Seleccione los graficos que exportara" , font=("Times New Roman" , 13) , bg="#E7E4C1")
-    Texto_Exportar_Graficos.place(x=310 , y=219)
+    Texto_Exportar_Graficos.place(x=310 , y=239)
 
     Text_Change_Name_Bar_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de barras: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
-    Text_Change_Name_Bar_Graph.place(x=20 , y=490)
+    Text_Change_Name_Bar_Graph.place(x=20 , y=510)
 
     Text_Change_Name_Pie_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de pastel: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
-    Text_Change_Name_Pie_Graph.place(x=20 , y=540)
+    Text_Change_Name_Pie_Graph.place(x=20 , y=560)
 
     Text_Change_Name_Boxplot = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de cajas: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
-    Text_Change_Name_Boxplot.place(x=20 , y=590)
+    Text_Change_Name_Boxplot.place(x=20 , y=610)
 
     Btn_Export_Graph = Button(W_Export_Graph , text="Descargar Graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5")
     Btn_Export_Graph.place(x=300 , y=660)
@@ -351,6 +351,8 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
         Btn_Export_Graph.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Widgets_W_Export_Graph))
 
     elif(Results_From_Multiple_Columns):
+        Label_Select_Column = Label(W_Export_Graph , text="Seleccione la columna: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1") 
+        Label_Select_Column.place(x=20 , y=10)
         Widgets_W_Export_Graph = None
         There_Are_Boxplot = [True if "boxplot_graph" in value else False for value in Graphs.values()]
 
@@ -366,7 +368,7 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
         Select_Column["values"] = Columns_Name
         Select_Column.set(Columns_Name[0])
         Select_Column.bind('<<ComboboxSelected>>' , Display_Widgets_Acoording_Column_Name)
-        Select_Column.place(x=10 , y=10)
+        Select_Column.place(x=200 , y=10)
 
         Display_Widgets_Acoording_Column_Name()
     else:
@@ -375,10 +377,6 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
 
     W_Export_Graph.resizable(False , False)
     W_Export_Graph.mainloop()
-    """ if(Results_From_Single_Column != {}):
-        W_For_Single_Column_Data(Father_Window , Graphs)
-    elif(Results_From_Multiple_Columns != {}):
-        W_For_Mutiple_Column_Data(Father_Window , Graphs) """
 
 def W_For_Single_Column_Data(Father_Window , Graphs):
 

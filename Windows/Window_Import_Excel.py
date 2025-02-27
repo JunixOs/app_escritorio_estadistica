@@ -332,6 +332,14 @@ def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , D
         messagebox.showerror("Error" , f"{e}")
 
 def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns):
+    def Back():
+        for widget in W_Import_Excel.winfo_children():
+            widget.destroy()
+        W_Import_Excel.grab_release()
+        W_Import_Excel.quit()
+        W_Import_Excel.destroy()
+
+        Father_Window.lift()
     if __name__ == "__main__":
         W_Import_Excel = Tk()
     else:
@@ -344,6 +352,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     W_Import_Excel.title("Seleccionar Archivo")
     W_Import_Excel.config(bg="#d1e7d2")
     W_Import_Excel.iconphoto(False , Icon)
+    W_Import_Excel.protocol("WM_DELETE_WINDOW" , Back)
     
     Path = StringVar(W_Import_Excel)
     Cell_Range = StringVar(W_Import_Excel)

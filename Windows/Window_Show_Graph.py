@@ -117,7 +117,6 @@ def Generate_Graphs(Root_Window , Results_From_Single_Column , Results_From_Mult
                     bar_hi_percent = Graph.Draw_Graph("hi_percent")
                     if("Frecuences_Cuant_For_Many_Values" in value):
                         boxplot_graph = Draw_Boxplot_For_Single_Column_Data(value["Variables_Cuant_For_Many_Values"]["Data_List"] , key)
-                        Graphs["boxplot_graph"] = boxplot_graph
                         Graphs[f"{key}"] = {
                             "bar_fi" : bar_fi,
                             "bar_hi" : bar_hi,
@@ -127,7 +126,6 @@ def Generate_Graphs(Root_Window , Results_From_Single_Column , Results_From_Mult
                         }
                     elif("Frecuences_Cuant_Normal_Extended" in value):
                         boxplot_graph = Draw_Boxplot_For_Single_Column_Data(value["Variables_Cuant_Normal_Extended"]["Data_List"] , key)
-                        Graphs["boxplot_graph"] = boxplot_graph
                         Graphs[f"{key}"] = {
                             "bar_fi" : bar_fi,
                             "bar_hi" : bar_hi,

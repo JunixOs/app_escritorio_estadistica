@@ -13,7 +13,7 @@ Image_Right_Section.subsample(10)
 Icon = PhotoImage(file="Images/icon.png")
 
 Main_Window.geometry("1240x700+135+100")
-Main_Window.title("StatPhi beta v1.7")
+Main_Window.title("StatPhi beta v1.8")
 Main_Window.config(bg="#9DAEC6")
 Main_Window.iconphoto(False , Icon)
 

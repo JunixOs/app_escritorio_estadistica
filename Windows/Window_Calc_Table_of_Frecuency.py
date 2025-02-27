@@ -502,12 +502,15 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     def Back_to_main_window():
         Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
+        for widget in Window_Frecuences_Table.winfo_children():
+            widget.destroy()
+
         Window_Frecuences_Table.grab_release()
         Window_Frecuences_Table.quit()
         Window_Frecuences_Table.destroy()
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("StatPhi beta v1.7")
+        Main_Window.title("StatPhi beta v1.8")
         Main_Window.lift()
 
     def Display_Results_By_Column_Name(Event):
