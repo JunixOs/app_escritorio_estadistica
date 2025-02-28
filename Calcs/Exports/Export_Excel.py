@@ -117,7 +117,7 @@ class Export_Data:
 
                     if cell.value is not None and Type_Of_Data == "Cuantitative_Grouped":
                         Old_Text = str(cell.value)
-                        Old_Text = Old_Text.replace("[","").replace("]","").replace(",","").replace(" "," - ")
+                        Old_Text = Old_Text.replace("[","").replace("]","").replace(",","").replace(" "," - ").replace("np.float64(","").replace(")","")
 
                         if(row != Worksheet.max_row):
                             New_Text = "[ " + Old_Text + " >"

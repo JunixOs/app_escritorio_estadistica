@@ -275,7 +275,7 @@ def Main_Function(In):
                             break
 
                 n = len(Data)
-                m = round(1 + 3.222*log10(n))
+                m = round(1 + 3.322*log10(n))
                 if(m<5):
                     Calc_For_Classes = False
                 else:

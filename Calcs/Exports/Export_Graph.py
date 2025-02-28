@@ -2,12 +2,15 @@ from datetime import datetime
 import os
 from tkinter import messagebox
 
-def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , File_Path , Extra_Info , **kwargs):
+def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , File_Path , Extra_Info , Multiple_Columns , **kwargs):
     dpi = int(dpi)
     time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     Is_Checked = False
+    Checkboxes_Values = {}
 
-    
+    """ if(Multiple_Columns):
+        for key , value in Extra_Info.items():
+            Checkboxes_Values[f"{key}"] = value. """
 
     for a in kwargs.values():
         if(a):
