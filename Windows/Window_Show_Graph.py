@@ -52,17 +52,18 @@ def Generate_Graphs(Root_Window , Results_From_Single_Column , Results_From_Mult
                 bar_fi , pie_graph = Graph.Draw_Graph("fi")
                 bar_hi = Graph.Draw_Graph("hi")
                 bar_hi_percent = Graph.Draw_Graph("hi_percent")
+
+                Graphs["bar_fi"] = bar_fi
+                Graphs["bar_hi"] = bar_hi
+                Graphs["bar_hi_percent"] = bar_hi_percent
+                Graphs["pie_graph"] = pie_graph
+                
                 if("Frecuences_Cuant_For_Many_Values" in Copy_Data):
                     boxplot_graph = Draw_Boxplot_For_Single_Column_Data(Copy_Data["Variables_Cuant_For_Many_Values"]["Data_List"] , Data_Column_Name)
                     Graphs["boxplot_graph"] = boxplot_graph
                 elif("Frecuences_Cuant_Normal_Extended" in Copy_Data):
                     boxplot_graph = Draw_Boxplot_For_Single_Column_Data(Copy_Data["Variables_Cuant_Normal_Extended"]["Data_List"] , Data_Column_Name)
                     Graphs["boxplot_graph"] = boxplot_graph
-
-                Graphs["bar_fi"] = bar_fi
-                Graphs["bar_hi"] = bar_hi
-                Graphs["bar_hi_percent"] = bar_hi_percent
-                Graphs["pie_graph"] = pie_graph
             
             Widget_bar_fi = FigureCanvasTkAgg(Graphs["bar_fi"] , master=Root_Window)
             Widget_bar_fi.draw()

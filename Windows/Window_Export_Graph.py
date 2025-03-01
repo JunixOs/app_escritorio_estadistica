@@ -287,6 +287,10 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
         Selection = Select_Column.get()
         Hidden_All_Widgets()
         Collection_Widgets_W_Export_Graph[f"{Selection}"].Display_All_Widgets()
+        if("boxplot_graph" in Graphs[f"{Selection}"]):
+            Text_Change_Name_Boxplot.place(x=20 , y=610)
+        else:
+            Text_Change_Name_Boxplot.place_forget()
 
     W_Export_Graph = Toplevel(W_Show_Graph)
     W_Show_Graph.state(newstate="withdraw")
@@ -304,6 +308,7 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
     Path.set("")
     Columns_Name = []
     Collection_Widgets_W_Export_Graph = {}
+    Collection_Checkboxes = {}
     
     Section_1 = Label(W_Export_Graph , bg="#E4DBD5" , width=128 , height=14 , borderwidth=2 , relief="solid")
     Section_1.place(x=0 , y=0)
@@ -337,21 +342,30 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
     Text_Change_Name_Pie_Graph.place(x=20 , y=560)
 
     Text_Change_Name_Boxplot = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de cajas: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
-    Text_Change_Name_Boxplot.place(x=20 , y=610)
 
     Btn_Export_Graph = Button(W_Export_Graph , text="Descargar Graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5")
     Btn_Export_Graph.place(x=300 , y=660)
     if(Results_From_Single_Column):
+        if(len(Results_From_Single_Column) == 1):
+            Variable_Name , value = next(iter(Results_From_Single_Column.items()))
+        else:
+            Variable_Name = ""
         There_Are_Boxplot = "boxplot_graph" in Graphs
+
+        if(There_Are_Boxplot):
+            Text_Change_Name_Boxplot.place(x=20 , y=610)
+        else:
+            Text_Change_Name_Boxplot.place_forget()
+
         Widgets_W_Export_Graph = Widgets_For_W_Export_Graphs(W_Export_Graph , There_Are_Boxplot)
 
         Widgets_W_Export_Graph.Create_All_Widgets()
         Widgets_W_Export_Graph.Display_All_Widgets()
 
-        Btn_Export_Graph.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Widgets_W_Export_Graph))
+        Btn_Export_Graph.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Widgets_W_Export_Graph , Widgets_W_Export_Graph.Dictionary_Checkboxes , Variable_Name))
 
     elif(Results_From_Multiple_Columns):
-        Label_Select_Column = Label(W_Export_Graph , text="Seleccione la columna: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1") 
+        Label_Select_Column = Label(W_Export_Graph , text="Seleccione la columna: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E4DBD5") 
         Label_Select_Column.place(x=20 , y=10)
         Widgets_W_Export_Graph = None
         There_Are_Boxplot = [True if "boxplot_graph" in value else False for value in Graphs.values()]
@@ -364,6 +378,7 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
             Widgets_W_Export_Graph.Create_All_Widgets()
 
             Collection_Widgets_W_Export_Graph[f"{key}"] = Widgets_W_Export_Graph
+            Collection_Checkboxes[f"{key}"] = Widgets_W_Export_Graph.Dictionary_Checkboxes
 
         Select_Column["values"] = Columns_Name
         Select_Column.set(Columns_Name[0])
@@ -371,6 +386,8 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
         Select_Column.place(x=200 , y=10)
 
         Display_Widgets_Acoording_Column_Name()
+
+        Btn_Export_Graph.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Collection_Widgets_W_Export_Graph , Collection_Checkboxes))
     else:
         raise Exception("No se pudieron encontrar los resultados.")
 

@@ -266,6 +266,7 @@ def Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , start_co
                 Concat_Columns.append(column_i)
 
             data = pd.concat(Concat_Columns , axis=1 , ignore_index=True)
+            """ PERMITIR LA IMPORTACION DE CELDAS COMO C1:C1001;E1:F1001 """
             data.columns = Columns_Name
 
         else:
