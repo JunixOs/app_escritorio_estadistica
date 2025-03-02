@@ -11,6 +11,13 @@ from openpyxl.utils import column_index_from_string
 import threading
 import re
 
+def index_to_string(i):
+    Letter = ''
+    Temp = i
+    while Temp >= 0:
+        Letter = chr(Temp % 26 + 65) + Letter
+        Temp = Temp // 26 - 1
+    return Letter
 class TreeviewFrame(ttk.Frame):
     def __init__(self , *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -110,15 +117,13 @@ class TreeviewFrame(ttk.Frame):
         self.treeview.heading("N° fila/columna", text="N° fila/columna")
         self.treeview.column("N° fila/columna" , anchor="center" , width=120 , stretch=False)
         for i , col in enumerate(data.columns):
-            Col_Letter = ''
-            Temp = i
-            while Temp >= 0:
-                Col_Letter = chr(Temp % 26 + 65) + Col_Letter
-                Temp = Temp // 26 - 1
+            Col_Letter = index_to_string(i)
             self.treeview.heading(f"{i}" , text=Col_Letter)
             self.treeview.column(f"{i}" , anchor="center" , width=120 , stretch=False)
 
         # Insertar los datos en el Treeview
+        val = tuple([1] + data.columns.tolist())
+        self.treeview.insert("" , "end" , values=val)
         for (index, row) in data.iterrows():
             values = tuple([index + 2] + row.tolist())
             self.treeview.insert("", "end", values=values)
@@ -183,8 +188,6 @@ def Import_Data_From_Single_Column(File_Path , Widget_Sheet_Number , column , st
         else:
             data = Excel.iloc[start_row-2:end_row-1]
 
-        data.dropna()
-
         if data.isnull().all().all():
             raise Exception("Los datos seleccionados están vacíos o contienen solo valores nulos. Por favor, intente con otra columna")
         
@@ -241,6 +244,10 @@ def Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , start_co
                 if(col_start > total_columns or col_end > total_columns):
                     raise Exception("Se intento acceder a una columna no valida, intente nuevamente.")
                 Columns.append(c[0])
+                if(col_end - col_start > 1):
+                    for col in range(col_start , col_end - 1):
+                        Letter = index_to_string(col)
+                        Columns.append(Letter)
                 Columns.append(c[1])
             Unique_Columns = list(set(Columns))
             String_Columns = ",".join(Unique_Columns)
@@ -252,23 +259,29 @@ def Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , start_co
             Columns_Name = Excel.columns
             Concat_Columns = []
 
-            for i in range(0 , len(Ranges["Rows"])):
-                col = list(set(Ranges["Columns"][i]))
-                if(len(col) == 1):
-                    col = column_index_from_string(col[0]) - 1
-                else:
-                    col = [column_index_from_string(c) - 1 for c in col]
-                
-                if(Ranges["Rows"][i][0] == 1):
-                    column_i = Excel.iloc[Ranges["Rows"][i][0]-1:Ranges["Rows"][i][1]-1 , i]
-                else:
-                    column_i = Excel.iloc[Ranges["Rows"][i][0]-2:Ranges["Rows"][i][1]-1 , i]
-                Concat_Columns.append(column_i)
+            try:
+                n = 0
+                for i in range(0 , len(Ranges["Rows"])):
+                    prev_n = n
+                    if(column_index_from_string(Ranges["Columns"][i][1]) - column_index_from_string(Ranges["Columns"][i][0]) >= 1):
+                        n += column_index_from_string(Ranges["Columns"][i][1]) - column_index_from_string(Ranges["Columns"][i][0])
+                        col = [val for val in range(prev_n , n+1)]
+                        n += 1
+                    else:
+                        col = n
+                        n += 1
+                    
+                    if(Ranges["Rows"][i][0] == 1):
+                        column_i = Excel.iloc[Ranges["Rows"][i][0]-1:Ranges["Rows"][i][1]-1 , col]
+                    else:
+                        column_i = Excel.iloc[Ranges["Rows"][i][0]-2:Ranges["Rows"][i][1]-1 , col]
+                    column_i.dropna(inplace=True)
+                    Concat_Columns.append(column_i)# El * desempaqueta directamente todos los valores de la lista
 
-            data = pd.concat(Concat_Columns , axis=1 , ignore_index=True)
-            """ PERMITIR LA IMPORTACION DE CELDAS COMO C1:C1001;E1:F1001 """
-            data.columns = Columns_Name
-
+                data = pd.concat(Concat_Columns , axis=1 , ignore_index=True)
+                data.columns = Columns_Name
+            except Exception:
+                raise Exception("Algo salio mal, asegurese de que el rango de celdas ingresado no tenga intersecciones.\nCorrecto: A1:D1001;F1:H1001 \nIncorrecto: A1:D1001;C1:E1001")
         else:
             if(start_row > total_rows or end_row > total_rows):
                 raise Exception("Se intento acceder a una fila no valida, intente nuevamente.")

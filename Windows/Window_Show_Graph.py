@@ -247,6 +247,7 @@ def W_For_Single_Colum_Data(Father_Window , Results_From_Single_Column , Precisi
     else:
         """ Hacer la ventana mas grande para que los graficos quepan mejor, modficiar el tamaño al exportar los graficos """
         """ Reducir a una sola unica funcion que administre todo. """
+        """ Eliminar el grafico para hi, ya que no aporta nada relevante. """
         W_Show_Graph = Toplevel(Father_Window)
         W_Show_Graph.title("Ver graficos")
         W_Show_Graph.geometry("1000x700+270+100")
