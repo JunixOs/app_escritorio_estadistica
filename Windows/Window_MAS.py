@@ -103,7 +103,7 @@ def Create_Window_MAS(Father_Window=None):
     Input_N.place(x=230 , y=100)
     Input_N.config(state="disabled")
 
-    Text_Input_Confidence_Level = Label(Window_MAS , text="Nivel de confianza (1-alfa): ", font=("Times New Roman" , 13))
+    Text_Input_Confidence_Level = Label(Window_MAS , text="Nivel de confianza (1 - α): ", font=("Times New Roman" , 13))
     Text_Input_Confidence_Level.place(x=40 , y=140)
     Input_Confidence_Level = Entry(Window_MAS , font=("Courier New" , 13), width=26 , textvariable=Confidence_Level)
     Input_Confidence_Level.place(x=230 , y=140)
