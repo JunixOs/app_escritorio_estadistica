@@ -1,5 +1,5 @@
 # **StatPhi (Beta V1.8)**
-<div style="display:flex;justify-content:center;border-radius:50%;">
+<div style="display:flex;justify-content:center;border-radius:50%;margin: 0 auto;">
     <img src="./Images/icon.png" alt="Logo de StatPhi" width="200" style=""></img>
 </div>
 <br>
@@ -38,7 +38,7 @@ Al importar multiples columnas de un archivo `.xlsx` y al calcular la tabla de f
 
 ### ***Crear Tabla de Frecuencias***
 ![Ventana Calcular Tabla de Frecuencias](./Images/DEMO/Calc_Table_Frecuences_DEMO_1.png)
-<div>
+<div style="margin:0 auto;">
     <h3 style="text-align:center;font-size:14px;font-style:italic;">Variables Cuantitativas</h3>
     <div style="display:flex; flex-wrap:wrap;gap:15px;justify-content:center">
         <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Table.png" alt="Calculo con Variables Cuantitativas" width="200"></img>
@@ -87,11 +87,13 @@ Al importar multiples columnas de un archivo `.xlsx` y al calcular la tabla de f
         <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Table.png" alt="Tabla Para Multiples Variables de un Excel" width="200"></img>
         <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Graph.png" alt="Grafico Para Multiples Variables de un Excel" width="200"></img>
     </div>
+</div>
 
 ---
+
 ### ***Calcular Tamaño de Muestra***
 ![Ventana Calcular Tamaño de Muestra](./Images/DEMO/MAS_Calc_DEMO_1.png)
-<table>
+<table style="margin: 0 auto;">
     <tr>
         <th>Calculo de Tamaño de Muestra para una Poblacion Finita</th>
         <th>Calculo de Tamaño de Muestra para una Poblacion Infinita</th>
@@ -192,7 +194,7 @@ Ademas, deberas contar con las siguientes librerias de **python** (puedes usar `
 4. `openpyxl 3.1.5`
 5. `scipy 1.15.1`
 
-> [!WARNING] 
+> [!WARNING]
 > Si ya tienes librerias instaladas, es recomendable crear un entorno virtual para evitar conflictos con las diferentes librerias de tu sistema.
 
 ### ***Pasos para la Instalacion***

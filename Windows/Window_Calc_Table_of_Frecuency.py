@@ -58,6 +58,7 @@ class Process_Column_Of_Data:
         self.Labels = []
         self.Data_To_Analized = Data_To_Analized
         self.Precision = 3
+        self.Amplitude_N_Decimals = None
 
     def Calc_Results(self , Precision):
         self.Precision = Precision
@@ -68,6 +69,7 @@ class Process_Column_Of_Data:
 
         if(Results["Frecuences_Cuant_For_Many_Values"] != None):
             self.Type_Of_Variable = "Cuantitative_Grouped"
+            self.Amplitude_N_Decimals = Results["Variables_Cuant_For_Many_Values"]["C_Decimals_Number"]
         elif(Results["Frecuences_Cuant_Normal_Extended"] != None):
             self.Type_Of_Variable = "Cuantitative_Not_Grouped"
         elif(Results["Frecuences_Cuali_Normal_Extended"] != None):
@@ -112,6 +114,9 @@ class Process_Column_Of_Data:
                 self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=118 , stretch=False)
     
     def Put_Data_On_Table_For_Cuant_Grouped_Data(self):
+        if(self.Amplitude_N_Decimals == None):
+            raise Exception("Hubo un error al calcular la tabla de frecuencias.")
+
         Variables = self.Results["Variables_Cuant_For_Many_Values"]
         Frecuences = self.Results["Frecuences_Cuant_For_Many_Values"]
 
@@ -122,9 +127,9 @@ class Process_Column_Of_Data:
                 self.Table_Frecuences.treeview.insert(
                     "", END , values=(
                         a+1, 
-                        Frecuences["Intervals"][a][0], 
-                        Frecuences["Intervals"][a][1], 
-                        Frecuences["Groups"][a], 
+                        f"{Frecuences['Intervals'][a][0]:.{self.Amplitude_N_Decimals}f}", 
+                        f"{Frecuences['Intervals'][a][1]:.{self.Amplitude_N_Decimals}f}", 
+                        f"{Frecuences['Groups'][a]:.{self.Amplitude_N_Decimals}f}", 
                         f"{Frecuences['xi'][a]:.{self.Precision}f}",
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],

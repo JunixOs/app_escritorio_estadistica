@@ -64,8 +64,9 @@ def Calculate_Table_Cuantitative_For_Many_Values(Data , There_Are_Floats , m):
 
     if(not There_Are_Floats):
         C = round(R/m , 1)
-        Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , 1)
-        Arr_Groups = Cuant_Many_Values.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , 1)
+        C_N_Decimals = 1
+        Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Groups = Cuant_Many_Values.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
     else:
         N_Decimals_Most_Common = Cuant_Many_Values.Calc_Max_Decimal_Number(Data)
         C_N_Decimals = int(N_Decimals_Most_Common[0][0])
@@ -125,6 +126,7 @@ def Calculate_Table_Cuantitative_For_Many_Values(Data , There_Are_Floats , m):
         ("m" , m),
         ("C" , C),
         ("Is_Float" , There_Are_Floats),
+        ("C_Decimals_Number" , C_N_Decimals),
     ])
 
     Frecuences_Value = dict(
