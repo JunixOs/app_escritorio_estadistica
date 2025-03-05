@@ -746,7 +746,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
     Text_Input_Precision_Results.place(x=960 , y=135)
-    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=2 , textvariable=Precision , from_=3 , to=8 , increment=1 , font=("Courier New" , 13) , bg="#ffffff" , state="readonly" , command= lambda: Interact_Precision())
+    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=3 , textvariable=Precision , from_=3 , to=10 , increment=1 , font=("Courier New" , 13) , bg="#ffffff" , state="readonly" , command= lambda: Interact_Precision())
     Input_Precision_Results.place(x=1050 , y=135)
 
     Text_Column_Selection = Label(Window_Frecuences_Table , text="Seleccione el nombre de la columna: " , font=("Times New Roman", 13) , bg="#FEE1AB")
@@ -757,7 +757,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Btn_Generate_Excel.place(x=960 , y=210)
     Btn_Generate_Excel.config(state="disabled")
 
-    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Windows_Show_Graphs(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Graphs))
+    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Graphs))
     Btn_Show_Graph.place(x=1211 , y=210)
     Btn_Show_Graph.config(state="disabled")
 

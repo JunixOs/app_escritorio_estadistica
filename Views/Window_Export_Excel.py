@@ -39,7 +39,7 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
 
     Text_Input_Route = Label(W_Export_Excel , text="Ingrese la ruta de exportacion:" , font=("Times New Roman" , 13))
     Text_Input_Route.place(x=20 , y=60)
-    Input_Route = Entry(W_Export_Excel , font=("Courier New" , 13) , textvariable=Path , width=35)
+    Input_Route = Entry(W_Export_Excel , font=("Courier New" , 13) , textvariable=Path , width=35 , state="readonly")
     Input_Route.place(x=315 , y=60)
 
     Btn_Search_Route = Button(W_Export_Excel , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_File(Path))
