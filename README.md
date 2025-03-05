@@ -253,13 +253,13 @@ Aqui te encontraras con los siguientes elementos:
 
         - *Para multiples columnas de datos no consecutivas*: `A1:C1001;E1:E1001;G1:H1001`
 
-        > [!WARNING]
-        > Evite ingresar rangos de celdas como A1:C1001;B1:D1001.
+> [!WARNING]
+> Evite ingresar rangos de celdas como A1:C1001;B1:D1001.
 
     4. Finalmente, si no ocurre ningun error, podras ver los datos seleccionados en el cuadro de previsualizacion y en la ventana de calculo. Si lo deseas puedes salir de la ventana de importacion o corregir la seleccion actual.
 
-        > [!CAUTION]
-        > Dentro del Excel con los datos a importar, asegurese de que el formato de los datos sea correcto, que cada columna de datos cuente un nombre y que los datos se encuentren en la primera fila.
+> [!CAUTION]
+> Dentro del Excel con los datos a importar, asegurese de que el formato de los datos sea correcto, que cada columna de datos cuente un nombre y que los datos se encuentren en la primera fila.
 
 - **Mostrar Grafico**:
 
