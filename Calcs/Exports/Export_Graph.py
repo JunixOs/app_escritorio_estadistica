@@ -73,7 +73,7 @@ def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , F
         if(isinstance(Info_For_Export , dict)):
             Check_Checked = []
             for check in Checkboxes_Info.values():
-                Check_Checked.append(any([boolean for boolean in check]))
+                Check_Checked.append(any([boolean[1].get() for boolean in check.values()]))
 
             if(not any(Check_Checked)):
                 raise Exception("No se ha seleccionado un grafico para exportar")
