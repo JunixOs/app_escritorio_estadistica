@@ -6,8 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Calcs.Exports.Export_Excel import Export_Table_In_Excel
 from tkinter import *
 from tkinter import filedialog
-from tkinter import ttk
-
+    
 def Select_File(Path):
     Path_File = filedialog.askdirectory(title="Seleccione una carpeta")
     if Path_File:
@@ -17,7 +16,7 @@ def Select_File(Path):
         else:
             Path.set(Path_File)
 
-def Generate_Window_Export_Excel(Father_Window , Data_From_Single_Column , Data_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
+def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
     if __name__== "__main__":
         W_Export_Excel = Tk()
     else:
@@ -47,20 +46,20 @@ def Generate_Window_Export_Excel(Father_Window , Data_From_Single_Column , Data_
     Btn_Search_Route.place(x=100 , y=90)
 
     Columns_To_Export = {}
-    Label_Columns_To_Export = Label(W_Export_Excel , text="Seleccione la columna a exportar: " , font=("Times New Roman" , 13))
+    Label_Columns_To_Export = Label(W_Export_Excel , text="Seleccione las columnas a exportar: " , font=("Times New Roman" , 13) , justify="center")
 
-    Btn_Generate = Button(W_Export_Excel , text="Exportar" , font=("Times New Roman" , 13) , width=20 , command=lambda: Export_Table_In_Excel(W_Export_Excel , Data_From_Single_Column , Data_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column , Path.get() , Columns_To_Export , File_Name.get()))
+    Btn_Generate = Button(W_Export_Excel , text="Exportar" , font=("Times New Roman" , 13) , width=20 , command=lambda: Export_Table_In_Excel(W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column , Path.get() , Columns_To_Export , File_Name.get()))
     Btn_Generate.pack(side=BOTTOM)
 
-    if(Data_From_Multiple_Column != {}):
-        for b , key in enumerate(Data_From_Multiple_Column.keys()):
+    if(Results_From_Multiple_Column != {}):
+        for b , key in enumerate(Results_From_Multiple_Column.keys()):
             y_pos = 190 + b*30
             Checked_Checkbox_1 = BooleanVar(W_Export_Excel)
             Checkbox_1 = Checkbutton(W_Export_Excel , text=f"{key}" , font=("Times New Roman" , 13) , variable=Checked_Checkbox_1)
             Checkbox_1.place(x=20 , y=y_pos)
             Columns_To_Export[key] = Checked_Checkbox_1
 
-        Label_Columns_To_Export.place(x=240 , y=130)
+        Label_Columns_To_Export.place(x=200 , y=130 , width=300)
         W_Export_Excel.geometry(f"700x450+430+270")
 
     W_Export_Excel.resizable(False , False)

@@ -11,6 +11,8 @@ def Calc_Max_Decimal_Number(Numbers):
         Temp = str(Number)
         if "." in Temp:
             N_Decimals.append(len(Temp.split(".")[1]))
+        else:
+            N_Decimals.append(0)
 
     Ocurrences = collections.Counter(N_Decimals)
     return Ocurrences.most_common(1)
@@ -39,11 +41,8 @@ def Calc_Intervals(Min , C , Max , m , Precision):
                 Acumulate=Max
             if(Acumulate<Max and a==m-1 and b==1):
                 Acumulate=Max
-            
-            if(Precision!=0):
-                Arr_Intervals[a][b] = round(Acumulate , Precision)
-            else:
-                Arr_Intervals[a][b] = round(Acumulate)
+
+            Arr_Intervals[a][b] = round(Acumulate , Precision)
 
     return Arr_Intervals
 

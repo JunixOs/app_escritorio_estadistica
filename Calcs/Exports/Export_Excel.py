@@ -69,7 +69,7 @@ class Export_Data:
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"].font = Font(bold=True)
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"].alignment = Alignment(horizontal="center" , vertical="center")
 
-                WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"] = f"{S_Measures[Key_SM]}"
+                WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"] = S_Measures[Key_SM]
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"].alignment = Alignment(horizontal="center" , vertical="center")
             else:
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"] = f"{Key_SM}"
@@ -117,7 +117,7 @@ class Export_Data:
 
                     if cell.value is not None and Type_Of_Data == "Cuantitative_Grouped":
                         Old_Text = str(cell.value)
-                        Old_Text = Old_Text.replace("[","").replace("]","").replace(",","").replace(" "," - ")
+                        Old_Text = Old_Text.replace("[","").replace("]","").replace(",","").replace(" "," - ").replace("np.float64(","").replace(")","")
 
                         if(row != Worksheet.max_row):
                             New_Text = "[ " + Old_Text + " >"
@@ -127,77 +127,76 @@ class Export_Data:
                     
                     cell.font = Font(bold=True)
 
-    def Export_Excel_With_Single_Table_For_Cuant_Grouped_Data(self):
+    def Export_Excel_With_Single_Table(self):
         Full_Route = self.Create_Full_Route()
-
-        Copy_Data = copy.deepcopy(self.Data_To_Import["Frecuences_Cuant_For_Many_Values"])
-
-        Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
-        Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
-
-        Copy_Data = Change_Key(Copy_Data , "Intervals" , "[ Li - Ls >")
-
-        F_Cuant_For_Many_Values = pd.DataFrame(Copy_Data)
-
+        Key_Data_To_Import = None
+        Value_Data_To_Import = None
         with pd.ExcelWriter(Full_Route) as writer:
-            F_Cuant_For_Many_Values.to_excel(writer , sheet_name='Hoja1' , index=False , startcol=3 , startrow=3)
+            Workboox = writer.book
+            Worksheet_1 = Workboox.create_sheet("Hoja1")
 
-            workbook = writer.book  #Acceder al excel
-            worksheet_hoja1 = workbook['Hoja1']
-            
-            self.Align_And_Style_Values_In_Cells(worksheet_hoja1 , "Cuantitative_Grouped")
+            Start_Row = 3
+            if(len(self.Data_To_Import) == 1 and isinstance(self.Data_To_Import , dict)):
+                Key_Data_To_Import , Value_Data_To_Import = next(iter(self.Data_To_Import.items()))
+                Copy_Data = copy.deepcopy(Value_Data_To_Import)
+            else:
+                Copy_Data = copy.deepcopy(self.Data_To_Import)
 
-            self.Create_Row_Total(
-                worksheet_hoja1 , "D" ,["G" , Copy_Data["fi"]] , ["I" , Copy_Data["hi"]] , ["K" , Copy_Data["hi%"]]
-            )
+            S_Measures = None
+            if("Summary_Measures_For_Grouped_Data" in Copy_Data):
+                S_Measures = Copy_Data["Summary_Measures_For_Grouped_Data"]
+            elif("Summary_Measures_For_Not_Grouped_Data" in Copy_Data):
+                S_Measures = Copy_Data["Summary_Measures_For_Not_Grouped_Data"]
 
-            self.Adjust_Width(worksheet_hoja1)
+            if("Frecuences_Cuant_For_Many_Values" in Copy_Data):
+                Copy_Data =  Copy_Data["Frecuences_Cuant_For_Many_Values"]
+            elif("Frecuences_Cuant_Normal_Extended" in Copy_Data):
+                Copy_Data = Copy_Data["Frecuences_Cuant_Normal_Extended"]
+            elif("Frecuences_Cuali_Normal_Extended" in Copy_Data):
+                Copy_Data = Copy_Data["Frecuences_Cuali_Normal_Extended"]
 
-    def Export_Excel_With_Single_Table_For_Cuant_Not_Grouped_Data(self):
-        Copy_Data = copy.deepcopy(self.Data_To_Import["Frecuences_Cuant_Normal_Extended"])
+            Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
+            Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
+            if("Intervals" in Copy_Data):
+                Copy_Data = Change_Key(Copy_Data , "Intervals" , "[ Li - Ls >")
 
-        Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
-        Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
+            Data_Excel = pd.DataFrame(Copy_Data)
+            Data_Excel.to_excel(writer , sheet_name="Hoja1" , index=False , startrow=Start_Row , startcol=3)
 
-        F_Cuant_Norm_Extend = pd.DataFrame(Copy_Data)
+            if(Key_Data_To_Import):
+                Worksheet_1[f"C{Start_Row + 1}"] = f"Tabla para: \"{Key_Data_To_Import}\""
+                Worksheet_1[f"C{Start_Row + 1}"].font = Font(bold=True)
+                Worksheet_1[f"C{Start_Row + 1}"].alignment = Alignment(horizontal="center" , vertical="center")
 
-        with pd.ExcelWriter(self.Full_Route) as writer:
-            F_Cuant_Norm_Extend.to_excel(writer , sheet_name = 'Hoja1' , index=False , startcol=3 , startrow=3)
+            match(self.Type_Of_Variable):
+                case "Cuantitative_Grouped":
+                    self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable , Start_Row)
+                    self.Create_Row_Total(Worksheet_1 , "D" , ["G" , Copy_Data["fi"]] , ["I" , Copy_Data["hi"]] , ["K" , Copy_Data["hi%"]])
+                    self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
+                case "Cuantitative_Not_Grouped":
+                    self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable , Start_Row)
+                    self.Create_Row_Total(Worksheet_1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]])
+                    self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
+                case "Cualitative":
+                    self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable , Start_Row)
+                    self.Create_Row_Total(Worksheet_1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]])
+                case _:
+                    raise Exception("No se pudo identificar el tipo de variable del cual resultan la tabla a exportar")
 
-            workbook = writer.book  #Acceder al excel
-            worksheet_hoja1 = workbook['Hoja1'] #Acceder a Hoja 1
-
-            self.Align_And_Style_Values_In_Cells(worksheet_hoja1)
-
-            self.Create_Row_Total(
-                worksheet_hoja1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]]
-            )
-
-            self.Adjust_Width(worksheet_hoja1)
-    
-    def Export_Excel_With_Single_Table_For_Cualitative_Data(self):
-        Full_Route = self.Create_Full_Route()
-        Copy_Data = copy.deepcopy(self.Data_To_Import["Frecuences_Cuali_Normal_Extended"])
-
-        Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
-        Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
-
-        F_Cuali_Norm_Extend = pd.DataFrame(Copy_Data)
-
-        with pd.ExcelWriter(Full_Route) as writer:
-            F_Cuali_Norm_Extend.to_excel(writer , sheet_name='Hoja1' , index=False , startcol=3 , startrow=3)
-
-            workbook = writer.book  #Acceder al excel
-            worksheet_hoja1 = workbook['Hoja1']
-
-            self.Align_And_Style_Values_In_Cells(worksheet_hoja1)
-
-            self.Create_Row_Total(
-                worksheet_hoja1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]]
-            )
-
-            self.Adjust_Width(worksheet_hoja1)
-
+            Worksheet_1.auto_filter.ref = Worksheet_1.dimensions
+            for col in Worksheet_1.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if cell.value is not None:  # Verifica si el valor de la celda no es None
+                            cell_length = len(str(cell.value))
+                            if cell_length > max_length:
+                                max_length = cell_length
+                    except Exception:
+                        pass
+                adjusted_width = (max_length + 2)
+                Worksheet_1.column_dimensions[column].width = adjusted_width
 
     def Export_Excel_With_Multiple_Tables(self , Columns_To_Export):
         Full_Route = self.Create_Full_Route(True)
@@ -276,42 +275,34 @@ class Export_Data:
                 adjusted_width = (max_length + 2)
                 Worksheet_1.column_dimensions[column].width = adjusted_width
 
-    def Export_Excel_With_Single_Table(self):
-        match(self.Type_Of_Variable):
-            case "Cuantitative_Grouped":
-                self.Export_Excel_With_Single_Table_For_Cuant_Grouped_Data()
-            case "Cuantitative_Not_Grouped":
-                self.Export_Excel_With_Single_Table_For_Cuant_Not_Grouped_Data()
-            case "Cualitative":
-                self.Export_Excel_With_Single_Table_For_Cualitative_Data()
-
 def Change_Key(dictionary, old_key, new_key):
     """ No modifica el diccionarrio, sino que genera uno nuevo , pero con las claves moficiadas """
     return {clave if clave != old_key else new_key: valor for clave, valor in dictionary.items()}
 
 def Export_Table_In_Excel(
-        Main_Window , Data_From_Single_Column , Data_From_Multiple_Columns , Type_Of_Variable_Single_Column , Type_Of_Variable_Multiple_Column, 
+        W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Columns , Type_Of_Variable_Single_Column , Type_Of_Variable_Multiple_Column, 
         Route , Columns_To_Export , File_Name = ""
     ):
     try:
-        if(Data_From_Single_Column != {}):
-            For_Single_Column_Data( Data_From_Single_Column , Type_Of_Variable_Single_Column , Route , File_Name)
-        elif(Data_From_Multiple_Columns != {}):
+        if(Results_From_Single_Column != {}):
+            For_Single_Column_Data( Results_From_Single_Column , Type_Of_Variable_Single_Column , Route , File_Name)
+        elif(Results_From_Multiple_Columns != {}):
             if(all(value == False for value in Columns_To_Export)):
                 raise Exception("No se ha seleccionado ninguna columna a exportar.")
-            For_Multiple_Column_Data(Data_From_Multiple_Columns , Type_Of_Variable_Multiple_Column , Route , File_Name , Columns_To_Export)
+            For_Multiple_Column_Data(Results_From_Multiple_Columns , Type_Of_Variable_Multiple_Column , Route , File_Name , Columns_To_Export)
         else:
             raise Exception("No se encontraron los datos a exportar.")
     except Exception as e:
         messagebox.showerror("Error" , f"Hubo un error al exportar el Excel\n{e}")
     else:
         messagebox.showinfo("Sucess" , f"Excel exportado correctamente a {Route}")
-        Main_Window.destroy()
+        W_Export_Excel.quit()
+        W_Export_Excel.destroy()
 
-def For_Single_Column_Data(Data_From_Single_Column , Type_Of_Variable , Route , File_Name = ""):
-    Export = Export_Data(Data_From_Single_Column , Type_Of_Variable , Route , File_Name)
+def For_Single_Column_Data(Results_From_Single_Column , Type_Of_Variable , Route , File_Name = ""):
+    Export = Export_Data(Results_From_Single_Column , Type_Of_Variable , Route , File_Name)
     Export.Export_Excel_With_Single_Table()
 
-def For_Multiple_Column_Data(Data_From_Multiple_Columns , Type_Of_Variables , Route , File_Name , Columns_To_Export):
-    Exports = Export_Data(Data_From_Multiple_Columns , Type_Of_Variables , Route , File_Name)
+def For_Multiple_Column_Data(Results_From_Multiple_Columns , Type_Of_Variables , Route , File_Name , Columns_To_Export):
+    Exports = Export_Data(Results_From_Multiple_Columns , Type_Of_Variables , Route , File_Name)
     Exports.Export_Excel_With_Multiple_Tables(Columns_To_Export)

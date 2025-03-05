@@ -35,3 +35,6 @@ def Calc_Standard_Deviation(Variance):
 
 def Calc_Percentage_Coefficient_Variation(Standart_Variation , Arith_Average):
     return (Standart_Variation/Arith_Average)*100
+
+def Calc_Symmetry_Coefficient(Arith_Average , Me , S):
+    return 3*(Arith_Average - Me)/S
