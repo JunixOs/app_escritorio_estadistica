@@ -204,6 +204,19 @@ def Change_Key(dictionary, old_key, new_key):
 def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Results_From_Multiple_Columns , Precision , Graphs):
     """ Esta es la funcion principal del modulo """
     def Back(W_Show_Graph):
+        if(Results_From_Single_Column):
+            if(len(Results_From_Single_Column) == 1):
+                var_name , value = next(iter(Results_From_Single_Column.items()))
+                if("Frecuences_Cuant_For_Many_Values" in value or "Frecuences_Cuant_Normal_Extended" in value):
+                    Graphs.clear()
+            elif("Frecuences_Cuant_For_Many_Values" in Results_From_Single_Column or "Frecuences_Cuant_Normal_Extended" in Results_From_Single_Column):
+                Graphs.clear()
+
+        elif(Results_From_Multiple_Columns):
+            for var_name , value in Results_From_Multiple_Columns.items():
+                if("Frecuences_Cuant_For_Many_Values" in value or "Frecuences_Cuant_Normal_Extended" in value):
+                    Graphs[f"{var_name}"].clear()
+
         Widgets_Collection.clear()
         Checkboxes_Collection.clear()
         W_Show_Graph.grab_release()
@@ -225,7 +238,7 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
 
     W_Show_Graph = Toplevel(Father_Window)
     W_Show_Graph.title("Ver graficos")
-    W_Show_Graph.geometry("1000x700+270+100")
+    W_Show_Graph.geometry("1300x700+105+105")
     W_Show_Graph.grab_set()
     Icon = PhotoImage(file="Images/icon.png")
     W_Show_Graph.iconphoto(False , Icon)
@@ -243,10 +256,17 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
 
     try:
         if(Results_From_Single_Column):
+            Gen_Graphs = None
+            Gen_Widgets = None
             Results = copy.deepcopy(Results_From_Single_Column)
 
-            Gen_Graphs = Graphs_For_Frecuences(Results , Precision , None , False)
-            Gen_Graphs.Generate_Graphs(Graphs)
+            if(not Graphs):
+                if(len(Results_From_Single_Column) == 1):
+                    key , value = next(iter(Results.items()))
+                    Gen_Graphs = Graphs_For_Frecuences(value , Precision , key , False)
+                else:
+                    Gen_Graphs = Graphs_For_Frecuences(Results , Precision , None , False)
+                Gen_Graphs.Generate_Graphs(Graphs)
 
             Gen_Widgets = Widgets_For_Graphs(W_Show_Graph , Graphs , None , False)
             Gen_Widgets.Generate_Widgets(Widgets_Collection)
@@ -260,13 +280,24 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
         elif(Results_From_Multiple_Columns):
             Results = copy.deepcopy(Results_From_Multiple_Columns)
 
-            for key , value in Results.items():
+            if(Graphs):
+                There_Are_Graphics = [True if val else False for val in Graphs.values()]
+            else:
+                There_Are_Graphics = True if Graphs else False
+
+            for i , (key , value) in enumerate(Results.items()):
                 Gen_Graphs = None
                 Gen_Widgets = None
 
-                Gen_Graphs = Graphs_For_Frecuences(value , Precision , key , True)
-                Gen_Graphs.Generate_Graphs(Graphs)
-                print(Graphs)
+                match(isinstance(There_Are_Graphics , list)):
+                    case True:
+                        if(not There_Are_Graphics[i]):
+                            Gen_Graphs = Graphs_For_Frecuences(value , Precision , key , True)
+                            Gen_Graphs.Generate_Graphs(Graphs)
+                    case False:
+                        if(not There_Are_Graphics):
+                            Gen_Graphs = Graphs_For_Frecuences(value , Precision , key , True)
+                            Gen_Graphs.Generate_Graphs(Graphs)
 
                 Gen_Widgets = Widgets_For_Graphs(W_Show_Graph , Graphs[f"{key}"] , key , True)
                 Gen_Widgets.Generate_Widgets(Widgets_Collection)

@@ -56,9 +56,6 @@ def Conv_Data_To_Numbers(Data):
         ==============================================================================================
     """
     Data_Converted = Data
-
-    if(len(Data_Converted)<2):
-        raise ValueError("Se ingresaron muy pocos datos")
     
     Is_Float = False
     for n in range(0,len(Data_Converted)):
@@ -285,7 +282,7 @@ def Calculate_Results_Cualitative_Data(Data):
 
     return Variables_Values , Frecuences_Values
 
-def Main_Function(In):
+def Main_Function(In , Is_Continue , Repeated_Calc):
     """  
         ==============================================================================================
         Aqui se determina si los datos ingresados son cualitativos o cuantitativos, y se realizan los
@@ -318,6 +315,9 @@ def Main_Function(In):
                 if(isinstance(value , str)):
                     Is_Cuantitative = False
                     break
+        
+        if(len(Data) < 2):
+            raise Exception("Se ingresaron muy pocos datos.")
 
         match(Is_Cuantitative):
             case True:
@@ -329,23 +329,25 @@ def Main_Function(In):
                         if(int(a) != a):
                             Is_Float = True
                             break
+                Data.sort()
+                if(not Repeated_Calc):
+                    Arr_xi , Arr_fi = Cuant_Normal_Extended.Calc_fi_And_xi(Data)
 
-                n = len(Data)
-                m = round(1 + 3.322*log10(n))
-                if(m<5):
-                    Calc_For_Classes = False
-                else:
-                    Calc_For_Classes = True
-                
-                match(Calc_For_Classes):
+                    if(len(Arr_xi) > (1/4)*(len(Data))):
+                        Is_Continue[0].set(True)
+                        Is_Continue[1].config(state="disabled")
+                    else:
+                        Is_Continue[0].set(Is_Float)
+
+                match(Is_Continue[0].get()):
                     case True:
-                        Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data , Quantiles_For_Grouped_Data = Calculate_Results_Cuantitative_For_Grouped_Data(Data , Is_Float , m)
-                    case False:
-                        if(Is_Float):
-                            Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data , Quantiles_For_Grouped_Data = Calculate_Results_Cuantitative_For_Grouped_Data(Data , Is_Float , m)
-                        else:
+                        m = round(1 + (3.322*log10(len(Data))))
+                        if(m < 5):
                             Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
-
+                        else:
+                            Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data , Quantiles_For_Grouped_Data = Calculate_Results_Cuantitative_For_Grouped_Data(Data , Is_Float , m)
+                    case False:
+                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
             case False:
                 Variables_Cuali_Normal_Extended , Frecuences_Cuali_Normal_Extended = Calculate_Results_Cualitative_Data(Data)
             case _:
