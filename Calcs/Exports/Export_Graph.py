@@ -17,11 +17,12 @@ class Validations:
         return File_Path + File_Name
     
 class Exports(Validations):
-    def __init__(self , Graphs , File_Name , File_Path , Format , Resolution , Variable_Name , Bar_Title , Pie_Title , Boxplot_Title):
+    def __init__(self , Graphs , File_Name , File_Path , Format , Resolution , Size , Variable_Name , Bar_Title , Pie_Title , Boxplot_Title):
         self.Graphs = Graphs
         self.Full_Route = self.Validate_Route(File_Name , File_Path)
         self.Format = Format
         self.Resolution = Resolution
+        self.Size = Size
         self.Variable_Name = Variable_Name
         self.Extra_Info_Graph = ["fi" , "hi" , "hi%" , "pie"]
         self.Actual_Time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
@@ -32,10 +33,15 @@ class Exports(Validations):
             self.Extra_Info_Graph.append("boxplot")
             self.Graphs_Title.append(Boxplot_Title)
 
+        if(self.Size):
+            List_Size = self.Size.split("x")
+            self.Width_In_Inches = int(List_Size[0])/self.Resolution
+            self.Height_In_Inches = int(List_Size[1])/self.Resolution
+
     def Export_All(self):
         for i , graphs in enumerate(self.Graphs.values()):
             if(self.Variable_Name):
-                Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_para_" + self.Variable_Name + self.Actual_Time + self.Format
+                Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_para_" + self.Variable_Name + "_" + self.Actual_Time + self.Format
             else:
                 Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_" + self.Actual_Time + self.Format
             graphs.suptitle(f"{self.Graphs_Title[i]}")
@@ -62,7 +68,7 @@ class Exports(Validations):
             G_Name = self.Graphs_Title[4]
 
         if(self.Variable_Name):
-            Route_To_Export = self.Full_Route + "_" + E_Info_Graph + "_para_" + self.Variable_Name + self.Actual_Time + self.Format
+            Route_To_Export = self.Full_Route + "_" + E_Info_Graph + "_para_" + self.Variable_Name + "_" + self.Actual_Time + self.Format
         else:
             Route_To_Export = self.Full_Route + "_" + E_Info_Graph + "_" + self.Actual_Time + self.Format
         Graph.suptitle(f"{G_Name}")
@@ -84,7 +90,7 @@ def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , F
                     continue
 
                 Export = Exports(
-                    Graphs[f"{key}"] , File_Name , File_Path , I_Export.Input_Format.get() , int(I_Export.Input_dpi.get()) ,
+                    Graphs[f"{key}"] , File_Name , File_Path , I_Export.Input_Format.get() , int(I_Export.Input_dpi.get()) , I_Export.Input_Sizes.get() ,
                     key , I_Export.Name_Bar_Graph.get() , I_Export.Name_Pie_Graph.get() , I_Export.Name_Boxplot_Graph.get()
                 )
                 if(Checkboxes_Info[f"{key}"]["All"][1].get()):
@@ -111,7 +117,7 @@ def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , F
             if(not any(Checkboxes_Info)):
                 raise Exception("No se ha seleccionado un grafico para exportar")
             Export = Exports(
-                Graphs , File_Name , File_Path , Info_For_Export.Input_Format.get() , int(Info_For_Export.Input_dpi.get()) , 
+                Graphs , File_Name , File_Path , Info_For_Export.Input_Format.get() , int(Info_For_Export.Input_dpi.get()) , Info_For_Export.Input_Sizes.get() ,
                 Variable_Name_For_Single_Column , Info_For_Export.Name_Bar_Graph.get() , Info_For_Export.Name_Pie_Graph.get() ,
                 Info_For_Export.Name_Boxplot_Graph.get())
 

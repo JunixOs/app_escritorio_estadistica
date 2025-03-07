@@ -215,17 +215,22 @@ class Widget_Combobox_For_DPI_And_Format():
         self.W_Export_Graph = Root_Window
         self.Resolutions = [72 , 96 , 150 , 300 , 600 , 1200]
         self.Formats = [".jpg" , ".png" , ".svg"]
-    
+        self.Sizes_In_pX = ["980x700" , "1280x720" , "1920x1080" , "2560x1440"] # (Width x Height)
+
     def Create_Widgets(self):
-        self.Input_dpi = ttk.Combobox(self.W_Export_Graph , values=self.Resolutions , font=("Times New Roman", 13), state="readonly")
+        self.Input_dpi = ttk.Combobox(self.W_Export_Graph , values=self.Resolutions , font=("Times New Roman", 13), state="readonly" , width=5)
         self.Input_dpi.set(self.Resolutions[0])
+
+        self.Input_Sizes = ttk.Combobox(self.W_Export_Graph , values=self.Sizes_In_pX , font=("Times New Roman" , 13) , state="readonly" , width=10)
+        self.Input_Sizes.set(self.Sizes_In_pX[0])
 
         self.Input_Format = ttk.Combobox(self.W_Export_Graph , values=self.Formats , font=("Times New Roman", 13), state="readonly" , width=4)
         self.Input_Format.set(self.Formats[0])
 
     def Display_Widgets(self):
-        self.Input_dpi.place(x=250 , y=147)
-        self.Input_Format.place(x=800 , y=37)
+        self.Input_dpi.place(x=250 , y=150)
+        self.Input_Sizes.place(x=670 , y=150)
+        self.Input_Format.place(x=800 , y=39)
 
     def Hidden_Widgets(self):
         self.Input_dpi.place_forget()
@@ -328,6 +333,9 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
 
     Label_Input_dpi = Label(W_Export_Graph ,text="Resolucion de la imagen (DPI): \n96 resolucion estandar \n>300 alta resolucion" , font=("Times New Roman" , 13) , justify=LEFT , bg="#E4DBD5")
     Label_Input_dpi.place(x=20 , y=150)
+
+    Label_Input_Size = Label(W_Export_Graph , text="Tamaño de la imagen (px):\nOriginal 980x700" , font=("Times New Roman" , 13) , justify=LEFT , bg="#E4DBD5")
+    Label_Input_Size.place(x=470 , y=150)
 
     Section_2 = Label(W_Export_Graph , bg="#E7E4C1" , width=129 , height=32 , borderwidth=2 , relief="solid")
     Section_2.place(x=0 , y=214)

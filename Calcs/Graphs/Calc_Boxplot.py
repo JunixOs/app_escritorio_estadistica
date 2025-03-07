@@ -7,7 +7,7 @@ def Draw_Boxplot_For_Single_Column_Data(Data_List , Column_Name = None):
     else:
         Key = "Variable"
 
-    Figure_Boxplot , ax = plt.subplots(figsize=(680/96 , 700/96) , dpi=96)
+    Figure_Boxplot , ax = plt.subplots(figsize=(980/96 , 700/96) , dpi=96)
 
 
     sns.boxplot(data=Data_List , flierprops=dict(markerfacecolor='red', marker='o', markersize=8) , ax=ax)
@@ -35,7 +35,7 @@ class Draw_Boxplot_For_Multiple_Columns_Data:
         Figure_Boxplot , ax = plt.subplots(figsize=(680/96 , 700/96) , dpi=96)
 
         sns.boxplot(data=Arr_Data_List , flierprops=dict(markerfacecolor='red', marker='o', markersize=8) , ax=ax)
-        ax.set_title("Grafico de cajas")
+
         ax.set_ylabel("Valores")
 
         N_Columns = [n for n in range(0 , len(Arr_Data_List))]

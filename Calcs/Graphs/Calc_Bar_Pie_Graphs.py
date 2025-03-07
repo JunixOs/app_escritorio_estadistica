@@ -10,14 +10,14 @@ class Draw_Graph_for_Each_Variable:
         self.Data = Data
         self.Precision = Precision
 
-        self.Bar_Title = "Grafico de Barras"
+        self.Bar_Title = ""
 
-        self.Pie_Title = "Grafico de Pastel"
+        self.Pie_Title = ""
         self.Axis_x_Title = Axis_x_Title
         self.Axis_y_Title = None
 
         self.Fig_Height = pixels_to_inches(700)
-        self.Fig_Width = pixels_to_inches(680)
+        self.Fig_Width = pixels_to_inches(980)
 
     def Draw_Bars(self , Copy_Data , Variable_Of_Frecuency , Variable_To_Access):
         figure_bars = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=96)
@@ -63,7 +63,7 @@ class Draw_Graph_for_Each_Variable:
             autopct="%1.1f%%",
             startangle=90,
             labeldistance=1.1,  # Aleja las etiquetas de los centro
-            explode=[0.05]*len(values),  # Separar las porciones
+            explode=[0.08]*len(values),  # Separar las porciones
             shadow= False,
             pctdistance=0.85,   # Distancia de los porcentajes del centro
             wedgeprops={"edgecolor": "black"},

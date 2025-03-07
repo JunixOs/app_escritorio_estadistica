@@ -17,6 +17,12 @@ def Select_File(Path):
             Path.set(Path_File)
 
 def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
+    def Back():
+        for widget in W_Export_Excel.winfo_children():
+            widget.destroy()
+        W_Export_Excel.grab_release()
+        W_Export_Excel.quit()
+        W_Export_Excel.destroy()
     if __name__== "__main__":
         W_Export_Excel = Tk()
     else:
@@ -27,6 +33,7 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
     Icon = PhotoImage(file="Images/icon.png")
     W_Export_Excel.iconphoto(False , Icon)
     W_Export_Excel.title("Exportar Excel")
+    W_Export_Excel.protocol("WM_DELETE_WINDOW" , Back)
 
     File_Name = StringVar(W_Export_Excel)
     Path = StringVar(W_Export_Excel)
@@ -56,7 +63,11 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
             y_pos = 190 + b*30
             Checked_Checkbox_1 = BooleanVar(W_Export_Excel)
             Checkbox_1 = Checkbutton(W_Export_Excel , text=f"{key}" , font=("Times New Roman" , 13) , variable=Checked_Checkbox_1)
-            Checkbox_1.place(x=20 , y=y_pos)
+            if(b > 6):
+                y_pos -= 210
+                Checkbox_1.place(x=425 , y=y_pos)
+            else:
+                Checkbox_1.place(x=20 , y=y_pos)
             Columns_To_Export[key] = Checked_Checkbox_1
 
         Label_Columns_To_Export.place(x=200 , y=130 , width=300)
@@ -66,5 +77,12 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
     W_Export_Excel.mainloop()
 
 if __name__ == "__main__":
-    Generate_Window_Export_Excel(None , None , {"one": [1,2,3] , "two": [1 ,2]} , {} , {})
+    Generate_Window_Export_Excel(
+        None , 
+        None , 
+        {
+            "one": [1,2,3] , "two": [1 ,2] , "three": {1,2,3} , "four":[1,2,3,4] , "five":[1,2,3,4,5] , 
+            "six":[1,2,3,4,5,6] , "seven":[1,2,3,4,5,6,7] , "eight":[1,2,3,4,5,6,7,8] , "nine":[1,2,3,9]} , 
+        {} , 
+        {})
 
