@@ -30,15 +30,22 @@ def Calc_Quantile_For_Not_Grouped_Data(N_Quantile , Data):
     for k in range(1 , N_Quantile):
         Q_k = k*(n+1)/N_Quantile
         if(isinstance(Q_k , float)):
-            Pos_E1 = Data[math.floor(Q_k)]
+            Pos_E1 = math.floor(Q_k) - 1
             if(round(Q_k) == Pos_E1):
-                Pos_E2 = round(Q_k + 1)
+                Pos_E2 = round(Q_k + 1) - 1
             else:
-                Pos_E2 = round(Q_k)
+                Pos_E2 = round(Q_k) - 1
             
             e = Q_k - math.floor(Q_k)
-            Q_k = Data[Pos_E1] + (Data[Pos_E2] - Data[Pos_E1]) * e
-
-        Arr_Quantile.append(Data[Q_k - 1])
+            if(Pos_E2 >= n):
+                Q_k = Data[Pos_E1] + (Data[-1] - Data[Pos_E1]) * e
+            else:
+                Q_k = Data[Pos_E1] + (Data[Pos_E2] - Data[Pos_E1]) * e
+            Arr_Quantile.append(Q_k)
+        else:
+            if(Q_k >= n):
+                Arr_Quantile.append(Data[-1])
+            else:
+                Arr_Quantile.append(Data[Q_k - 1])
 
     return Arr_Quantile

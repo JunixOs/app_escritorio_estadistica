@@ -5,9 +5,17 @@ def Calc_Arithmetic_Average(n , arr_xi , arr_fi):
     return np.sum(arr_xi[pos]*arr_fi[pos] for pos in range(0 , len(arr_xi)))/n
 
 def Calc_Geometric_Average(n , Arr_xi , Arr_fi):
+    if(any(xi < 0 for xi in Arr_xi)):
+        return "Indeterminado"
+    elif(any(xi == 0 for xi in Arr_xi)):
+        return 0
+
     return 10**(np.sum(Arr_fi[pos] * math.log10(Arr_xi[pos]) for pos in range(0 , len(Arr_xi)))/n)
 
 def Calc_Armonic_Average(n , Arr_xi , Arr_fi):
+    if(any(xi == 0 for xi in Arr_xi)):
+        return "Indeterminado"
+
     return n/np.sum(Arr_fi[pos]/Arr_xi[pos] for pos in range(0 , len(Arr_xi)))
 
 def Calc_Median_Me(n , Arr_fi , Arr_Fi , Arr_Intervals , C):

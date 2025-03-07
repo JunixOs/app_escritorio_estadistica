@@ -5,10 +5,22 @@ def Calc_Arithmetic_Average(Data):
     return np.sum(Data)/len(Data)
 
 def Calc_Geometric_Average(Data):
-    return pow(np.prod(Data) , 1/len(Data))
+    if(any(x < 0 for x in Data)):
+        return "Indeterminado"
+    elif(any(xi == 0 for xi in Data)):
+        return 0
+
+    return np.exp(np.sum(np.log(Data))/len(Data))
 
 def Calc_Armonic_Average(Data):
-    return len(Data)/sum(1/value for value in Data)
+    Summa = 0
+    for value in Data:
+        if(value == 0):
+            return "Indeterminado"
+        else:
+            Summa += 1/value
+    X_h = len(Data)/Summa
+    return X_h
 
 def Calc_Median_Me(Data):
     Copy_Data = Data.copy()
