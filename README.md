@@ -1,4 +1,8 @@
 # **StatPhi (Beta V1.8)**
+[![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20Desarrollo-blue)]()
+[![Licencia](https://img.shields.io/github/license/JunixOs/app_escritorio_estadistica)]()
+[![Última actualización](https://img.shields.io/github/commit-activity/w/JunixOs/app_escritorio_estadistica/develop)]()
+
 <div style="display:flex;justify-content:center;border-radius:50%;margin: 0 auto;">
     <img src="./Images/icon.png" alt="Logo de StatPhi" width="200" style=""></img>
 </div>
@@ -11,11 +15,17 @@
 ## **Tabla de Contenidos**
 
 - [Descripcion](#descripcion)
+- [Licencia](#licencia)
 - [Caracteristicas](#features)
 - [Caracteristicas proximas](#features-to-add)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Instalacion](#instalacion)
 - [Guia de Uso](#guia-de-uso)
+
+---
+## Licencia
+
+Este proyecto está bajo la Licencia GNU GPLv3 - consulta el archivo [LICENSE](./LICENSE) para más detalles.
 
 ---
 
