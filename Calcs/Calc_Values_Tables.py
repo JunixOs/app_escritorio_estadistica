@@ -102,7 +102,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
             **********************************************************************************
         """
         N_Decimals_Most_Common = Cuant_Many_Values.Calc_Max_Decimal_Number(Data)
-        C_N_Decimals = int(N_Decimals_Most_Common[0][0])
+        C_N_Decimals = int(N_Decimals_Most_Common[0][0]) + 1
         C = round(R/m , C_N_Decimals)
 
         Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
@@ -333,7 +333,7 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                 if(not Repeated_Calc):
                     Arr_xi , Arr_fi = Cuant_Normal_Extended.Calc_fi_And_xi(Data)
 
-                    if(len(Arr_xi) > (1/4)*(len(Data))):
+                    if(len(Arr_xi) > (1/5)*(len(Data))):
                         Is_Continue[0].set(True)
                         Is_Continue[1].config(state="disabled")
                     else:

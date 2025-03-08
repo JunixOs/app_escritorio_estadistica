@@ -441,7 +441,7 @@ class Labels_Summary_Measures:
 
 
 class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Quantiles_Table , Checkbox_Is_Continue):
-    def __init__(self , W_Calc_Table_Frec , Data_To_Analized , Precision):
+    def __init__(self , W_Calc_Table_Frec , Data_To_Analized , Precision , Variable_Name , Multiple_Columns = False):
         self.W_Calc_Table_Frec = W_Calc_Table_Frec
 
         self.Data_To_Analized = Data_To_Analized
@@ -449,6 +449,8 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
         self.Results = {}
         self.Type_Of_Variable = None
         self.Amplitude_N_Decimals = None
+        self.Variable_Name = Variable_Name
+        self.Multiple_Columns = Multiple_Columns
 
         Table_Of_Frecuences.__init__(self, W_Calc_Table_Frec)
 
@@ -484,6 +486,22 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             self.Create_Widgets_For_Results(Repeated_Calc)
             self.Put_Data_On_Widgets_For_Results()
             self.Display_Widgets_For_Results()
+            self.Update_Global_Results_And_Type_Of_Variable()
+
+    def Update_Global_Results_And_Type_Of_Variable(self):
+        global Global_Results_From_Multiple_Columns , Global_Results_From_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Type_Of_Variable_Single_Column
+        if(self.Variable_Name and self.Multiple_Columns):
+            Global_Results_From_Multiple_Columns[f"{self.Variable_Name}"].clear()
+            Global_Type_Of_Variable_Multiple_Column[f"{self.Variable_Name}"] = ""
+
+            Global_Results_From_Multiple_Columns[f"{self.Variable_Name}"] = self.Results
+            Global_Type_Of_Variable_Multiple_Column[f"{self.Variable_Name}"] = self.Type_Of_Variable
+        elif(self.Variable_Name):
+            Global_Results_From_Single_Column[f"{self.Variable_Name}"] = self.Results
+            Global_Type_Of_Variable_Single_Column = self.Type_Of_Variable
+        else:
+            Global_Results_From_Single_Column = self.Results
+            Global_Type_Of_Variable_Single_Column = self.Type_Of_Variable
 
     def Activate_Checkbox_Funcionality(self):
         if(self.Checkbox_Is_Continue):
@@ -582,12 +600,12 @@ def Create_Window_Frecuences_Table(Main_Window):
             if(Imported_Data_From_Single_Column != {}):
                 Results_From_Single_Column = {}
                 key, value = next(iter(Imported_Data_From_Single_Column.items()))
-                Results_On_Window_For_Single_Variable = Process_Column_Of_Data(Window_Frecuences_Table , value , Precision) # Para datos importados de Excel
+                Results_On_Window_For_Single_Variable = Process_Column_Of_Data(Window_Frecuences_Table , value , Precision , key) # Para datos importados de Excel
                 Results_On_Window_For_Single_Variable.Calc_Results(False)
                 Results_From_Single_Column[f"{key}"] = Results_On_Window_For_Single_Variable.Results
             else:
                 Results_From_Single_Column = None
-                Results_On_Window_For_Single_Variable = Process_Column_Of_Data(Window_Frecuences_Table , Data_From_Widget_Entry , Precision) # Para datos ingresados manuamente
+                Results_On_Window_For_Single_Variable = Process_Column_Of_Data(Window_Frecuences_Table , Data_From_Widget_Entry , Precision , None) # Para datos ingresados manuamente
                 Results_On_Window_For_Single_Variable.Calc_Results(False)
                 Results_From_Single_Column = Results_On_Window_For_Single_Variable.Results
 
@@ -610,10 +628,10 @@ def Create_Window_Frecuences_Table(Main_Window):
         Results_From_Multiple_Columns = {}
         Type_Of_Variable_For_Multiple_Columns = {}
         if(Global_Views == {}):
-            for key,values in Imported_Data_From_Multiple_Columns.items():
+            for key , values in Imported_Data_From_Multiple_Columns.items():
                 Results_On_Window_For_Multiple_Variables = None
 
-                Results_On_Window_For_Multiple_Variables = Process_Column_Of_Data(Window_Frecuences_Table , values , Precision)
+                Results_On_Window_For_Multiple_Variables = Process_Column_Of_Data(Window_Frecuences_Table , values , Precision , key , True)
                 Results_On_Window_For_Multiple_Variables.Calc_Results(False)
 
                 Results_On_Window_For_Multiple_Variables.Create_Widgets_For_Results()

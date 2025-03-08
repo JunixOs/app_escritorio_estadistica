@@ -202,13 +202,13 @@ def Change_Key(dictionary, old_key, new_key):
     return {clave if clave != old_key else new_key: valor for clave, valor in dictionary.items()}
 
 def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Results_From_Multiple_Columns , Precision , Graphs):
-    """ Esta es la funcion principal del modulo """
     def Back(W_Show_Graph):
         if(Results_From_Single_Column):
             if(len(Results_From_Single_Column) == 1):
                 var_name , value = next(iter(Results_From_Single_Column.items()))
                 if("Frecuences_Cuant_For_Many_Values" in value or "Frecuences_Cuant_Normal_Extended" in value):
                     Graphs.clear()
+                
             elif("Frecuences_Cuant_For_Many_Values" in Results_From_Single_Column or "Frecuences_Cuant_Normal_Extended" in Results_From_Single_Column):
                 Graphs.clear()
 
@@ -261,7 +261,7 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
             Results = copy.deepcopy(Results_From_Single_Column)
 
             if(not Graphs):
-                if(len(Results_From_Single_Column) == 1):
+                if(len(Results) == 1):
                     key , value = next(iter(Results.items()))
                     Gen_Graphs = Graphs_For_Frecuences(value , Precision , key , False)
                 else:
@@ -283,7 +283,7 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
             if(Graphs):
                 There_Are_Graphics = [True if val else False for val in Graphs.values()]
             else:
-                There_Are_Graphics = True if Graphs else False
+                There_Are_Graphics = False
 
             for i , (key , value) in enumerate(Results.items()):
                 Gen_Graphs = None
@@ -325,9 +325,9 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
         messagebox.showerror("Error" , f"{e}")
 
     Btn_Export_Graph = Button(W_Show_Graph , text="Exportar Graficos" , font=("Times New Roman" , 13) , width=15 , command= lambda: Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Column , Results_From_Multiple_Columns))
-    Btn_Export_Graph.place(x=90 , y=440)
+    Btn_Export_Graph.place(x=90 , y=480)
 
     Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24 , justify="center" , command= lambda: Create_Window_Multiple_Graphs(W_Show_Graph))
-    Btn_Create_And_Export_Multiple_Graphs.place(x=50 , y=480)
+    Btn_Create_And_Export_Multiple_Graphs.place(x=50 , y=560)
     W_Show_Graph.resizable(False , False)
     W_Show_Graph.mainloop()
