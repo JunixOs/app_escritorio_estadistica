@@ -73,41 +73,46 @@ class Draw_Graph_for_Each_Variable:
             wedgeprops={"edgecolor": "black"},
             textprops={"fontsize": 10}
         )
-
+        max_w = len(wedges) + 1
         for i, wedge in enumerate(wedges):
             # Obtenemos el centro de cada wedge, sin necesidad de calcular ángulos.
             center_x, center_y = wedge.center
 
             arrow_x = center_x * 24.5
             arrow_y = center_y * 24.5
-            """ print(f"{i}")
-            print(f"x : {center_x}")
-            print(f"y : {center_y}\n") """
-            if((center_x <= 0.05 and center_x >= -0.05) and (center_y <= 0.05 and center_y >= -0.05)):
-                if(center_x >= 0):
-                    label_x = center_x * 30
-                    label_y = center_y * 30
+
+            angle_start, angle_end = wedge.theta1, wedge.theta2
+
+            # Calcular el ángulo central
+            angle = (angle_start + angle_end) / 2
+
+            # Convertir el ángulo a radianes
+            angle_rad = np.deg2rad(angle)
+
+            # La longitud de la etiqueta para determinar el desplazamiento
+            label_text = texts[i].get_text()
+            label_length = len(label_text)
+            
+            # Ajuste dinámico de la distancia en función de la longitud de la etiqueta
+            
+            label_distance = 1.20 + (np.log10(2*label_length/11) * 0.001)  # Ajusta este factor si es necesario
+
+            # Calculamos las coordenadas x, y de la etiqueta basándonos en el ángulo central
+            if(center_x > 0):
+                label_x = label_distance * np.cos(angle_rad)
+                label_y = label_distance * np.sin(angle_rad)
+            else:
+                if(label_length <= 20):
+                    label_x = (label_distance * np.cos(angle_rad)) - ((label_length + 1.7)/(35 * np.log10(label_length + 1.7))-0.08)
+                elif(label_length > 20 and label_length < 30):
+                    label_x = (label_distance * np.cos(angle_rad)) - ((label_length + 1.7)/(33 * np.log10(label_length + 1.7))-0.08)
                 else:
-                    label_x = center_x * 39.5
-                    label_y = center_y * 33.5
-            elif(center_x <= 0.05 and center_x >= -0.05):
-                if(center_x >= 0):
-                    label_x = center_x * 30
-                    label_y = center_y * 10
-                else:
-                    label_x = center_x * 39.5
-                    label_y = center_y * 11.16
-            elif(center_y <= 0.05 and center_y >= -0.05):
-                if(center_x >= 0):
-                    label_x = center_x * 10
-                    label_y = center_y * 30
-                else:
-                    label_x = center_x * 13.16
-                    label_y = center_y * 33.5
+                    label_x = (label_distance * np.cos(angle_rad)) - ((label_length + 1.7)/(27 * np.log10(label_length + 1.7))-0.08)
+                label_y = (label_distance * np.sin(angle_rad)) - (max_w/8000)
 
             # Ahora usamos `annotate` para crear la línea de conexión desde el centro de cada wedge hacia la etiqueta.
             ax_pie.annotate(
-                texts[i].get_text(),  # El texto de la etiqueta
+                label_text,  # El texto de la etiqueta
                 xy=(arrow_x , arrow_y),  # Coordenadas del centro del pedazo del pastel (wedge)
                 xytext=(label_x, label_y),  # Las coordenadas de la etiqueta fuera del gráfico
                 textcoords='data',  # Usamos coordenadas de datos para las etiquetas fuera del gráfico

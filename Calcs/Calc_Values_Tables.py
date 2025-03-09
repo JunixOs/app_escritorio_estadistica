@@ -330,10 +330,15 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                             Is_Float = True
                             break
                 Data.sort()
+                m = round(1 + (3.322*log10(len(Data))))
+                
                 if(not Repeated_Calc):
                     Arr_xi , Arr_fi = Cuant_Normal_Extended.Calc_fi_And_xi(Data)
 
                     if(len(Arr_xi) > (1/5)*(len(Data))):
+                        Is_Continue[0].set(True)
+                        Is_Continue[1].config(state="disabled")
+                    elif(Is_Float and m > 5):
                         Is_Continue[0].set(True)
                         Is_Continue[1].config(state="disabled")
                     else:
@@ -341,7 +346,6 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
 
                 match(Is_Continue[0].get()):
                     case True:
-                        m = round(1 + (3.322*log10(len(Data))))
                         if(m < 5):
                             Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
                         else:

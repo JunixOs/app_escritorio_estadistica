@@ -167,19 +167,30 @@ class Widgets_Checkboxes_For_Export_Graphs(Widget_Input_Name_For_Graphs):
         if(self.There_Are_Boxplot):
             self.Checked_Export_Boxplot.set(False)
             self.Checkbox_Export_Boxplot = Checkbutton(self.W_Export_Graph , text="Exportar grafico de cajas" , font=("Times New Roman" , 13) , variable=self.Checked_Export_Boxplot , command=self.Check_Boxplot , bg="#E7E4C1")
+            
+            self.Dictionary_Checkboxes = dict([
+                ("All" , [self.Checkbox_Export_All , self.Checked_Export_All]),
+                ("All_Bars" , [self.Checkbox_Export_All_Bar_Graphs , self.Checked_Export_All_Bars]),
+                ("Bars_fi" , [self.Checkbox_Export_bar_fi , self.Checked_Export_Bar_fi]),
+                ("Bar_hi" , [self.Checkbox_Export_bar_hi , self.Checked_Export_Bar_hi]),
+                ("Bar_hi_percent" , [self.Checkbox_Export_bar_hi_percent , self.Checked_Export_Bar_hi_percent]),
+                ("Pie" , [self.Checkbox_Export_pie , self.Checked_Export_Pie]),
+                ("Boxplot" , [self.Checkbox_Export_Boxplot , self.Checked_Export_Boxplot])
+            ])
         else:
             self.Checkbox_Export_Boxplot = None
             self.Checked_Export_Boxplot.set(True)
 
-        self.Dictionary_Checkboxes = dict([
-            ("All" , [self.Checkbox_Export_All , self.Checked_Export_All]),
-            ("All_Bars" , [self.Checkbox_Export_All_Bar_Graphs , self.Checked_Export_All_Bars]),
-            ("Bars_fi" , [self.Checkbox_Export_bar_fi , self.Checked_Export_Bar_fi]),
-            ("Bar_hi" , [self.Checkbox_Export_bar_hi , self.Checked_Export_Bar_hi]),
-            ("Bar_hi_percent" , [self.Checkbox_Export_bar_hi_percent , self.Checked_Export_Bar_hi_percent]),
-            ("Pie" , [self.Checkbox_Export_pie , self.Checked_Export_Pie]),
-            ("Boxplot" , [self.Checkbox_Export_Boxplot , self.Checked_Export_Boxplot])
-        ])
+            self.Dictionary_Checkboxes = dict([
+                ("All" , [self.Checkbox_Export_All , self.Checked_Export_All]),
+                ("All_Bars" , [self.Checkbox_Export_All_Bar_Graphs , self.Checked_Export_All_Bars]),
+                ("Bars_fi" , [self.Checkbox_Export_bar_fi , self.Checked_Export_Bar_fi]),
+                ("Bar_hi" , [self.Checkbox_Export_bar_hi , self.Checked_Export_Bar_hi]),
+                ("Bar_hi_percent" , [self.Checkbox_Export_bar_hi_percent , self.Checked_Export_Bar_hi_percent]),
+                ("Pie" , [self.Checkbox_Export_pie , self.Checked_Export_Pie]),
+            ])
+
+
 
     def Display_Widgets(self):
         self.Checkbox_Export_All.place(x=310 , y=260)
@@ -229,7 +240,7 @@ class Widget_Combobox_For_DPI_And_Format():
 
     def Display_Widgets(self):
         self.Input_dpi.place(x=250 , y=150)
-        self.Input_Sizes.place(x=670 , y=150)
+        # self.Input_Sizes.place(x=670 , y=150) # Importacion con tamaño personalizado, caracteristica sin terminar
         self.Input_Format.place(x=800 , y=39)
 
     def Hidden_Widgets(self):

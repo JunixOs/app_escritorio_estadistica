@@ -45,7 +45,7 @@ class Exports(Validations):
             else:
                 Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_" + self.Actual_Time + self.Format
             graphs.suptitle(f"{self.Graphs_Title[i]}")
-            graphs.savefig(Route_To_Export , dpi=self.Resolution)
+            graphs.savefig(Route_To_Export , dpi=self.Resolution , bbox_inches='tight')
 
     def Export_Only_Bars(self):
         for i , bar in enumerate(self.Graphs.values()):
@@ -55,7 +55,7 @@ class Exports(Validations):
                 else:
                     Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_" + self.Actual_Time + self.Format
                 bar.suptitle(f"{self.Graphs_Title[i]}")
-                bar.savefig(Route_To_Export , dpi=self.Resolution)
+                bar.savefig(Route_To_Export , dpi=self.Resolution , bbox_inches='tight')
 
     def Export_One_Graph(self , Graph_Name , E_Info_Graph):
         Graph = self.Graphs[f"{Graph_Name}"]
@@ -72,7 +72,7 @@ class Exports(Validations):
         else:
             Route_To_Export = self.Full_Route + "_" + E_Info_Graph + "_" + self.Actual_Time + self.Format
         Graph.suptitle(f"{G_Name}")
-        Graph.savefig(Route_To_Export , dpi=self.Resolution)
+        Graph.savefig(Route_To_Export , dpi=self.Resolution , bbox_inches='tight')
 
 def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , File_Path , Info_For_Export , Checkboxes_Info , Variable_Name_For_Single_Column = None):
     try:
@@ -99,8 +99,9 @@ def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , F
                     Export.Export_Only_Bars()
                     if(Checkboxes_Info[f"{key}"]["Pie"][1].get()):
                         Export.Export_One_Graph("pie_graph" , "pie")
-                    if(Checkboxes_Info[f"{key}"]["Boxplot"][1].get() and "boxplot_graph" in Graphs[f"{key}"]):
-                        Export.Export_One_Graph("boxplot_graph" , "boxplot")
+                    if("Boxplot" in Checkboxes_Info[f"{key}"]):
+                        if(Checkboxes_Info[f"{key}"]["Boxplot"][1].get()):
+                            Export.Export_One_Graph("boxplot_graph" , "boxplot")
                 else:
                     if(Checkboxes_Info[f"{key}"]["Bars_fi"][1].get()):
                         Export.Export_One_Graph("bar_fi" , "fi")
@@ -110,8 +111,9 @@ def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , F
                         Export.Export_One_Graph("bar_hi_percent" , "hi%")
                     if(Checkboxes_Info[f"{key}"]["Pie"][1].get()):
                         Export.Export_One_Graph("pie_graph" , "pie")
-                    if(Checkboxes_Info[f"{key}"]["Boxplot"][1].get() and "boxplot_graph" in Graphs[f"{key}"]):
-                        Export.Export_One_Graph("boxplot_graph" , "boxplot")
+                    if("Boxplot" in Checkboxes_Info[f"{key}"]):
+                        if(Checkboxes_Info[f"{key}"]["Boxplot"][1].get()):
+                            Export.Export_One_Graph("boxplot_graph" , "boxplot")
             
         else:
             if(not any(Checkboxes_Info)):
@@ -127,8 +129,9 @@ def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , F
                 Export.Export_Only_Bars()
                 if(Checkboxes_Info["Pie"][1].get()):
                     Export.Export_One_Graph("pie_graph" , "pie")
-                if(Checkboxes_Info["Boxplot"][1].get()):
-                    Export.Export_One_Graph("boxplot_graph" , "boxplot")
+                if("Boxplot" in Checkboxes_Info):
+                    if(Checkboxes_Info["Boxplot"][1].get()):
+                        Export.Export_One_Graph("boxplot_graph" , "boxplot")
             else:
                 if(Checkboxes_Info["Bars_fi"][1].get()):
                     Export.Export_One_Graph("bar_fi" , "fi")
@@ -138,8 +141,9 @@ def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , F
                     Export.Export_One_Graph("bar_hi_percent" , "hi%")
                 if(Checkboxes_Info["Pie"][1].get()):
                     Export.Export_One_Graph("pie_graph" , "pie")
-                if(Checkboxes_Info["Boxplot"][1].get()):
-                    Export.Export_One_Graph("boxplot_graph" , "boxplot")
+                if("Boxplot" in Checkboxes_Info):
+                    if(Checkboxes_Info["Boxplot"][1].get()):
+                        Export.Export_One_Graph("boxplot_graph" , "boxplot")
 
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")

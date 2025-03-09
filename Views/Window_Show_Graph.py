@@ -161,15 +161,15 @@ class Checkboxes_Selection_Graphs:
             self.Diplay_Widgets_Graphs()
 
     def Generate_Checkboxes(self):
-        self.Checkbox_Show_Bar_fi = Checkbutton(self.W_Show_Graph , text="Segun fi" , font=("Times New Roman" , 13) , variable=self.Checked_Bar_fi ,  command= lambda: self.Only_Check_Single_Option("fi"))
-        self.Checkbox_Show_Bar_hi = Checkbutton(self.W_Show_Graph , text="Segun hi" , font=("Times New Roman" , 13) , variable=self.Checked_Bar_hi , command= lambda: self.Only_Check_Single_Option("hi"))
-        self.Checkbox_Show_Bar_hi_percent = Checkbutton(self.W_Show_Graph , text="Segun hi%" , font=("Times New Roman" , 13) , variable=self.Checked_Bar_hi_percent , command= lambda: self.Only_Check_Single_Option("hi_percent"))
+        self.Checkbox_Show_Bar_fi = Checkbutton(self.W_Show_Graph , text="Grafico para fi" , font=("Times New Roman" , 13) , bg="#F8D9AB" , variable=self.Checked_Bar_fi ,  command= lambda: self.Only_Check_Single_Option("fi"))
+        self.Checkbox_Show_Bar_hi = Checkbutton(self.W_Show_Graph , text="Grafico para hi" , font=("Times New Roman" , 13) , bg="#F8D9AB" , variable=self.Checked_Bar_hi , command= lambda: self.Only_Check_Single_Option("hi"))
+        self.Checkbox_Show_Bar_hi_percent = Checkbutton(self.W_Show_Graph , text="Grafico para hi%" , font=("Times New Roman" , 13) , bg="#F8D9AB" , variable=self.Checked_Bar_hi_percent , command= lambda: self.Only_Check_Single_Option("hi_percent"))
 
-        self.Checkbox_Pie_Graph = Checkbutton(self.W_Show_Graph , text="Grafico de pastel" , font=("Times New Roman" , 13) , variable=self.Checked_Pie_Graph , command= lambda: self.Only_Check_Single_Option("pie"))
+        self.Checkbox_Pie_Graph = Checkbutton(self.W_Show_Graph , text="Grafico de pastel" , font=("Times New Roman" , 13) , bg="#F8D9AB" ,  variable=self.Checked_Pie_Graph , command= lambda: self.Only_Check_Single_Option("pie"))
 
         self.Checkbox_Boxplot_Graph = None
         if(self.There_Are_Boxplot):
-            self.Checkbox_Boxplot_Graph = Checkbutton(self.W_Show_Graph , text="Grafico de cajas" , font=("Times New Roman" , 13) , variable=self.Checked_Boxplot_Graph , command= lambda: self.Only_Check_Single_Option("boxplot"))
+            self.Checkbox_Boxplot_Graph = Checkbutton(self.W_Show_Graph , text="Grafico de cajas" , font=("Times New Roman" , 13) , bg="#F8D9AB" , variable=self.Checked_Boxplot_Graph , command= lambda: self.Only_Check_Single_Option("boxplot"))
 
         self.Dictionary_Checkboxes_Values = dict([
             ("fi" , self.Checked_Bar_fi),
@@ -242,11 +242,15 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
     W_Show_Graph.grab_set()
     Icon = PhotoImage(file="Images/icon.png")
     W_Show_Graph.iconphoto(False , Icon)
+    W_Show_Graph.config(bg="#F8D9AB")
 
     Widgets_Collection = {}
     Checkboxes_Collection = {}
 
     W_Show_Graph.protocol("WM_DELETE_WINDOW", lambda: Back(W_Show_Graph))
+
+    Section_Graphs = Label(W_Show_Graph , bg="#ffffff" , text="Selecciona un grafico y se mostrara aqui" , font=("Times New Roman" , 13) , anchor="center")
+    Section_Graphs.place(x=320 , y=0 , width=980 , height=700)
 
     Column_Name = []
     Column_Select = ttk.Combobox(W_Show_Graph , values=Column_Name , font=("Courier New" , 13) , width=25 , state="readonly")
@@ -324,10 +328,10 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
 
-    Btn_Export_Graph = Button(W_Show_Graph , text="Exportar Graficos" , font=("Times New Roman" , 13) , width=15 , command= lambda: Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Column , Results_From_Multiple_Columns))
+    Btn_Export_Graph = Button(W_Show_Graph , text="Exportar Graficos" , font=("Times New Roman" , 13) , width=15 , bg="#FDA8C0" , command= lambda: Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Column , Results_From_Multiple_Columns))
     Btn_Export_Graph.place(x=90 , y=480)
 
-    Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24 , justify="center" , command= lambda: Create_Window_Multiple_Graphs(W_Show_Graph))
+    Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24  , bg="#FDA8C0" , justify="center" , command= lambda: Create_Window_Multiple_Graphs(W_Show_Graph))
     Btn_Create_And_Export_Multiple_Graphs.place(x=50 , y=560)
     W_Show_Graph.resizable(False , False)
     W_Show_Graph.mainloop()

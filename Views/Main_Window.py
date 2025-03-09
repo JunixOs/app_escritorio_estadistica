@@ -1,8 +1,16 @@
-from tkinter import *
+import sys
+import os
+# Esto añade la carpeta raiz
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from Calcs.Center_Window import Center
 import Window_Calc_Table_of_Frecuency as W_Calc_Table
 import Window_MAS as W_MAS
+from tkinter import *
 
 def On_Closing():
+    for widget in Main_Window.winfo_children():
+        widget.destroy()
     Main_Window.quit()
     Main_Window.destroy()
 
@@ -12,7 +20,8 @@ Image_Right_Section = PhotoImage(file="Images/normal_distribution.png")
 Image_Right_Section.subsample(10)
 Icon = PhotoImage(file="Images/icon.png")
 
-Main_Window.geometry("1240x700+135+100")
+Main_Window.geometry("1240x700")
+Center(Main_Window , 1240 , 700)
 Main_Window.title("StatPhi beta v1.8")
 Main_Window.config(bg="#9DAEC6")
 Main_Window.iconphoto(False , Icon)
