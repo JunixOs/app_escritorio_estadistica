@@ -3,7 +3,7 @@ import os
 import copy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Calcs.Exports.Export_Graph import Export_Graph_As_Image
+from Calcs.Table_of_Frecuency.Exports.Export_Graph import Export_Graph_As_Image
 
 from tkinter import *
 from tkinter import filedialog
@@ -49,6 +49,8 @@ class Widget_Input_Name_For_Graphs:
 
         if(self.Input_Name_Boxplot_Graph):
             self.Input_Name_Boxplot_Graph.place_forget()
+
+
 class Widgets_Checkboxes_For_Export_Graphs(Widget_Input_Name_For_Graphs):
     def __init__(self , Root_Window , There_Are_Boxplot):
         Widget_Input_Name_For_Graphs.__init__(self , Root_Window , There_Are_Boxplot)

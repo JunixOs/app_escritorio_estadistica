@@ -148,12 +148,12 @@ class Export_Data:
             elif("Summary_Measures_For_Not_Grouped_Data" in Copy_Data):
                 S_Measures = Copy_Data["Summary_Measures_For_Not_Grouped_Data"]
 
-            if("Frecuences_Cuant_For_Many_Values" in Copy_Data):
-                Copy_Data =  Copy_Data["Frecuences_Cuant_For_Many_Values"]
-            elif("Frecuences_Cuant_Normal_Extended" in Copy_Data):
-                Copy_Data = Copy_Data["Frecuences_Cuant_Normal_Extended"]
-            elif("Frecuences_Cuali_Normal_Extended" in Copy_Data):
-                Copy_Data = Copy_Data["Frecuences_Cuali_Normal_Extended"]
+            if("Frecuences_Cuant_Grouped" in Copy_Data):
+                Copy_Data =  Copy_Data["Frecuences_Cuant_Grouped"]
+            elif("Frecuences_Cuant_Not_Grouped" in Copy_Data):
+                Copy_Data = Copy_Data["Frecuences_Cuant_Not_Grouped"]
+            elif("Frecuences_Cuali" in Copy_Data):
+                Copy_Data = Copy_Data["Frecuences_Cuali"]
 
             Copy_Data = Change_Key(Copy_Data , "hi_percent" , "hi%")
             Copy_Data = Change_Key(Copy_Data , "Hi_percent" , "Hi%")
@@ -220,12 +220,12 @@ class Export_Data:
                     S_Measures = value["Summary_Measures_For_Not_Grouped_Data"]
                     value.pop("Summary_Measures_For_Not_Grouped_Data")
                 
-                if("Frecuences_Cuant_For_Many_Values" in value):
-                    value = value["Frecuences_Cuant_For_Many_Values"]
-                elif("Frecuences_Cuant_Normal_Extended" in value):
-                    value = value["Frecuences_Cuant_Normal_Extended"]
-                elif("Frecuences_Cuali_Normal_Extended" in value):
-                    value = value["Frecuences_Cuali_Normal_Extended"]
+                if("Frecuences_Cuant_Grouped" in value):
+                    value = value["Frecuences_Cuant_Grouped"]
+                elif("Frecuences_Cuant_Not_Grouped" in value):
+                    value = value["Frecuences_Cuant_Not_Grouped"]
+                elif("Frecuences_Cuali" in value):
+                    value = value["Frecuences_Cuali"]
                 
                 value = Change_Key(value , "hi_percent" , "hi%")
                 value = Change_Key(value , "Hi_percent" , "Hi%")

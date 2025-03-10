@@ -4,8 +4,9 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Calcs.Center_Window import Center
-import Window_Calc_Table_of_Frecuency as W_Calc_Table
-import Window_MAS as W_MAS
+import Views.Table_of_Frecuency.Window_Calc_Table_of_Frecuency as W_Calc_Table
+import Views.Venn_Diagram.Window_Create_Venn_Diagram as W_Venn_Diagram
+import Views.MAS.Window_MAS as W_MAS
 from tkinter import *
 
 def On_Closing():
@@ -30,10 +31,13 @@ Right_Section = Label(Main_Window , width=531 , height=691 , bg="#F7EDCB" , imag
 Right_Section.place(x=700 , y=0)
 
 BtnFrecuencyTable = Button(Main_Window , text="Crear tabla de frecuencias" , font=("Times New Roman", 14) , command= lambda: W_Calc_Table.Create_Window_Frecuences_Table(Main_Window) , width=30 , bg="#FBCFC6")
-BtnFrecuencyTable.place(x=190,y=260)
+BtnFrecuencyTable.place(x=190 , y=220)
+
+BtnVennDiagram = Button(Main_Window , text="Crear Diagramas de Venn" , font=("Times New Roman", 14) , command= lambda: W_Venn_Diagram.Create_Window_Create_Venn_Diagram(Main_Window) , width=30 , bg="#FBCFC6")
+BtnVennDiagram.place(x=190 , y=300)
 
 BtnMAS = Button(Main_Window , text="Calcular tamaño de muestra" , font=("Times New Roman", 14) , command= lambda: W_MAS.Create_Window_MAS(Main_Window) , width=30 , bg="#FBCFC6")
-BtnMAS.place(x=190 , y=330)
+BtnMAS.place(x=190 , y=380)
 
 Main_Window.protocol("WM_DELETE_WINDOW", On_Closing)
 Main_Window.resizable(False,False)

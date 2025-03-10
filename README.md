@@ -153,35 +153,47 @@ El proyecto tiene la siguiente estructura de carpetas
 ```bash
 Statphi/
 ├── Calcs/
-│   ├── Exports/
-│   │   ├── Export_Excel.py
-│   │   └── Export_Graph.py
-│   ├── Graphs/
-│   │   ├── Calc_Bar_Pie_Graphs.py
-│   │   ├── Calc_Boxplot.py
-│   │   └── Calc_Multiple_Graphs.py
-│   ├── Quantiles/
-│   │   └── Quantil.py
-│   └── Summary_Measures/
-│   │   ├── Calc_For_Agrupped_Data.py
-│   │   └── Calc_For_Not_Agrupped_Data.py
-│   └── Calc_Frecuences_Cualitative_Normal_Extended.py
-│   └── Calc_Frecuences_Cuantitative_Normal_Extended.py
-│   └── Calc_Frecuences_Cuantitative_Many_Values.py
+│   ├── MAS/
+│   │   └── MAS_Calc.py
+│   ├── Table_of_Frecuency/
+│   │   ├── Exports/
+│   │   │   ├── Export_Excel.py
+│   │   │   └── Export_Graph.py
+│   │   ├── Frecuences/
+│   │   │   ├── Calc_Frecuences_Cualitative.py
+│   │   │   ├── Calc_Frecuences_Cuantitative_Grouped.py
+│   │   │   └── Calc_Frecuences_Cuantitative_Not_Grouped.py
+│   │   ├── Graphs/
+│   │   │   ├── Calc_Bar_Pie_Graphs.py
+│   │   │   ├── Calc_Boxplot.py
+│   │   │   └── Calc_Multiple_Graphs.py
+│   │   ├── Quantiles/
+│   │   │   └── Quantil.py
+│   │   ├── Summary_Measures/
+│   │   │   ├── Calc_For_Grouped_Data.py
+│   │   │   └── Calc_For_Not_Grouped_Data.py
+│   │   └── Calc_Values_Tables.py
+│   ├── Venn/
+│   │   └── Calc_Venn_Diagram.py
+│   └── Center_Window.py
 ├── Images/
 │   ├── DEMO/
 │   ├── icon.png
 │   └── normal_distribution.png
-├── Windows/
+├── Views/
+│   ├── MAS/
+│   │   └── Window_MAS.py
+│   ├── Table_of_Frecuency/
+│   │   ├── Window_Calc_Table_of_Frecuency.py
+│   │   ├── Window_Export_Excel.py
+│   │   ├── Window_Export_Graph.py
+│   │   ├── Window_Import_Excel.py
+│   │   └── Window_Show_Graph.py
+│   ├── Venn_Diagram/
+│   │   └── Window_Create_Venn_Diagram.py
 │   ├── Main_Window.py
-│   ├── Window_Calc_Table_of_Frecuency.py
 │   ├── Window_Create_Multiple_Graphs.py
-│   ├── Window_Export_Excel.py
-│   ├── Window_Export_Graph.py
-│   ├── Window_Import_Excel.py
-│   ├── Window_MAS.py
-│   ├── Window_Progress_Bar.py
-│   └── Window_Show_Graph.py
+│   └── Window_Progress_Bar.py
 ├── .gitignore
 └── README.md
 ```
@@ -251,7 +263,7 @@ Aqui te encontraras con los siguientes elementos:
 - **Precision**:
     Permite ajustar la cantidad de decimales que se mostraran en valores como las Medidas de Resumen , los Quantiles , Deciles , Percentiles , la Frecuencia Relativa (hi) , la Frecuencia Relativa Acumulada (Hi) y sus respectivos valores porcentuales (hi% y Hi%).
 
-- **Importar datos de un Excel**:
+- **Importar datos**:
     Permite importar datos de una o varias columnas de un archivo `.xlsx` externo. Para ello, sigue los siguientes pasos:
     
     1. Primero selecciona la ubicacion de tu archivo Excel con los datos a importar.
@@ -263,10 +275,9 @@ Aqui te encontraras con los siguientes elementos:
 
         - *Para multiples columnas de datos no consecutivas*: `A1:C1001;E1:E1001;G1:H1001`
 
+    4. Finalmente, si no ocurre ningun error, podras ver los datos seleccionados en el cuadro de previsualizacion y en la ventana de calculo. Si lo deseas puedes salir de la ventana de importacion o corregir la seleccion actual.
 > [!WARNING]
 > Evite ingresar rangos de celdas como A1:C1001;B1:D1001.
-
-    4. Finalmente, si no ocurre ningun error, podras ver los datos seleccionados en el cuadro de previsualizacion y en la ventana de calculo. Si lo deseas puedes salir de la ventana de importacion o corregir la seleccion actual.
 
 > [!CAUTION]
 > Dentro del Excel con los datos a importar, asegurese de que el formato de los datos sea correcto, que cada columna de datos cuente un nombre y que los datos se encuentren en la primera fila.
@@ -275,7 +286,11 @@ Aqui te encontraras con los siguientes elementos:
 
 ---
 
-#### Calculo de Tamaño de Muestra por M.A.S.
+#### ***Calculo de Diagramas de Venn***
+
+---
+
+#### ***Calculo de Tamaño de Muestra por M.A.S.***
 Aqui te encontraras con los siguientes elementos:
 - **Seleccion de tipo de poblacion**: Permite especificar el tamaño de la poblacion a investigar, si es finita (Cantidad Conocida) o infinita (Cantidad no conocida).
 

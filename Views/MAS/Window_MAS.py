@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import Calcs.MAS_Calc as MAS
+import Calcs.MAS.MAS_Calc as MAS
 from Calcs.Center_Window import Center
 from tkinter import *
 

@@ -8,9 +8,9 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 
-from Calcs.Graphs.Calc_Bar_Pie_Graphs import Draw_Graph_for_Each_Variable
-from Calcs.Graphs.Calc_Boxplot import Draw_Boxplot_For_Single_Column_Data
-from Window_Export_Graph import Create_Windows_Export_Graphs
+from Calcs.Table_of_Frecuency.Graphs.Calc_Bar_Pie_Graphs import Draw_Graph_for_Each_Variable
+from Calcs.Table_of_Frecuency.Graphs.Calc_Boxplot import Draw_Boxplot_For_Single_Column_Data
+from Views.Table_of_Frecuency.Window_Export_Graph import Create_Windows_Export_Graphs
 from Window_Create_Multiple_Graphs import Create_Window_Multiple_Graphs
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -70,12 +70,12 @@ class Graphs_For_Frecuences:
         self.For_Multiple_Columns = For_Multiple_Columns
 
     def Modify_Intervals_Key(self):
-        if("Frecuences_Cuant_For_Many_Values" in self.Results):
-            for a in range(0 , len(self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"])):
-                if(a != len(self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"]) - 1):
-                    self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"][a][1]) +" >"
+        if("Frecuences_Cuant_Grouped" in self.Results):
+            for a in range(0 , len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"])):
+                if(a != len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"]) - 1):
+                    self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" >"
                 else:
-                    self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_For_Many_Values"]["Intervals"][a][1]) +" ]"
+                    self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" ]"
 
     def Generate_Graphs(self , Graphs):
         self.Modify_Intervals_Key()
@@ -87,11 +87,11 @@ class Graphs_For_Frecuences:
         bar_hi_percent = Graph.Draw_Graph("hi_percent")
         boxplot_graph = None
 
-        if("Frecuences_Cuant_For_Many_Values" in self.Results):
-            boxplot_graph = Draw_Boxplot_For_Single_Column_Data(self.Results["Variables_Cuant_For_Many_Values"]["Data_List"] , self.Variable_Name)
+        if("Frecuences_Cuant_Grouped" in self.Results):
+            boxplot_graph = Draw_Boxplot_For_Single_Column_Data(self.Results["Variables_Cuant_Grouped"]["Data_List"] , self.Variable_Name)
 
-        elif("Frecuences_Cuant_Normal_Extended" in self.Results):
-            boxplot_graph = Draw_Boxplot_For_Single_Column_Data(self.Results["Variables_Cuant_Normal_Extended"]["Data_List"] , self.Variable_Name)
+        elif("Frecuences_Cuant_Not_Grouped" in self.Results):
+            boxplot_graph = Draw_Boxplot_For_Single_Column_Data(self.Results["Variables_Cuant_Not_Grouped"]["Data_List"] , self.Variable_Name)
         
         if(self.For_Multiple_Columns):
             if(boxplot_graph):
@@ -206,15 +206,15 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
         if(Results_From_Single_Column):
             if(len(Results_From_Single_Column) == 1):
                 var_name , value = next(iter(Results_From_Single_Column.items()))
-                if("Frecuences_Cuant_For_Many_Values" in value or "Frecuences_Cuant_Normal_Extended" in value):
+                if("Frecuences_Cuant_Grouped" in value or "Frecuences_Cuant_Not_Grouped" in value):
                     Graphs.clear()
                 
-            elif("Frecuences_Cuant_For_Many_Values" in Results_From_Single_Column or "Frecuences_Cuant_Normal_Extended" in Results_From_Single_Column):
+            elif("Frecuences_Cuant_Grouped" in Results_From_Single_Column or "Frecuences_Cuant_Not_Grouped" in Results_From_Single_Column):
                 Graphs.clear()
 
         elif(Results_From_Multiple_Columns):
             for var_name , value in Results_From_Multiple_Columns.items():
-                if("Frecuences_Cuant_For_Many_Values" in value or "Frecuences_Cuant_Normal_Extended" in value):
+                if("Frecuences_Cuant_Grouped" in value or "Frecuences_Cuant_Not_Grouped" in value):
                     Graphs[f"{var_name}"].clear()
 
         Widgets_Collection.clear()

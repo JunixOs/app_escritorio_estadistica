@@ -3,11 +3,11 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from math import *
-import Calc_Frecuences_Cuantitative_Many_Values as Cuant_Many_Values
-import Calc_Frecuences_Cualitative_Normal_Extended as Cuali_Normal_Extended
-import Calc_Frecuences_Cuantitative_Normal_Extended as Cuant_Normal_Extended
-import Summary_Measures.Calc_For_Not_Agrupped_Data as SM_For_Not_Grouped_Data
-import Summary_Measures.Calc_For_Agrupped_Data as SM_For_Grouped_Data
+import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Grouped as Cuant_Grouped
+import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cualitative as Cuali
+import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Not_Grouped as Cuant_Not_Grouped
+import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Not_Grouped_Data as SM_For_Not_Grouped_Data
+import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Grouped_Data as SM_For_Grouped_Data
 import Quantiles.Quantil as Quantile
 
 def Check_Contains_Only_Numbers(Data):
@@ -76,11 +76,11 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         y algunas variables mas.
         ==============================================================================================
     """
-    V_Min = Cuant_Many_Values.Calc_Min(Data)
-    V_Max = Cuant_Many_Values.Calc_Max(Data)
+    V_Min = Cuant_Grouped.Calc_Min(Data)
+    V_Max = Cuant_Grouped.Calc_Max(Data)
 
     n = len(Data)
-    R = Cuant_Many_Values.Calc_Range(V_Min,V_Max)
+    R = Cuant_Grouped.Calc_Range(V_Min,V_Max)
 
     if(not There_Are_Floats):
         """ 
@@ -91,8 +91,8 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         """
         C = round(R/m , 1)
         C_N_Decimals = 1
-        Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-        Arr_Groups = Cuant_Many_Values.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
     else:
         """ 
             **********************************************************************************
@@ -101,23 +101,23 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
             datos.
             **********************************************************************************
         """
-        N_Decimals_Most_Common = Cuant_Many_Values.Calc_Max_Decimal_Number(Data)
+        N_Decimals_Most_Common = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
         C_N_Decimals = int(N_Decimals_Most_Common[0][0]) + 1
         C = round(R/m , C_N_Decimals)
 
-        Arr_Intervals = Cuant_Many_Values.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-        Arr_Groups = Cuant_Many_Values.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
 
-    Arr_xi = Cuant_Many_Values.Calc_xi(Arr_Intervals , m)
+    Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
-    Arr_fi = Cuant_Many_Values.Calc_fi(Data , Arr_Intervals , m)
-    Arr_Fi = Cuant_Many_Values.Calc_Fi(Arr_fi)
+    Arr_fi = Cuant_Grouped.Calc_fi(Data , Arr_Intervals , m)
+    Arr_Fi = Cuant_Grouped.Calc_Fi(Arr_fi)
 
-    Arr_hi = Cuant_Many_Values.Calc_hi(Data , Arr_fi)
-    Arr_Hi = Cuant_Many_Values.Calc_Hi(Arr_hi)
+    Arr_hi = Cuant_Grouped.Calc_hi(Data , Arr_fi)
+    Arr_Hi = Cuant_Grouped.Calc_Hi(Arr_hi)
 
-    Arr_hi_percent = Cuant_Many_Values.Calc_hi_percent(Arr_hi)
-    Arr_Hi_percent = Cuant_Many_Values.Calc_Hi_percent(Arr_Hi)
+    Arr_hi_percent = Cuant_Grouped.Calc_hi_percent(Arr_hi)
+    Arr_Hi_percent = Cuant_Grouped.Calc_Hi_percent(Arr_Hi)
     
     X_ = SM_For_Grouped_Data.Calc_Arithmetic_Average(len(Data) , Arr_xi , Arr_fi)
     Me = SM_For_Grouped_Data.Calc_Median_Me(len(Data) , Arr_fi , Arr_Fi , Arr_Intervals , C)
@@ -186,16 +186,16 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
     """
     n = len(Data)
 
-    Arr_xi , Arr_fi = Cuant_Normal_Extended.Calc_fi_And_xi(Data)
+    Arr_xi , Arr_fi = Cuant_Not_Grouped.Calc_fi_And_xi(Data)
     N_Stadistic_Variables = len(Arr_xi)
 
-    Arr_Fi = Cuant_Normal_Extended.calc_Fi(Arr_fi)
+    Arr_Fi = Cuant_Not_Grouped.calc_Fi(Arr_fi)
 
-    Arr_hi = Cuant_Normal_Extended.Calc_hi(Data , Arr_fi)
-    Arr_Hi = Cuant_Normal_Extended.Calc_Hi(Arr_hi)
+    Arr_hi = Cuant_Not_Grouped.Calc_hi(Data , Arr_fi)
+    Arr_Hi = Cuant_Not_Grouped.Calc_Hi(Arr_hi)
 
-    Arr_hi_percent = Cuant_Normal_Extended.Calc_hi_percent(Arr_hi)
-    Arr_Hi_percent = Cuant_Normal_Extended.Calc_Hi_percent(Arr_Hi)
+    Arr_hi_percent = Cuant_Not_Grouped.Calc_hi_percent(Arr_hi)
+    Arr_Hi_percent = Cuant_Not_Grouped.Calc_Hi_percent(Arr_Hi)
 
     X_ = SM_For_Not_Grouped_Data.Calc_Arithmetic_Average(Data)
     Me = SM_For_Not_Grouped_Data.Calc_Median_Me(Data)
@@ -254,16 +254,16 @@ def Calculate_Results_Cualitative_Data(Data):
     """
     n = len(Data)
 
-    Arr_Char_Mod , Arr_fi = Cuali_Normal_Extended.Calc_fi_And_ai(Data)
+    Arr_Char_Mod , Arr_fi = Cuali.Calc_fi_And_ai(Data)
     Number_Char_Mod = len(Arr_Char_Mod)
 
-    Arr_Fi = Cuali_Normal_Extended.Calc_Fi(Arr_fi)
+    Arr_Fi = Cuali.Calc_Fi(Arr_fi)
 
-    Arr_hi = Cuali_Normal_Extended.Calc_hi(Data , Arr_fi)
-    Arr_Hi = Cuali_Normal_Extended.Calc_Hi(Arr_hi)
+    Arr_hi = Cuali.Calc_hi(Data , Arr_fi)
+    Arr_Hi = Cuali.Calc_Hi(Arr_hi)
 
-    Arr_hi_percent = Cuali_Normal_Extended.Calc_hi_percent(Arr_hi)
-    Arr_Hi_percent = Cuali_Normal_Extended.Calc_Hi_percent(Arr_Hi)
+    Arr_hi_percent = Cuali.Calc_hi_percent(Arr_hi)
+    Arr_Hi_percent = Cuali.Calc_Hi_percent(Arr_Hi)
 
     Variables_Values = dict([
         ("n" , n),
@@ -289,18 +289,18 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
         calculos necesarios segun el tipo de variable.
         ==============================================================================================
     """
-    Variables_Cuant_For_Many_Values = None
-    Frecuences_Cuant_For_Many_Values = None
+    Variables_Cuant_Grouped = None
+    Frecuences_Cuant_Grouped = None
     Summary_Measures_For_Grouped_Data = None
     Quantiles_For_Grouped_Data = None
 
-    Variables_Cuant_Normal_Extended = None
-    Frecuences_Cuant_Normal_Extended = None
+    Variables_Cuant_Not_Grouped = None
+    Frecuences_Cuant_Not_Grouped = None
     Summary_Measures_For_Not_Grouped_Data = None
     Quantiles_For_Not_Grouped_Data = None
 
-    Variables_Cuali_Normal_Extended = None
-    Frecuences_Cuali_Normal_Extended = None
+    Variables_Cuali = None
+    Frecuences_Cuali = None
     if(not In):
         raise ValueError("No se ingresaron datos")
     else:
@@ -333,7 +333,7 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                 m = round(1 + (3.322*log10(len(Data))))
                 
                 if(not Repeated_Calc):
-                    Arr_xi , Arr_fi = Cuant_Normal_Extended.Calc_fi_And_xi(Data)
+                    Arr_xi , Arr_fi = Cuant_Not_Grouped.Calc_fi_And_xi(Data)
 
                     if(len(Arr_xi) > (1/5)*(len(Data))):
                         Is_Continue[0].set(True)
@@ -347,27 +347,27 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                 match(Is_Continue[0].get()):
                     case True:
                         if(m < 5):
-                            Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
+                            Variables_Cuant_Not_Grouped , Frecuences_Cuant_Not_Grouped , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
                         else:
-                            Variables_Cuant_For_Many_Values , Frecuences_Cuant_For_Many_Values , Summary_Measures_For_Grouped_Data , Quantiles_For_Grouped_Data = Calculate_Results_Cuantitative_For_Grouped_Data(Data , Is_Float , m)
+                            Variables_Cuant_Grouped , Frecuences_Cuant_Grouped , Summary_Measures_For_Grouped_Data , Quantiles_For_Grouped_Data = Calculate_Results_Cuantitative_For_Grouped_Data(Data , Is_Float , m)
                     case False:
-                        Variables_Cuant_Normal_Extended , Frecuences_Cuant_Normal_Extended , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
+                        Variables_Cuant_Not_Grouped , Frecuences_Cuant_Not_Grouped , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
             case False:
-                Variables_Cuali_Normal_Extended , Frecuences_Cuali_Normal_Extended = Calculate_Results_Cualitative_Data(Data)
+                Variables_Cuali , Frecuences_Cuali = Calculate_Results_Cualitative_Data(Data)
             case _:
                 raise Exception("Hubo un error al identificar el tipo de variable de los datos ingresados.")
 
     Dictionary_Results = dict([
-        ("Variables_Cuant_For_Many_Values" , Variables_Cuant_For_Many_Values),
-        ("Frecuences_Cuant_For_Many_Values" , Frecuences_Cuant_For_Many_Values),
+        ("Variables_Cuant_Grouped" , Variables_Cuant_Grouped),
+        ("Frecuences_Cuant_Grouped" , Frecuences_Cuant_Grouped),
         ("Summary_Measures_For_Grouped_Data" , Summary_Measures_For_Grouped_Data),
         ("Quantiles_For_Grouped_Data" , Quantiles_For_Grouped_Data),
-        ("Variables_Cuant_Normal_Extended" , Variables_Cuant_Normal_Extended),
-        ("Frecuences_Cuant_Normal_Extended" , Frecuences_Cuant_Normal_Extended),
+        ("Variables_Cuant_Not_Grouped" , Variables_Cuant_Not_Grouped),
+        ("Frecuences_Cuant_Not_Grouped" , Frecuences_Cuant_Not_Grouped),
         ("Summary_Measures_For_Not_Grouped_Data" , Summary_Measures_For_Not_Grouped_Data),
         ("Quantiles_For_Not_Grouped_Data" , Quantiles_For_Not_Grouped_Data),
-        ("Variables_Cuali_Normal_Extended" , Variables_Cuali_Normal_Extended),
-        ("Frecuences_Cuali_Normal_Extended" , Frecuences_Cuali_Normal_Extended),
+        ("Variables_Cuali" , Variables_Cuali),
+        ("Frecuences_Cuali" , Frecuences_Cuali),
     ])
     return Dictionary_Results
 
@@ -383,7 +383,7 @@ if (__name__ == "__main__"):
         else:
             print(f"{key} : None")
     """ 
-        Error en la funcion  Cuant_Normal_Extended.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
+        Error en la funcion  Cuant_Not_Grouped.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
         Solucion, usar el metodo copy() para crear una copia del objeto. No usar otras variables, colo copy()
     """
     

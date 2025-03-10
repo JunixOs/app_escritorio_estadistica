@@ -19,6 +19,7 @@ def index_to_string(i):
         Temp = Temp // 26 - 1
     return Letter
 class TreeviewFrame(ttk.Frame):
+    """ SEPARAR EN UN MODULO DIFERENTE """
     def __init__(self , *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hscrollbar = ttk.Scrollbar(self, orient=HORIZONTAL)

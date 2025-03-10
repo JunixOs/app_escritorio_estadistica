@@ -4,13 +4,13 @@ import numpy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Calcs.Calc_Values_Tables import *
-from Window_Export_Excel import Generate_Window_Export_Excel
+from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
+from Views.Table_of_Frecuency.Window_Export_Excel import Generate_Window_Export_Excel
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import Views.Window_Import_Excel as W_Import_Excel
-import Window_Show_Graph as W_Show_Graph
+import Views.Table_of_Frecuency.Window_Import_Excel as W_Import_Excel
+import Views.Table_of_Frecuency.Window_Show_Graph as W_Show_Graph
 
 # Variables Globales
 Labels_Window_Frecuences_Table = []
@@ -145,8 +145,8 @@ class Table_Of_Frecuences:
     
         self.Table_Frecuences.clear_table()
 
-        Variables = Results["Variables_Cuant_For_Many_Values"]
-        Frecuences = Results["Frecuences_Cuant_For_Many_Values"]
+        Variables = Results["Variables_Cuant_Grouped"]
+        Frecuences = Results["Frecuences_Cuant_Grouped"]
 
         if(not self.Table_Frecuences.Has_Rows()):
             self.Table_Frecuences.treeview.tag_configure("font_arial_10", font=("Arial", 10))
@@ -194,8 +194,8 @@ class Table_Of_Frecuences:
     def Put_Data_On_Table_For_Cuantitative_Not_Grouped_Data(self , Results , Precision):
         self.Table_Frecuences.clear_table()
         
-        Variables = Results["Variables_Cuant_Normal_Extended"]
-        Frecuences = Results["Frecuences_Cuant_Normal_Extended"]
+        Variables = Results["Variables_Cuant_Not_Grouped"]
+        Frecuences = Results["Frecuences_Cuant_Not_Grouped"]
         
         if(not self.Table_Frecuences.Has_Rows()):
             self.Table_Frecuences.treeview.tag_configure("font_arial_10", font=("Arial", 10))
@@ -233,8 +233,8 @@ class Table_Of_Frecuences:
     def Put_Data_On_Table_For_Cualitative_Data(self , Results , Precision):
         self.Table_Frecuences.clear_table()
         
-        Variables = Results["Variables_Cuali_Normal_Extended"]
-        Frecuences = Results["Frecuences_Cuali_Normal_Extended"]
+        Variables = Results["Variables_Cuali"]
+        Frecuences = Results["Frecuences_Cuali"]
         if(not self.Table_Frecuences.Has_Rows()):
             self.Table_Frecuences.treeview.tag_configure("font_arial_10", font=("Arial", 10))
             for a in range(0 , Variables["N_Character_Modalities"]):
@@ -464,12 +464,12 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
     def Calc_Results(self , Repeated_Calc):
         Results = Main_Function(self.Data_To_Analized , [self.Checked_Is_Continue , self.Checkbox_Is_Continue] , Repeated_Calc)
 
-        if(Results["Frecuences_Cuant_For_Many_Values"] != None):
+        if(Results["Frecuences_Cuant_Grouped"] != None):
             self.Type_Of_Variable = "Cuantitative_Grouped"
-            self.Amplitude_N_Decimals = Results["Variables_Cuant_For_Many_Values"]["C_Decimals_Number"]
-        elif(Results["Frecuences_Cuant_Normal_Extended"] != None):
+            self.Amplitude_N_Decimals = Results["Variables_Cuant_Grouped"]["C_Decimals_Number"]
+        elif(Results["Frecuences_Cuant_Not_Grouped"] != None):
             self.Type_Of_Variable = "Cuantitative_Not_Grouped"
-        elif(Results["Frecuences_Cuali_Normal_Extended"] != None):
+        elif(Results["Frecuences_Cuali"] != None):
             self.Type_Of_Variable = "Cualitative"
             self.Checkbox_Is_Continue = None
         
@@ -760,8 +760,8 @@ def Create_Window_Frecuences_Table(Main_Window):
     Imported_Data_From_Single_Column = {}
     Graphs = {}
 
-    Title = Label(Window_Frecuences_Table , text="Calculo de Tablas de Frecuencia" , font=("Times New Roman" , 22), foreground="#ffffff", justify=CENTER , bg="#9DAEC6" , highlightthickness=1 ,highlightbackground="#ffffff")
-    Title.place(x=9 , y=10 , width=1380)
+    Main_Title = Label(Window_Frecuences_Table , text="Calculo de Tablas de Frecuencia" , font=("Times New Roman" , 22), foreground="#ffffff", justify=CENTER , bg="#9DAEC6" , highlightthickness=1 ,highlightbackground="#ffffff")
+    Main_Title.place(x=9 , y=10 , width=1380)
 
     Section_Input = Label(Window_Frecuences_Table ,height=30, bg="#FEE1AB" , highlightthickness=2 , highlightbackground="#000000")
     Section_Input.place(x=29 , y=65 , width=1340)

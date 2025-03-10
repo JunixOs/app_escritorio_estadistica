@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Calcs.Center_Window import Center
-from Calcs.Exports.Export_Excel import Export_Table_In_Excel
+from Calcs.Table_of_Frecuency.Exports.Export_Excel import Export_Table_In_Excel
 from tkinter import *
 from tkinter import filedialog
     

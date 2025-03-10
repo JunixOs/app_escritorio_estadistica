@@ -143,8 +143,8 @@ class Draw_Graph_for_Each_Variable:
         elif(Variable_Of_Frecuency == "hi_percent"):
             self.Axis_y_Title = "Frecuencia Relativa Porcentual (hi%)"
         
-        if ("Frecuences_Cuant_For_Many_Values" in self.Data):
-            Copy_Data = copy.deepcopy(self.Data["Frecuences_Cuant_For_Many_Values"])
+        if ("Frecuences_Cuant_Grouped" in self.Data):
+            Copy_Data = copy.deepcopy(self.Data["Frecuences_Cuant_Grouped"])
             Copy_Data = pd.DataFrame(Copy_Data)
 
             if(not self.Axis_x_Title):
@@ -159,8 +159,8 @@ class Draw_Graph_for_Each_Variable:
 
             return figure_bars
 
-        elif("Frecuences_Cuant_Normal_Extended" in self.Data):
-            Copy_Data = self.Data["Frecuences_Cuant_Normal_Extended"].copy()
+        elif("Frecuences_Cuant_Not_Grouped" in self.Data):
+            Copy_Data = self.Data["Frecuences_Cuant_Not_Grouped"].copy()
             Copy_Data = pd.DataFrame(Copy_Data)
             
             if(not self.Axis_x_Title):
@@ -173,8 +173,8 @@ class Draw_Graph_for_Each_Variable:
                 return figure_bars , figure_pie
             return figure_bars
 
-        elif("Frecuences_Cuali_Normal_Extended" in self.Data):
-            Copy_Data = self.Data["Frecuences_Cuali_Normal_Extended"].copy()
+        elif("Frecuences_Cuali" in self.Data):
+            Copy_Data = self.Data["Frecuences_Cuali"].copy()
             Copy_Data = pd.DataFrame(Copy_Data)
 
             if(not self.Axis_x_Title):
