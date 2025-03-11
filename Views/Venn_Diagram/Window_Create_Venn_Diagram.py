@@ -72,10 +72,10 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     content_frame.update_idletasks()  # Asegura que los widgets estén completamente renderizados
     canvas.config(scrollregion=canvas.bbox("all"))  # Actualiza la región desplazable
 
-    Btn_Import_Data = Button(W_Create_Venn_Diagram , text="Importar datos" , font=("Times New Roman" , 13) , bg="#F9FFD1")
+    Btn_Import_Data = Button(W_Create_Venn_Diagram , text="Importar datos" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command=lambda : Main_Frame_Input.place(x=30, y=80, width=1240, height=180))
     Btn_Import_Data.place(x=80 , y=270)
 
-    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar Diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA")
+    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar Diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command=Main_Frame_Input.place_forget)
     Btn_Generate_Venn_Diagram.place(x=1080 , y=270)
 
     Section_Diagram = Label(W_Create_Venn_Diagram , bg="#CBEFE3" , highlightbackground="#000000" , highlightthickness=1)

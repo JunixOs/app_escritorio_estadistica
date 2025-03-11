@@ -58,29 +58,29 @@ class Export_Data:
         Worksheet[f"{Col_hi_percent[0]}{new_row}"].font = Font(bold=True , )
         Worksheet[f"{Col_hi_percent[0]}{new_row}"].alignment = Alignment(horizontal="center" , vertical="center")
 
-    def Add_Summary_Measures(self , WorkSheet, S_Measures , Start_Row):
-        if(S_Measures == None):
+    def Add_Measures_Of_Central_Tendency_And_Dispersion(self , WorkSheet, M_Central_Tendency_And_Dispersion , Start_Row):
+        if(M_Central_Tendency_And_Dispersion == None):
             raise Exception("Error al exportar las medidas de resumen.")
 
         Arr_Col = ["N" , "O" , "P" , "Q" , "R" , "S" , "T" , "U"]
-        for N_col , Key_SM in enumerate(S_Measures.keys()):
+        for N_col , Key_SM in enumerate(M_Central_Tendency_And_Dispersion.keys()):
             if(N_col != 3):
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"] = f"{Key_SM}"
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"].font = Font(bold=True)
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"].alignment = Alignment(horizontal="center" , vertical="center")
 
-                WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"] = S_Measures[Key_SM]
+                WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"] = M_Central_Tendency_And_Dispersion[Key_SM]
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"].alignment = Alignment(horizontal="center" , vertical="center")
             else:
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"] = f"{Key_SM}"
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"].font = Font(bold=True)
                 WorkSheet[f"{Arr_Col[N_col]}{Start_Row}"].alignment = Alignment(horizontal="center" , vertical="center")
-                if(len(S_Measures[Key_SM]) > 1):
-                    for n , Mo in enumerate(S_Measures[Key_SM] , start=1):
+                if(len(M_Central_Tendency_And_Dispersion[Key_SM]) > 1):
+                    for n , Mo in enumerate(M_Central_Tendency_And_Dispersion[Key_SM] , start=1):
                         WorkSheet[f"{Arr_Col[N_col]}{Start_Row + n}"] = f"Mo_{n} : {Mo}"
                         WorkSheet[f"{Arr_Col[N_col]}{Start_Row + n}"].alignment = Alignment(horizontal="center" , vertical="center")
                 else:
-                    WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"] = f"Mo_1 : {S_Measures[Key_SM][0]}"
+                    WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"] = f"Mo_1 : {M_Central_Tendency_And_Dispersion[Key_SM][0]}"
                     WorkSheet[f"{Arr_Col[N_col]}{Start_Row + 1}"].alignment = Alignment(horizontal="center" , vertical="center")
             
     def Adjust_Width(self , Worksheet):
@@ -142,11 +142,11 @@ class Export_Data:
             else:
                 Copy_Data = copy.deepcopy(self.Data_To_Import)
 
-            S_Measures = None
+            M_Central_Tendency_And_Dispersion = None
             if("Summary_Measures_For_Grouped_Data" in Copy_Data):
-                S_Measures = Copy_Data["Summary_Measures_For_Grouped_Data"]
+                M_Central_Tendency_And_Dispersion = Copy_Data["Summary_Measures_For_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
             elif("Summary_Measures_For_Not_Grouped_Data" in Copy_Data):
-                S_Measures = Copy_Data["Summary_Measures_For_Not_Grouped_Data"]
+                M_Central_Tendency_And_Dispersion = Copy_Data["Summary_Measures_For_Not_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
 
             if("Frecuences_Cuant_Grouped" in Copy_Data):
                 Copy_Data =  Copy_Data["Frecuences_Cuant_Grouped"]
@@ -172,11 +172,11 @@ class Export_Data:
                 case "Cuantitative_Grouped":
                     self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable , Start_Row)
                     self.Create_Row_Total(Worksheet_1 , "D" , ["G" , Copy_Data["fi"]] , ["I" , Copy_Data["hi"]] , ["K" , Copy_Data["hi%"]])
-                    self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
+                    self.Add_Measures_Of_Central_Tendency_And_Dispersion(Worksheet_1 , M_Central_Tendency_And_Dispersion , Start_Row + 1)
                 case "Cuantitative_Not_Grouped":
                     self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable , Start_Row)
                     self.Create_Row_Total(Worksheet_1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]])
-                    self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
+                    self.Add_Measures_Of_Central_Tendency_And_Dispersion(Worksheet_1 , M_Central_Tendency_And_Dispersion , Start_Row + 1)
                 case "Cualitative":
                     self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable , Start_Row)
                     self.Create_Row_Total(Worksheet_1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]])
@@ -212,12 +212,12 @@ class Export_Data:
                 if(not Columns_To_Export[key].get()):
                     continue
 
-                S_Measures = None
+                M_Central_Tendency_And_Dispersion = None
                 if("Summary_Measures_For_Grouped_Data" in value):
-                    S_Measures = value["Summary_Measures_For_Grouped_Data"]
+                    M_Central_Tendency_And_Dispersion = value["Summary_Measures_For_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
                     value.pop("Summary_Measures_For_Grouped_Data")
                 elif("Summary_Measures_For_Not_Grouped_Data" in value):
-                    S_Measures = value["Summary_Measures_For_Not_Grouped_Data"]
+                    M_Central_Tendency_And_Dispersion = value["Summary_Measures_For_Not_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
                     value.pop("Summary_Measures_For_Not_Grouped_Data")
                 
                 if("Frecuences_Cuant_Grouped" in value):
@@ -247,11 +247,11 @@ class Export_Data:
                     case "Cuantitative_Grouped":
                         self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable[key] , Start_Row)
                         self.Create_Row_Total(Worksheet_1 , "D" , ["G" , value["fi"]] , ["I" , value["hi"]] , ["K" , value["hi%"]])
-                        self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
+                        self.Add_Measures_Of_Central_Tendency_And_Dispersion(Worksheet_1 , M_Central_Tendency_And_Dispersion , Start_Row + 1)
                     case "Cuantitative_Not_Grouped":
                         self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable[key] , Start_Row)
                         self.Create_Row_Total(Worksheet_1 , "D" , ["E" , value["fi"]] , ["G" , value["hi"]] , ["I" , value["hi%"]])
-                        self.Add_Summary_Measures(Worksheet_1 , S_Measures , Start_Row + 1)
+                        self.Add_Measures_Of_Central_Tendency_And_Dispersion(Worksheet_1 , M_Central_Tendency_And_Dispersion , Start_Row + 1)
                     case "Cualitative":
                         self.Align_And_Style_Values_In_Cells(Worksheet_1 , self.Type_Of_Variable[key] , Start_Row)
                         self.Create_Row_Total(Worksheet_1 , "D" , ["E" , value["fi"]] , ["G" , value["hi"]] , ["I" , value["hi%"]])

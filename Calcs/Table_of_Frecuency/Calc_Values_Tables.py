@@ -133,22 +133,32 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
     Arr_Decile = Quantile.Calc_Quantile_For_Grouped_Data(10 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
     Arr_Percentile = Quantile.Calc_Quantile_For_Grouped_Data(100 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
 
-    Summary_Measures = dict([
-    ("Media Aritmetica (X)" , X_),
-    ("Media Geometrica (X_g)" , X_g),
-    ("Media Armonica (X_h)" , X_h),
-    ("Moda (Mo)" , Mo),
-    ("Mediana (Me)" , Me),
-    ("Varianza (S^2)" , S_2),
-    ("Desviacion Estandar (S)" , S),
-    ("CV%" , CV_Percent),
-    ])
+    Coef_Pearson = SM_For_Grouped_Data.Calc_Pearson_Coefficient(X_ , Me , S)
+    Coef_Fisher = SM_For_Grouped_Data.Calc_Fisher_Coefficient(Arr_xi , X_ , Arr_fi , n , S)
+    Coef_Kurtosis = SM_For_Grouped_Data.Calc_Kurtosis_Coefficient(Arr_Percentile , Arr_xi , X_ , Arr_fi , n , S)
 
-    Quantiles = dict([
-        ("Cuartil" , Arr_Quartile),
-        ("Decil" , Arr_Decile),
-        ("Percentil" , Arr_Percentile),
-    ])
+    Summary_Measures = {
+        "Measures_Of_Central_Tendency_And_Dispersion" : dict([
+            ("Media Aritmetica (X)" , X_),
+            ("Media Geometrica (X_g)" , X_g),
+            ("Media Armonica (X_h)" , X_h),
+            ("Moda (Mo)" , Mo),
+            ("Mediana (Me)" , Me),
+            ("Varianza (S^2)" , S_2),
+            ("Desviacion Estandar (S)" , S),
+            ("CV%" , CV_Percent),
+        ]),
+        "Quantiles" : dict([
+            ("Cuartil" , Arr_Quartile),
+            ("Decil" , Arr_Decile),
+            ("Percentil" , Arr_Percentile),
+        ]),
+        "Coefficient_Asymmetry" : dict([
+            ("Pearson" , Coef_Pearson),
+            ("Fisher" , Coef_Fisher),
+            ("Kurtosis" , Coef_Kurtosis),
+        ]),
+    }
 
     Variables_Value = dict([
         ("Data_List" , Data),
@@ -174,7 +184,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         Hi_percent = Arr_Hi_percent,
     )
 
-    return Variables_Value , Frecuences_Value , Summary_Measures , Quantiles
+    return Variables_Value , Frecuences_Value , Summary_Measures
 
 def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
     """ 
@@ -211,22 +221,32 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
     Arr_Decile = Quantile.Calc_Quantile_For_Not_Grouped_Data(10 , Data)
     Arr_Percentile = Quantile.Calc_Quantile_For_Not_Grouped_Data(100 , Data)
 
-    Summary_Measures = dict([
-        ("Media Aritmetica (X)" , X_),
-        ("Media Geometrica (X_g)" , X_g),
-        ("Media Armonica (X_h)" , X_h),
-        ("Moda (Mo)" , Mo),
-        ("Mediana (Me)" , Me),
-        ("Varianza (S^2)" , S_2),
-        ("Desviacion Estandar (S)" , S),
-        ("CV%" , CV_Percent),
-    ])
+    Coef_Pearson = SM_For_Not_Grouped_Data.Calc_Pearson_Coefficient(X_ , Me , S)
+    Coef_Fisher = SM_For_Not_Grouped_Data.Calc_Fisher_Coefficient(Data , X_ , n , S)
+    Coef_Kurtosis = SM_For_Not_Grouped_Data.Calc_Kurtosis_Coefficient(Data , X_ , n , S)
 
-    Quantiles = dict([
-        ("Cuartil" , Arr_Quartile),
-        ("Decil" , Arr_Decile),
-        ("Percentil" , Arr_Percentile),
-    ])
+    Summary_Measures = {
+        "Measures_Of_Central_Tendency_And_Dispersion" : dict([
+            ("Media Aritmetica (X)" , X_),
+            ("Media Geometrica (X_g)" , X_g),
+            ("Media Armonica (X_h)" , X_h),
+            ("Moda (Mo)" , Mo),
+            ("Mediana (Me)" , Me),
+            ("Varianza (S^2)" , S_2),
+            ("Desviacion Estandar (S)" , S),
+            ("CV%" , CV_Percent),
+        ]),
+        "Quantiles" : dict([
+            ("Cuartil" , Arr_Quartile),
+            ("Decil" , Arr_Decile),
+            ("Percentil" , Arr_Percentile),
+        ]),
+        "Coefficient_Asymmetry" : dict([
+            ("Pearson" , Coef_Pearson),
+            ("Fisher" , Coef_Fisher),
+            ("Kurtosis" , Coef_Kurtosis),
+        ]),
+    }
 
     Variables_Values = dict([
         ("Data_List" , Data),
@@ -243,7 +263,7 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
         hi_percent = Arr_hi_percent,
         Hi_percent = Arr_Hi_percent,
     )
-    return Variables_Values , Frecuences_Values , Summary_Measures , Quantiles
+    return Variables_Values , Frecuences_Values , Summary_Measures
 
 def Calculate_Results_Cualitative_Data(Data):
     """ 
@@ -292,12 +312,10 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
     Variables_Cuant_Grouped = None
     Frecuences_Cuant_Grouped = None
     Summary_Measures_For_Grouped_Data = None
-    Quantiles_For_Grouped_Data = None
 
     Variables_Cuant_Not_Grouped = None
     Frecuences_Cuant_Not_Grouped = None
     Summary_Measures_For_Not_Grouped_Data = None
-    Quantiles_For_Not_Grouped_Data = None
 
     Variables_Cuali = None
     Frecuences_Cuali = None
@@ -347,11 +365,11 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                 match(Is_Continue[0].get()):
                     case True:
                         if(m < 5):
-                            Variables_Cuant_Not_Grouped , Frecuences_Cuant_Not_Grouped , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
+                            Variables_Cuant_Not_Grouped , Frecuences_Cuant_Not_Grouped , Summary_Measures_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
                         else:
-                            Variables_Cuant_Grouped , Frecuences_Cuant_Grouped , Summary_Measures_For_Grouped_Data , Quantiles_For_Grouped_Data = Calculate_Results_Cuantitative_For_Grouped_Data(Data , Is_Float , m)
+                            Variables_Cuant_Grouped , Frecuences_Cuant_Grouped , Summary_Measures_For_Grouped_Data = Calculate_Results_Cuantitative_For_Grouped_Data(Data , Is_Float , m)
                     case False:
-                        Variables_Cuant_Not_Grouped , Frecuences_Cuant_Not_Grouped , Summary_Measures_For_Not_Grouped_Data , Quantiles_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
+                        Variables_Cuant_Not_Grouped , Frecuences_Cuant_Not_Grouped , Summary_Measures_For_Not_Grouped_Data = Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data)
             case False:
                 Variables_Cuali , Frecuences_Cuali = Calculate_Results_Cualitative_Data(Data)
             case _:
@@ -361,11 +379,9 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
         ("Variables_Cuant_Grouped" , Variables_Cuant_Grouped),
         ("Frecuences_Cuant_Grouped" , Frecuences_Cuant_Grouped),
         ("Summary_Measures_For_Grouped_Data" , Summary_Measures_For_Grouped_Data),
-        ("Quantiles_For_Grouped_Data" , Quantiles_For_Grouped_Data),
         ("Variables_Cuant_Not_Grouped" , Variables_Cuant_Not_Grouped),
         ("Frecuences_Cuant_Not_Grouped" , Frecuences_Cuant_Not_Grouped),
         ("Summary_Measures_For_Not_Grouped_Data" , Summary_Measures_For_Not_Grouped_Data),
-        ("Quantiles_For_Not_Grouped_Data" , Quantiles_For_Not_Grouped_Data),
         ("Variables_Cuali" , Variables_Cuali),
         ("Frecuences_Cuali" , Frecuences_Cuali),
     ])

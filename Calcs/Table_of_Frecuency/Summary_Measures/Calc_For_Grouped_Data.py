@@ -88,3 +88,20 @@ def Calc_Standard_Deviation(Variance):
 
 def Calc_Percentage_Coefficient_Variation(Standart_Deviation , Arith_Average):
     return (Standart_Deviation/Arith_Average)*100
+
+##### Coef de Asimetria
+def Calc_Pearson_Coefficient(Arith_Average , Me , S):
+    return 3*(Arith_Average - Me)/S
+
+def Calc_Fisher_Coefficient(Arr_xi , Arith_Average , Arr_fi , n , S):
+    return np.sum(((Arr_xi[i] - Arith_Average) ** 3 ) * Arr_fi[i] for i in range(len(Arr_xi)))/(n * (S ** 3))
+
+def Calc_Kurtosis_Coefficient(Arr_Percentiles , Arr_xi , Arith_Average , Arr_fi , n , S):
+    """ 
+        ==============================================================================================
+        Calculo con Percentiles:
+        Descomente para activar el calculo del coeficiente de kurtosis con Percentiles
+        ==============================================================================================
+    """
+    """ return ((Arr_Percentiles[74] - Arr_Percentiles[24])/(Arr_Percentiles[89] - Arr_Percentiles[9])) - 0.5 """
+    return (np.sum(((Arr_xi[i] - Arith_Average) ** 4) * Arr_fi[i] for i in range(len(Arr_xi)))/(n * (S ** 4))) - 3

@@ -4,18 +4,31 @@ from matplotlib_venn import venn2
 class Venn_Diagram:
     def __init__(self , Data_From_Sets):
         self.Data_From_Sets = Data_From_Sets
-        self.Labels = []
-        self.Sets = []
+        self.Sets_Names = []
+        self.Sets_Values = []
+        self.Arr_Only_One_Set = []
 
         for key , s in self.Data_From_Sets.items():
-            self.Labels = key
-            self.Sets = s
+            self.Sets_Names = key
+            self.Sets_Values = s
+
+        self.N_Sets = len(self.Sets)
     def Find_Elements_Only_One_Set(self):
         for i in range(len(self.Sets)):
-            pass  
+            Collection_Only_One_Set = [len(self.Sets[i] - self.Sets[a]) for a in range(len(self.Sets)) if a != i]
+            Only_One_Set = min(Collection_Only_One_Set)
+    def Calc_ID_For_Sets(self):
+        ID = [str(bin(a)).replace("0b" , "") for a in range(2 ** len(self.Sets)) if a != 0]
+        for i in range(len(ID)):
+            if(len(ID[i]) < self.N_Sets):
+                ID[i] = "0"*(self.N_Sets - len(ID[i])) + ID[i]
+
+        
+        return ID
     def Generate_Diagrams(self):
-        pass
-    
+        fiugre_venn = venn2(self.Sets , set_labels=tuple(self.Labels))
+
+
 # Definir los elementos en cada conjunto
 set_A = {1, 2, 3, 4}
 set_B = {3, 4, 5, 6}

@@ -375,69 +375,120 @@ class Quantiles_Table:
 class Labels_Summary_Measures:
     def __init__(self , W_Calc_Table_Frec):
         self.W_Calc_Table_Frec = W_Calc_Table_Frec
+
+        self.Frame_Summary_Measures = Frame(self.W_Calc_Table_Frec , bg="#ffffff")
+
+        self.Canvas_Frame_Summary_Measures = Canvas(self.Frame_Summary_Measures , width=720 , height=161 , bg="#ffffff")
+        self.Canvas_Frame_Summary_Measures.grid(row=0 , column=3 , sticky="nsew")
+
+        self.Scrollbar_Frame_Summary_Measures = Scrollbar(self.Frame_Summary_Measures , orient="vertical" , command=self.Canvas_Frame_Summary_Measures.yview)
+        self.Scrollbar_Frame_Summary_Measures.grid(row=0 , column=2 , sticky="ns")
+
+        self.Canvas_Frame_Summary_Measures.configure(yscrollcommand=self.Scrollbar_Frame_Summary_Measures.set)
+
+        self.Content_Frame_Summary_Measures = Frame(self.Canvas_Frame_Summary_Measures , width=720 , bg="#ffffff")
+
+        self.Canvas_Frame_Summary_Measures.create_window((0, 0), window=self.Content_Frame_Summary_Measures , anchor="nw")
+
         self.Labels_Collection = []
 
-    def Create_Labels(self, S_Measures):
+    def Create_Labels(self, M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry):
         self.Destroy_Labels()
 
-        b=0
-        for key,value in S_Measures.items():
+        Lab_Center_Tendency = Label(self.Content_Frame_Summary_Measures , text="Medidas de Tendencia Central y de Dispersion" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER)
+        Lab_Coefficient_Asymmetry = Label(self.Content_Frame_Summary_Measures , text="Coeficientes de Asimetria" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER)
+
+        self.Labels_Collection.append(Lab_Center_Tendency)
+        for b , (key,value) in enumerate(M_Central_Tendency_And_Dispersion.items()):
             if(b < 3):
                 if(value == "Indeterminado"):
-                    lab = Label(self.W_Calc_Table_Frec , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
                 else:
-                    lab = Label(self.W_Calc_Table_Frec , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
             elif(b == 3):
                 if(len(value) > 1):
                     sub=1
                     String = ""
                     for a in range(0 , len(value)):
-                        if(a >= 3 or a == len(value) - 1):
+                        if(a >= 4 or a == len(value) - 1):
                             String += f"Mo_{sub}: {value[a]:.{self.Precision}f}"
                             break
                         else:
                             String += f"Mo_{sub}: {value[a]:.{self.Precision}f}\n"
                         sub += 1
-                    lab = Label(self.W_Calc_Table_Frec , text=f"{key}\n{String}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{String}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
 
                 else:
-                    lab = Label(self.W_Calc_Table_Frec , text=f"{key}\nMo: {value[0]:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\nMo: {value[0]:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
 
             elif(b < 6):
-                lab = Label(self.W_Calc_Table_Frec , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
             else:
-                lab = Label(self.W_Calc_Table_Frec , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=20)
+                lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
             self.Labels_Collection.append(lab)
-            b +=1
+
+        self.Labels_Collection.append(Lab_Coefficient_Asymmetry)
+        for key , value in M_Coefficient_Asymmetry.items():
+            match(key):
+                case "Pearson":
+                    if(value < 0):
+                        Asymmetry = "Ap < 0\nSesgo hacia\nla derecha"
+                    elif(value == 0):
+                        Asymmetry = "Ap = 0\nSimetrica"
+                    elif(value > 0):
+                        Asymmetry = "Ap > 0\nSesgo hacia\nla izquierda"
+                case "Fisher":
+                    if(value < 0):
+                        Asymmetry = "Af < 0\nSesgo hacia\nla izquierda"
+                    elif(value == 0):
+                        Asymmetry = "Af = 0\nSimetrica"
+                    elif(value > 0):
+                        Asymmetry = "Af > 0\nSesgo hacia\nla derecha"
+                case "Kurtosis":
+                    if(value < 0):
+                        Asymmetry = "K < 0\nPlaticurtica\nConcentracion baja"
+                    elif(value == 0):
+                        Asymmetry = "K = 0\nMesocurtica\nConcentracion normal"
+                    elif(value > 0):
+                        Asymmetry = "K > 0\nLeptocurtica\nConcentracion alta"
+            lab = Label(self.Content_Frame_Summary_Measures , text=f"Coeficiente de {key}\n{value:.{self.Precision}f}\n{Asymmetry}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
+            self.Labels_Collection.append(lab)
         
     def Display_Labels(self):
         if(self.Labels_Collection):
-            b = 0
-            for lab in self.Labels_Collection:
-                if(b < 3):
-                    x_pos = 40 + (255*b)
-                    lab.place(x=x_pos , y=260)
-                elif(b == 3):
-                    x_pos = 40 + (255*b) - (255*3)
-                    lab.place(x=x_pos , y=320)
-                elif(b < 6):
-                    x_pos = 40 + (255*b) - (255*3)
-                    lab.place(x=x_pos , y=320)
+            self.Frame_Summary_Measures.place(x=40 , y=260 , width=715 , height=161)
+    
+            for b , lab in enumerate(self.Labels_Collection):
+                if(b == 0):
+                    lab.grid(row=0 , column = 0 , sticky="nsew" , columnspan = 3)
+                elif(b < 4):
+                    lab.grid(row=2 , column = b - 1 , padx=20 , pady=10 , sticky="w")
+                elif(b == 4):
+                    lab.grid(row=4 , column = (b - 4) , padx=20 , pady=10 , sticky="nsew" , rowspan=3)
+                elif(b < 7):
+                    lab.grid(row=4 , column = (b - 4) , padx=20 , pady=10 , sticky="w")
+                elif(b < 9):
+                    lab.grid(row=6 , column = (b - 6) , padx=20 , pady=10 , sticky="w")
+                elif(b == 9):
+                    lab.grid(row = 8 , column = 0 , sticky="nsew" , columnspan = 3)
                 else:
-                    x_pos = 40 + (255*b) - (255*5)
-                    lab.place(x=x_pos , y=380)
-                b += 1
+                    lab.grid(row = 10 , column = (b - 10) , padx=20 , pady=10 , sticky="w")
+    
+            self.Content_Frame_Summary_Measures.update_idletasks()
+            self.Canvas_Frame_Summary_Measures.config(scrollregion=self.Canvas_Frame_Summary_Measures.bbox("all"))
 
     def Hidden_Labels(self):
         if(self.Labels_Collection):
-            for lab in self.Labels_Collection:
-                lab.place_forget()
+            self.Frame_Summary_Measures.place_forget()
 
     def Destroy_Labels(self):
         if(self.Labels_Collection):
             for lab in self.Labels_Collection:
                 lab.destroy()
             self.Labels_Collection = []
+
+    def Destroy_Frame_Summary_Measures(self):
+        self.Frame_Summary_Measures.destroy()
 
 
 class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Quantiles_Table , Checkbox_Is_Continue):
@@ -528,18 +579,20 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
 
         match(self.Type_Of_Variable):
             case "Cuantitative_Grouped":
-                S_Measures = self.Results["Summary_Measures_For_Grouped_Data"]
-                Quantile_Data = self.Results["Quantiles_For_Grouped_Data"]
+                M_Central_Tendency_And_Dispersion = self.Results["Summary_Measures_For_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
+                M_Coefficient_Asymmetry = self.Results["Summary_Measures_For_Grouped_Data"]["Coefficient_Asymmetry"]
+                Quantile_Data = self.Results["Summary_Measures_For_Grouped_Data"]["Quantiles"]
 
                 Table_Of_Frecuences.Put_Data_On_Table_For_Cuantitative_Grouped_Data(self , self.Results , self.Precision , self.Amplitude_N_Decimals)
-                Labels_Summary_Measures.Create_Labels(self , S_Measures)
+                Labels_Summary_Measures.Create_Labels(self , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry)
                 Quantiles_Table.Put_Data_On_Tables(self , Quantile_Data , self.Precision)
             case "Cuantitative_Not_Grouped":
-                S_Measures = self.Results["Summary_Measures_For_Not_Grouped_Data"]
-                Quantile_Data = self.Results["Quantiles_For_Not_Grouped_Data"]
+                M_Central_Tendency_And_Dispersion = self.Results["Summary_Measures_For_Not_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
+                M_Coefficient_Asymmetry = self.Results["Summary_Measures_For_Not_Grouped_Data"]["Coefficient_Asymmetry"]
+                Quantile_Data = self.Results["Summary_Measures_For_Not_Grouped_Data"]["Quantiles"]
         
                 Table_Of_Frecuences.Put_Data_On_Table_For_Cuantitative_Not_Grouped_Data(self , self.Results , self.Precision)
-                Labels_Summary_Measures.Create_Labels(self , S_Measures)
+                Labels_Summary_Measures.Create_Labels(self , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry)
                 Quantiles_Table.Put_Data_On_Tables(self , Quantile_Data , self.Precision)
             case "Cualitative":
                 Table_Of_Frecuences.Put_Data_On_Table_For_Cualitative_Data(self , self.Results , self.Precision)
@@ -566,6 +619,7 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
         Table_Of_Frecuences.Destroy_Table(self)
         if(self.Type_Of_Variable == "Cuantitative_Grouped" or self.Type_Of_Variable == "Cuantitative_Not_Grouped"):
             Labels_Summary_Measures.Destroy_Labels(self)
+            Labels_Summary_Measures.Destroy_Frame_Summary_Measures(self)
             Quantiles_Table.Destroy_Tables(self)
             if(self.Checkbox_Is_Continue):
                 Checkbox_Is_Continue.Destroy_Checkbox(self)

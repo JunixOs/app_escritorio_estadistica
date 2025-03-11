@@ -50,3 +50,13 @@ def Calc_Percentage_Coefficient_Variation(Standart_Variation , Arith_Average):
 
 def Calc_Symmetry_Coefficient(Arith_Average , Me , S):
     return 3*(Arith_Average - Me)/S
+
+###### Coef de Asimetria
+def Calc_Pearson_Coefficient(Arith_Average , Me , S):
+    return 3*(Arith_Average - Me)/S
+
+def Calc_Fisher_Coefficient(Data , Arith_Average , n , S):
+    return np.sum((xi - Arith_Average) ** 3 for xi in Data)/(n * (S ** 3))
+
+def Calc_Kurtosis_Coefficient(Data , Arith_Average , n , S):
+    return (np.sum((xi - Arith_Average) ** 4 for xi in Data)/(n * (S ** 4))) - 3
