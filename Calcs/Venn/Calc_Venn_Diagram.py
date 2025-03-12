@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib_venn import venn2
+from matplotlib_venn import venn3
 
 class Venn_Diagram:
     def __init__(self , Data_From_Sets):
@@ -22,8 +23,6 @@ class Venn_Diagram:
         for i in range(len(ID)):
             if(len(ID[i]) < self.N_Sets):
                 ID[i] = "0"*(self.N_Sets - len(ID[i])) + ID[i]
-
-        
         return ID
     def Generate_Diagrams(self):
         fiugre_venn = venn2(self.Sets , set_labels=tuple(self.Labels))
@@ -41,8 +40,10 @@ Intersection = (len(set_A & set_B) / total_elements) * 100
 # Crear el diagrama de Venn
 g_ven = venn2([set_A, set_B], set_labels=('A', 'B'))
 
+
 old_text = g_ven.get_label_by_id("10").get_text()
-g_ven.get_label_by_id("10").set_text(f"{old_text}\n{Only_A:.3f}%")
+percent = round((int(old_text) / total_elements) * 100 , 4)
+g_ven.get_label_by_id("10").set_text(f"{old_text}\n{percent:.4f}%")
 g_ven.get_label_by_id("10").set_backgroundcolor(color="#ffffff")
 g_ven.get_label_by_id("01").set_text(f"{Only_B:.3f}%")
 g_ven.get_label_by_id("11").set_text(f"{Intersection:.3f}%")
