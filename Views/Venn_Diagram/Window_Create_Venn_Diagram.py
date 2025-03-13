@@ -1,5 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from Calcs.Venn.Calc_Venn_Diagram import Venn_Diagram
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def index_to_string(i):
     Letter = ''
@@ -20,20 +27,34 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
         Main_Window.state(newstate="normal")
         Main_Window.lift()
 
-    if(__name__ == "__main__"):
-        W_Create_Venn_Diagram = Tk()
-    else:
-        Main_Window.state(newstate="withdraw")
-        W_Create_Venn_Diagram = Toplevel(Main_Window)
-        W_Create_Venn_Diagram.protocol("WM_DELETE_WINDOW" , Back)
+    def Process_Data(Widget_Venn_Graph):
+        try:
+            Graph = Venn_Diagram(Collection_On_Inputs , Data_From_External_File)
+
+            Veen_Graph = Graph.Generate_Diagrams()
+
+            if(Widget_Venn_Graph):
+                Widget_Venn_Graph.destroy()
+            
+            Widget_Venn_Graph = FigureCanvasTkAgg(Veen_Graph , master=W_Create_Venn_Diagram)
+            Widget_Venn_Graph.place(x=30 , y=250 , width=1240 , height=510)
+
+        except Exception as e:
+            messagebox.showerror("Error" , f"{e}")
+
+    Main_Window.state(newstate="withdraw")
+    W_Create_Venn_Diagram = Toplevel(Main_Window)
 
     W_Create_Venn_Diagram.geometry("1300x800+110+48")
     Icon = PhotoImage(file="Images/icon.png")
     W_Create_Venn_Diagram.iconphoto(False , Icon)
     W_Create_Venn_Diagram.title("Crear Diagramas de Venn")
-    W_Create_Venn_Diagram.grab_set()
     W_Create_Venn_Diagram.lift()
     W_Create_Venn_Diagram.config(bg="#9EABC5")
+
+    Collection_On_Inputs = {}
+    Data_From_External_File = set()
+    Widget_Venn_Graph = None
 
     Main_Title = Label(W_Create_Venn_Diagram , text="Crear Diagramas de Venn" , bg="#A7D0D9" , font=("Times New Roman" , 22) , justify=CENTER , foreground="#000000" , highlightthickness=1 , highlightbackground="#000000" , relief="raised")
     Main_Title.place(x=10 , y=10 , width=1280 , height=50)
@@ -56,12 +77,18 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
 
     Canvas_Set.create_window((0, 0), window=Content_Frame_Sets, anchor="nw")
 
-    for i in range(7):
-        Text_Input_Data = Label(Content_Frame_Sets, text=f"Conjunto {index_to_string(i)}:", font=("Times New Roman", 13), bg="#CDC4FF", justify=LEFT)
-        Text_Input_Data.grid(row=i*2, column=0, padx=10, pady=10, sticky="w")
+    for i in range(3):
+        Input_Data_Set = StringVar(W_Create_Venn_Diagram)
+        Input_Data_Set.set("")
+        Set_Name = index_to_string(i)
 
-        Input_Data = Entry(Content_Frame_Sets, font=("Courier New", 13), relief="sunken", border=1 , width=109)
-        Input_Data.grid(row=i*2, column=1, padx=10, pady=10, sticky="w")
+        Text_Widget_Input_Data_Set = Label(Content_Frame_Sets, text=f"Conjunto {Set_Name}:", font=("Times New Roman", 13), bg="#CDC4FF", justify=LEFT)
+        Text_Widget_Input_Data_Set.grid(row=i*2, column=0, padx=10, pady=10, sticky="w")
+
+        Widget_Input_Data_Set = Entry(Content_Frame_Sets, font=("Courier New", 13), relief="sunken", border=1 , width=109 , textvariable=Input_Data_Set)
+        Widget_Input_Data_Set.grid(row=i*2, column=1, padx=10, pady=10, sticky="w")
+
+        Collection_On_Inputs[f"{Set_Name}"] = ["" , Widget_Input_Data_Set , Input_Data_Set]
 
 
     Content_Frame_Sets.update_idletasks()  # Asegura que los widgets estén completamente renderizados
@@ -70,7 +97,7 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     Btn_Import_Data = Button(W_Create_Venn_Diagram , text="Importar datos" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command=lambda : Frame_Sets.place(x=30, y=80, width=1240, height=180))
     Btn_Import_Data.place(x=80 , y=190)
 
-    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar Diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command=Frame_Sets.place_forget)
+    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar Diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command= lambda: Process_Data(Widget_Venn_Graph))
     Btn_Generate_Venn_Diagram.place(x=1080 , y=190)
 
     Section_Diagram = Label(W_Create_Venn_Diagram , bg="#CBEFE3" , highlightbackground="#000000" , highlightthickness=1)
@@ -85,6 +112,7 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     Btn_Volver = Button(W_Create_Venn_Diagram , text="Volver" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command=Back)
     Btn_Volver.pack(side=BOTTOM , fill=BOTH)
 
+    W_Create_Venn_Diagram.protocol("WM_DELETE_WINDOW" , Back)
     W_Create_Venn_Diagram.resizable(False , False)
     W_Create_Venn_Diagram.mainloop()
 
