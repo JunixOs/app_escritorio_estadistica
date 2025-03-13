@@ -1,8 +1,8 @@
 import sys
 import os
-import copy
-# Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from Path_Manager import Get_Resource_Path
 from Calcs.Table_of_Frecuency.Exports.Export_Graph import Export_Graph_As_Image
 
 from tkinter import *
@@ -317,7 +317,7 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
     W_Export_Graph.geometry("900x700+310+90")
     W_Export_Graph.lift()
     W_Export_Graph.grab_set()
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Export_Graph.iconphoto(False , Icon)
     W_Export_Graph.protocol("WM_DELETE_WINDOW" , Back_To_W_Show_Graph)
 
@@ -348,7 +348,7 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
     Label_Input_dpi.place(x=20 , y=150)
 
     Label_Input_Size = Label(W_Export_Graph , text="Tamaño de la imagen (px):\nOriginal 980x700" , font=("Times New Roman" , 13) , justify=LEFT , bg="#E4DBD5")
-    Label_Input_Size.place(x=470 , y=150)
+    # Label_Input_Size.place(x=470 , y=150)
 
     Section_2 = Label(W_Export_Graph , bg="#E7E4C1" , width=129 , height=32 , borderwidth=2 , relief="solid")
     Section_2.place(x=0 , y=214)

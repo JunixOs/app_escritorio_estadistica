@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
+import os
+import sys
 
 def Create_Window_Multiple_Graphs(Father_Window):
     try:
@@ -11,6 +13,9 @@ def Create_Window_Multiple_Graphs(Father_Window):
         W_Multiple_Grahps = Toplevel(Father_Window)
     else:
         W_Multiple_Grahps = Tk()
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    project_root = os.path.abspath(os.path.join(script_dir, '..'))
+    
     W_Multiple_Grahps.geometry("700x500+250+150")
     W_Multiple_Grahps.title("Crear Multiples Graficos")
     Icon = PhotoImage(file="Images/icon.png")

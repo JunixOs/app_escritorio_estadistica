@@ -153,6 +153,8 @@ El proyecto tiene la siguiente estructura de carpetas
 ```bash
 Statphi/
 ├── Calcs/
+│   ├── Imports/
+│   │   └── Import_Data_From_Excel.py
 │   ├── MAS/
 │   │   └── MAS_Calc.py
 │   ├── Table_of_Frecuency/
@@ -215,6 +217,7 @@ Ademas, deberas contar con las siguientes librerias de **python** (puedes usar `
 3. `matplotlib 3.10.0`
 4. `openpyxl 3.1.5`
 5. `scipy 1.15.1`
+6. `seaborn 0.13.2`
 
 > [!WARNING]
 > Si ya tienes librerias instaladas, es recomendable crear un entorno virtual para evitar conflictos con las diferentes librerias de tu sistema.

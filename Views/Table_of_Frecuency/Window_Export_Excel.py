@@ -3,6 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from Path_Manager import Get_Resource_Path
 from Calcs.Center_Window import Center
 from Calcs.Table_of_Frecuency.Exports.Export_Excel import Export_Table_In_Excel
 from tkinter import *
@@ -31,7 +32,7 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
         W_Export_Excel.grab_set()
 
     W_Export_Excel.geometry("700x180+430+350")
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Export_Excel.iconphoto(False , Icon)
     W_Export_Excel.title("Exportar Excel")
     W_Export_Excel.protocol("WM_DELETE_WINDOW" , Back)

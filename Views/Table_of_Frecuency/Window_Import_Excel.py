@@ -3,6 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from Path_Manager import Get_Resource_Path
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
@@ -66,11 +67,14 @@ class TreeviewFrame(ttk.Frame):
 
                 if(Sheet_Number.get() > len(self.sheets)):
                     Sheet_Number.set(Sheet_Number.get() - len(self.sheets))
-                    raise Exception(f"El numero de hoja {Sheet_Number.get() + len(self.sheets)} no existe.")
+                    raise Raise_Warning(f"El numero de hoja {Sheet_Number.get() + len(self.sheets)} no existe.")
                 
                 Sheet_N = Sheet_Number.get() - 1
 
                 self.Load_Sheet_Data(Sheet_N)
+        except Raise_Warning as e:
+            self.Progress_Bar.Close_Progress_Bar()
+            messagebox.showwarning("Advertencia" , f"{e}")
         except Exception as e:
             self.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
@@ -119,13 +123,16 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
 
             if (not os.path.exists(Path.get())):
                 Path.set("")
-                raise Exception("El archivo Excel no existe en la ruta especificada.")
+                raise Raise_Warning("El archivo Excel no existe en la ruta especificada.")
 
             if(isinstance(Sheet_Number.get() , float)):
                 Sheet_Number.set(1)
-                raise Exception("Numero de hoja no valido, solo valores enteros")
+                raise Raise_Warning("Numero de hoja no valido, solo valores enteros")
 
             threading.Thread(target= lambda: Preview.Load_Excel_File(Path.get() , Sheet_Number)).start()
+        except Raise_Warning as e:
+            Preview.Progress_Bar.Close_Progress_Bar()
+            messagebox.showwarning("Advertencia" , f"{e}")
         except Exception as e:
             Preview.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
@@ -139,18 +146,18 @@ def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , D
             raise Raise_Warning("No se ha ingresado un rango de celdas.")
         
         if(";" in Cell_Range.get()):
-            Import_Excel = Import_Excel_Using_Multiple_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
+            Import_Excel = Import_Excel_Using_Multiple_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get() , "Table_Of_Frecuency")
 
             Import_Excel.Process_Input_Data()
 
-            threading.Thread(target= lambda: Import_Excel.Import_Data(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Multiple_Columns)).start()
+            threading.Thread(target= lambda: Import_Excel.Import_Data(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Multiple_Columns , None , None)).start()
 
         elif(":" in Cell_Range.get()):
-            Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
+            Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get() , "Table_Of_Frecuency")
 
             Import_Excel.Process_Input_Data()
 
-            threading.Thread(target= lambda: Import_Excel.Import_Data(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns)).start()
+            threading.Thread(target= lambda: Import_Excel.Import_Data(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns , None , None)).start()
         else:
             raise Raise_Warning("El rango de celdas ingresado es invalido.")
 
@@ -175,7 +182,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     else:
         W_Import_Excel = Toplevel(Father_Window)
 
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
 
     W_Import_Excel.grab_set()
     W_Import_Excel.geometry("800x550+350+170")
@@ -202,7 +209,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     Input_Sheet_Number = Spinbox(W_Import_Excel , font=("Courier New" , 13) , textvariable=Sheet_Number , from_=1 , to=100 , width=4 , state="readonly" , command= lambda: Load_Excel_To_Preview(Path , Sheet_Number , Table_Preview_Data))
     Input_Sheet_Number.place(x=210 , y=410)
 
-    Text_Input_Cells_Range = Label(W_Import_Excel , text="Ingrese el rango de celdas:\nSolo los datos" , bg="#d1e7d2" , font=("Times New Roman" , 13))
+    Text_Input_Cells_Range = Label(W_Import_Excel , text="Ingrese el rango de celdas:" , bg="#d1e7d2" , font=("Times New Roman" , 13))
     Text_Input_Cells_Range.place(x=20 , y=440)
     Cells_Range = Entry(W_Import_Excel , font=("Courier New" , 13) , textvariable=Cell_Range , width=55)
     Cells_Range.place(x=210 , y=440)

@@ -1,13 +1,13 @@
 import sys
 import os
 import copy
-# Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 
+from Path_Manager import Get_Resource_Path
 from Calcs.Table_of_Frecuency.Graphs.Calc_Bar_Pie_Graphs import Draw_Graph_for_Each_Variable
 from Calcs.Table_of_Frecuency.Graphs.Calc_Boxplot import Draw_Boxplot_For_Single_Column_Data
 from Views.Table_of_Frecuency.Window_Export_Graph import Create_Windows_Export_Graphs
@@ -240,7 +240,7 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
     W_Show_Graph.title("Ver graficos")
     W_Show_Graph.geometry("1300x700+105+105")
     W_Show_Graph.grab_set()
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Show_Graph.iconphoto(False , Icon)
     W_Show_Graph.config(bg="#F8D9AB")
 

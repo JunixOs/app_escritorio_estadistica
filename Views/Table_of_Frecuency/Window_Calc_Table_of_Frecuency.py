@@ -4,6 +4,7 @@ import numpy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from Path_Manager import Get_Resource_Path
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
 from Views.Table_of_Frecuency.Window_Export_Excel import Generate_Window_Export_Excel
 from tkinter import *
@@ -395,8 +396,8 @@ class Labels_Summary_Measures:
     def Create_Labels(self, M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry):
         self.Destroy_Labels()
 
-        Lab_Center_Tendency = Label(self.Content_Frame_Summary_Measures , text="Medidas de Tendencia Central y de Dispersion" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER)
-        Lab_Coefficient_Asymmetry = Label(self.Content_Frame_Summary_Measures , text="Coeficientes de Asimetria" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER)
+        Lab_Center_Tendency = Label(self.Content_Frame_Summary_Measures , text="Medidas de Tendencia Central y de Dispersion" , font=("Times New Roman" , 12) , bg="#F8E6CE" , justify=CENTER)
+        Lab_Coefficient_Asymmetry = Label(self.Content_Frame_Summary_Measures , text="Coeficientes de Asimetria" , font=("Times New Roman" , 12) , bg="#F8E6CE" , justify=CENTER)
 
         self.Labels_Collection.append(Lab_Center_Tendency)
         for b , (key,value) in enumerate(M_Central_Tendency_And_Dispersion.items()):
@@ -800,10 +801,10 @@ def Create_Window_Frecuences_Table(Main_Window):
             Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
-    Window_Frecuences_Table.geometry("1400x800+60+55") # 1240
+    Window_Frecuences_Table.geometry("1400x800+60+55")
     Window_Frecuences_Table.title("Tabla de frecuencias")
     Window_Frecuences_Table.config(bg="#6C6E72")
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     Window_Frecuences_Table.iconphoto(False , Icon)
 
     Data_From_Widget_Entry = StringVar(Window_Frecuences_Table) # Estos datos se introducen como texto en el campo de texto de la ventana
