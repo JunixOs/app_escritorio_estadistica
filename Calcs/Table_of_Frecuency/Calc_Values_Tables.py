@@ -106,7 +106,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         C = round(R/m , C_N_Decimals)
 
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-        Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
+        # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
 
     Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
@@ -174,7 +174,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
 
     Frecuences_Value = dict(
         Intervals = Arr_Intervals,
-        Groups = Arr_Groups,
+        # Groups = Arr_Groups, <-- Se elimina la visualizacion de los grupos
         xi = Arr_xi,
         fi = Arr_fi,
         Fi = Arr_Fi,

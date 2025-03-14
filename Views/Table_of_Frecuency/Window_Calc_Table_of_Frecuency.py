@@ -55,32 +55,31 @@ class Table_Of_Frecuences:
     def Create_Table_For_Cuantitative_Grouped_Data(self):
         self.Table_Frecuences = TreeviewFrame(self.W_Calc_Table_Frec)
 
-        self.Table_Frecuences.treeview.config(columns=("1", "2" ,"3", "4", "5", "6", "7", "8", "9", "10", "11") , show="headings")
+        self.Table_Frecuences.treeview.config(columns=("1", "2" ,"3", "4", "5", "6", "7", "8", "9", "10") , show="headings")
         self.Table_Frecuences.treeview.heading("1" , text="m")
         self.Table_Frecuences.treeview.heading("2" , text="Li")
         self.Table_Frecuences.treeview.heading("3" , text="Ls")
-        self.Table_Frecuences.treeview.heading("4" , text="Grupos")
-        self.Table_Frecuences.treeview.heading("5" , text="xi")
-        self.Table_Frecuences.treeview.heading("6" , text="fi")
-        self.Table_Frecuences.treeview.heading("7" , text="Fi")
-        self.Table_Frecuences.treeview.heading("8" , text="hi")
-        self.Table_Frecuences.treeview.heading("9" , text="Hi")
-        self.Table_Frecuences.treeview.heading("10" , text="hi%")
-        self.Table_Frecuences.treeview.heading("11" , text="HI%")
+        self.Table_Frecuences.treeview.heading("4" , text="xi")
+        self.Table_Frecuences.treeview.heading("5" , text="fi")
+        self.Table_Frecuences.treeview.heading("6" , text="Fi")
+        self.Table_Frecuences.treeview.heading("7" , text="hi")
+        self.Table_Frecuences.treeview.heading("8" , text="Hi")
+        self.Table_Frecuences.treeview.heading("9" , text="hi%")
+        self.Table_Frecuences.treeview.heading("10" , text="HI%")
 
         self.Table_Frecuences.treeview.config(height=13)
 
-        for a in range(1 , 12):
+        for a in range(1 , 11):
             if(a == 1):
-                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=60 , stretch=False)
-            elif(a > 1 and a < 5):
-                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=145 , stretch=False)
-            elif(a == 6):
-                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=90 , stretch=False)
-            elif(a >= 10 and a <= 11):
-                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=118 , stretch=False)
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=65 , stretch=False)
+            elif(a > 1 and a < 4):
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=175 , stretch=False)
+            elif(a == 5):
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=100 , stretch=False)
+            elif(a >= 9 and a <= 10):
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=131 , stretch=False)
             else:
-                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=118 , stretch=False)
+                self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=130 , stretch=False)
 
         style = ttk.Style()
         style.configure("Treeview.Heading" , font=("Arial" , 10) , padding=(5 , 10))
@@ -158,7 +157,6 @@ class Table_Of_Frecuences:
                         a+1, 
                         f"{Frecuences['Intervals'][a][0]:.{Amplitude_N_Decimals}f}", 
                         f"{Frecuences['Intervals'][a][1]:.{Amplitude_N_Decimals}f}", 
-                        f"{Frecuences['Groups'][a]:.{Amplitude_N_Decimals}f}", 
                         f"{Frecuences['xi'][a]:.{Precision}f}",
                         Frecuences["fi"][a],
                         Frecuences["Fi"][a],
