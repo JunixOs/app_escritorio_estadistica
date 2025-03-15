@@ -101,7 +101,7 @@ class Export_Data:
         WorkSheet[f"N{Start_Row}"].alignment = self.Alignment_To_Cells
 
         for N_Cental_T , (key_Central_T , value_Central_T) in enumerate(M_Central_Tendency_And_Dispersion.items()):
-            if(Move_Row > Table_Length and Table_Length <= 6):
+            if(Move_Row > Table_Length and Table_Length <= 7):
                 Move_Col += 3
                 Move_Row = 0
         
@@ -262,7 +262,7 @@ class Export_Data:
             match(self.Type_Of_Variable):
                 case "Cuantitative_Grouped":
                     self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable , Start_Row)
-                    self.Create_Row_Total(Worksheet_1 , "D" , ["G" , Copy_Data["fi"]] , ["I" , Copy_Data["hi"]] , ["K" , Copy_Data["hi%"]])
+                    self.Create_Row_Total(Worksheet_1 , "D" , ["F" , Copy_Data["fi"]] , ["H" , Copy_Data["hi"]] , ["J" , Copy_Data["hi%"]])
                     self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Start_Row , Table_Length)
                 case "Cuantitative_Not_Grouped":
                     self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable , Start_Row)
@@ -329,7 +329,7 @@ class Export_Data:
                 match(self.Type_Of_Variable[key]):
                     case "Cuantitative_Grouped":
                         self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable[key] , Start_Row)
-                        self.Create_Row_Total(Worksheet_1 , "D" , ["G" , value["fi"]] , ["I" , value["hi"]] , ["K" , value["hi%"]])
+                        self.Create_Row_Total(Worksheet_1 , "D" , ["F" , value["fi"]] , ["H" , value["hi"]] , ["J" , value["hi%"]])
                         self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Start_Row , Table_Length)
                     case "Cuantitative_Not_Grouped":
                         self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable[key] , Start_Row)

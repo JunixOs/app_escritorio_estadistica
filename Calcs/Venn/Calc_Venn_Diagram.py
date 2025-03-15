@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-from matplotlib_venn import venn2
-from matplotlib_venn import venn3
+import matplotlib_venn as venn # type: ignore
 import numpy as np
 
 def Convert_Input_Str_To_Set(a):
@@ -66,9 +65,9 @@ class Venn_Diagram:
     def Generate_Diagrams(self):
         match(len(self.Sets_Values)):
             case 2:
-                fiugre_venn = venn2(self.Sets_Values , set_labels=tuple(self.Sets_Names))
+                fiugre_venn = venn.venn2(self.Sets_Values , set_labels=tuple(self.Sets_Names))
             case 3:
-                fiugre_venn = venn3(self.Sets_Values , set_labels=tuple(self.Sets_Names))
+                fiugre_venn = venn.venn3(self.Sets_Values , set_labels=tuple(self.Sets_Names))
             case _:
                 raise Exception("Se deben ingresar un minimo de 2 cojuntos de datos")
         ID = self.Calc_ID_For_Sets()
@@ -92,7 +91,7 @@ if(__name__ == "__main__"):
     Intersection = (len(set_A & set_B) / total_elements) * 100
 
     # Crear el diagrama de Venn
-    g_ven = venn2([set_A, set_B], set_labels=('A', 'B'))
+    g_ven = venn.venn2([set_A, set_B], set_labels=('A', 'B'))
 
 
     old_text = g_ven.get_label_by_id("10").get_text()

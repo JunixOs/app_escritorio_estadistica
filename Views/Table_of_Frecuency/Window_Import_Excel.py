@@ -150,14 +150,14 @@ def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , D
 
             Import_Excel.Process_Input_Data()
 
-            threading.Thread(target= lambda: Import_Excel.Import_Data(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Multiple_Columns , None , None)).start()
+            threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Multiple_Columns)).start()
 
         elif(":" in Cell_Range.get()):
             Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get() , "Table_Of_Frecuency")
 
             Import_Excel.Process_Input_Data()
 
-            threading.Thread(target= lambda: Import_Excel.Import_Data(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns , None , None)).start()
+            threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns)).start()
         else:
             raise Raise_Warning("El rango de celdas ingresado es invalido.")
 

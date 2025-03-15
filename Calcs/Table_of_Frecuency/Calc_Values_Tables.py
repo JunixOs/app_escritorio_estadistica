@@ -92,7 +92,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         C = round(R/m , 1)
         C_N_Decimals = 1
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-        Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
+        # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
     else:
         """ 
             **********************************************************************************
@@ -351,6 +351,31 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                 m = round(1 + (3.322*log10(len(Data))))
                 
                 if(not Repeated_Calc):
+                    """ 
+                        *********************************************************************************
+                        Cuando el calculo se realiza por primera vez, se calcula cuantas variables unicas
+                        hay.
+
+                        Luego se determina si la cantidad de estas variables es mayor o menor al 20% de
+                        la cantidad total de datos ingresados.
+                        Si llega a ser mayor al 20% del total, entonces los datos se agrupan en 
+                        intervalos y se consideran los datos como variables Cuantitativas Continuas.
+                        Este criterio es util para evitar el calculo sin agrupar de variables
+                        cuantitativas continuas cuyos valores ingresados son enteros 
+                        y para preservar el calculo sin agrupar de variables cuantitativas discretas 
+                        cuyos valores unicos son mas reducidos.
+
+                        Si llega a ser menor al 20% del total, entonces se determina si entre los datos 
+                        ingresados hay valores decimales y si el numero de intervalos (m) es mayor a 5, 
+                        si esto se  cumple, entonces se consideran los datos como 
+                        variables Cuantitativas Continuas y se agrupan en intervalos.
+
+                        Si esto ultimo tampoco se cumple, entonces segun si existen variables decimales o
+                        enteros se realizara el primer calculo, si son decimales, se agrupa en intervalos
+                        dependiendo del valor de m, y si es entero, entonces los datos no se agrupan en
+                        intervalos.
+                        *********************************************************************************
+                    """
                     Arr_xi , Arr_fi = Cuant_Not_Grouped.Calc_fi_And_xi(Data)
 
                     if(len(Arr_xi) > (1/5)*(len(Data))):

@@ -48,54 +48,54 @@ Al importar multiples columnas de un archivo `.xlsx` y al calcular la tabla de f
 
 ### ***Crear Tabla de Frecuencias***
 ![Ventana Calcular Tabla de Frecuencias](./Images/DEMO/Calc_Table_Frecuences_DEMO_1.png)
-<div style="margin:0 auto;">
-    <h3 style="text-align:center;font-size:14px;font-style:italic;">Variables Cuantitativas</h3>
-    <div style="display:flex; flex-wrap:wrap;gap:15px;justify-content:center">
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Table.png" alt="Calculo con Variables Cuantitativas" width="200"></img>
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph.png" alt="Grafico de las Frecuencias Obtenidas" width="200"></img>
-        <table>
-            <tr>
-                <th>Grafico de Barras para fi</th>
-                <th>Grafico de Barras para hi</th>
-                <th>Grafico de Barras para hi%</th>
-                <th>Grafico de Pastel</th>
-                <th>Grafico de Cajas</th>
-            <tr>
-            <tr>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_fi.png" alt="Grafico de Barras fi para Variables Cuantitativas"></img></td>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_hi.png" alt="Grafico de Barras hi para Variables Cuantitativas"></img></td>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_hi_percent.png" alt="Grafico de Barras hi% para Variables Cuantitativas"></img></td>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_Pie.png" alt="Grafico de Pastel para Variables Cuantitativas"></img></td>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_Box.png" alt="Grafico de Cajas para Variables Cuantitativas"></img></td>
-            </tr>
-        </table>
+<div style="margin: 0 auto; width: 80%; text-align: center;">
+    <h3 style="font-size:14px;font-style:italic;">Variables Cuantitativas</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-bottom:20px;">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Table.png" alt="Calculo con Variables Cuantitativas" width="200">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph.png" alt="Grafico de las Frecuencias Obtenidas" width="200">
     </div>
-    <h3 style="text-align:center;font-size:14px;font-style:italic;">Variables Cualitativas</h3>
-    <div style="display:flex; flex-wrap:wrap;gap:15px;justify-content:center">
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Table.png" alt="Calculo con Variables Cualitativas" width="200"></img>
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph.png" alt="Grafico de las Frecuencias Obtenidas" width="200"></img>
-        <table>
-            <tr>
-                <th>Grafico de Barras para fi</th>
-                <th>Grafico de Barras para hi</th>
-                <th>Grafico de Barras para hi%</th>
-                <th>Grafico de Pastel</th>
-            </tr>
-            <tr>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_fi.png" alt="Grafico de Barras fi para Variables Cualitativas"></img></td>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_hi.png" alt="Grafico de Barras fi para Variables Cualitativas"></img></td>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_hi_percent.png" alt="Grafico de Barras fi para Variables Cualitativas"></img></td>
-                <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_Pie.png" alt="Grafico de Barras fi para Variables Cualitativas"></img></td>
-            </tr>
-        </table>
+    <table style="margin: 0 auto; border-collapse: collapse; width: 80%; text-align: center;">
+        <tr>
+            <th>Grafico de Barras para fi</th>
+            <th>Grafico de Barras para hi</th>
+            <th>Grafico de Barras para hi%</th>
+            <th>Grafico de Pastel</th>
+            <th>Grafico de Cajas</th>
+        </tr>
+        <tr>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_fi.png" alt="Grafico de Barras fi para Variables Cuantitativas" width="100%"></td>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_hi.png" alt="Grafico de Barras hi para Variables Cuantitativas" width="100%"></td>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_hi_percent.png" alt="Grafico de Barras hi% para Variables Cuantitativas" width="100%"></td>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_Pie.png" alt="Grafico de Pastel para Variables Cuantitativas" width="100%"></td>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cuantitative_Graph_Box.png" alt="Grafico de Cajas para Variables Cuantitativas" width="100%"></td>
+        </tr>
+    </table>
+    <h3 style="font-size:14px;font-style:italic;">Variables Cualitativas</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-bottom:20px;">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Table.png" alt="Calculo con Variables Cualitativas" width="200">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph.png" alt="Grafico de las Frecuencias Obtenidas" width="200">
     </div>
-    <h3 style="text-align:center;font-size:14px;font-style:italic;">Datos Importados de un Excel</h3>
-    <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel.png" alt="Ventana de Importacion de Datos de un Excel"></img>
-    <div style="display:flex; flex-wrap:wrap;gap:15px;justify-content:center">
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Prev.png" alt="Previsualizacion de un Excel" width="200"></img>
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Import.png" alt="Importar Datos de un Excel" width="200"></img>
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Table.png" alt="Tabla Para Multiples Variables de un Excel" width="200"></img>
-        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Graph.png" alt="Grafico Para Multiples Variables de un Excel" width="200"></img>
+    <table style="margin: 0 auto; border-collapse: collapse; width: 80%; text-align: center;">
+        <tr>
+            <th>Grafico de Barras para fi</th>
+            <th>Grafico de Barras para hi</th>
+            <th>Grafico de Barras para hi%</th>
+            <th>Grafico de Pastel</th>
+        </tr>
+        <tr>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_fi.png" alt="Grafico de Barras fi para Variables Cualitativas" width="100%"></td>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_hi.png" alt="Grafico de Barras hi para Variables Cualitativas" width="100%"></td>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_hi_percent.png" alt="Grafico de Barras hi% para Variables Cualitativas" width="100%"></td>
+            <td><img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_2_Cualitative_Graph_Pie.png" alt="Grafico de Pastel para Variables Cualitativas" width="100%"></td>
+        </tr>
+    </table>
+    <h3 style="font-size:14px;font-style:italic;">Datos Importados de un Excel</h3>
+    <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel.png" alt="Ventana de Importacion de Datos de un Excel" style="margin-bottom:20px;">
+    <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-bottom:20px;">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Prev.png" alt="Previsualizacion de un Excel" width="200">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Import.png" alt="Importar Datos de un Excel" width="200">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Table.png" alt="Tabla Para Multiples Variables de un Excel" width="200">
+        <img src="./Images/DEMO/Calc_Table_Frecuences_DEMO_3_ImportDataFromExcel_Graph.png" alt="Grafico Para Multiples Variables de un Excel" width="200">
     </div>
 </div>
 
@@ -178,6 +178,8 @@ Statphi/
 │   ├── Venn/
 │   │   └── Calc_Venn_Diagram.py
 │   └── Center_Window.py
+├── Exceptions/
+│   └── Exception_Warning.py
 ├── Images/
 │   ├── DEMO/
 │   ├── icon.png
@@ -196,6 +198,7 @@ Statphi/
 │   ├── Main_Window.py
 │   ├── Window_Create_Multiple_Graphs.py
 │   └── Window_Progress_Bar.py
+├── Path_Manager.py
 ├── .gitignore
 └── README.md
 ```
@@ -208,7 +211,7 @@ Por el momento, no esta disponible un ejecutable que facilite su instalacion y u
  Si deseas probar StatPhi en tu ordenador, deberas tener intalado los siguientes programas:
 - Un editor de codigo como `VSCode`.
 - `Python 3.11.X`
-- El sistema de control de versiones de `GIT`.
+- El sistema de control de versiones de `git`.
 
 ### ***Librerias Necesarias***
 Ademas, deberas contar con las siguientes librerias de **python** (puedes usar `pip` o `conda`),
@@ -218,6 +221,7 @@ Ademas, deberas contar con las siguientes librerias de **python** (puedes usar `
 4. `openpyxl 3.1.5`
 5. `scipy 1.15.1`
 6. `seaborn 0.13.2`
+7. `matplotlib-venn 1.1.2`
 
 > [!WARNING]
 > Si ya tienes librerias instaladas, es recomendable crear un entorno virtual para evitar conflictos con las diferentes librerias de tu sistema.
@@ -244,8 +248,26 @@ Ademas, deberas contar con las siguientes librerias de **python** (puedes usar `
     ```
 
 5. Instalar las librerias necesarias.
+    - Usando `pip`:
+        ```bash
+        pip install tkinter pandas==2.2.3 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 matplotlib-venn==1.1.2
+        ```
+    - Usando `conda`:
+        ```bash
+        conda install pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2
+        pip install matplotlib-venn==1.1.2
+        ```
+6. Verificar si los paquetes se instalaron correctamente:
+    - Usando `pip`:
+        ```bash
+        pip list
+        ```
+    - Usando `conda`:
+        ```bash
+        conda list
+        ```
 
-6. Ejecutar el programa con el comando:
+7. Ejecutar el programa:
     ```bash
     python .\Windows\Main_Window.py
     ```
@@ -269,9 +291,9 @@ Aqui te encontraras con los siguientes elementos:
 - **Importar datos**:
     Permite importar datos de una o varias columnas de un archivo `.xlsx` externo. Para ello, sigue los siguientes pasos:
     
-    1. Primero selecciona la ubicacion de tu archivo Excel con los datos a importar.
-    2. Posteriormente, se cargara tu archivo en la parte superior de la ventana a modo de previsualizacion.
-    3. Una vez cargado tu archivo, selecciona el rango de celdas que contienen tus datos, algunos ejemplos de como seleccionar los datos son:
+    1. Selecciona la ubicacion de tu archivo Excel con los datos a importar. Posteriormente, se cargara tu archivo en la parte superior de la ventana a modo de previsualizacion.
+
+    2. Una vez cargado tu archivo, selecciona el rango de celdas que contienen tus datos, algunos ejemplos de como seleccionar los datos son:
         - *Para una sola columna de datos*: `A1:A1001`
 
         - *Para multiples columnas de datos consecutivas*: `A1:C1001`
@@ -285,11 +307,57 @@ Aqui te encontraras con los siguientes elementos:
 > [!CAUTION]
 > Dentro del Excel con los datos a importar, asegurese de que el formato de los datos sea correcto, que cada columna de datos cuente un nombre y que los datos se encuentren en la primera fila.
 
-- **Mostrar Grafico**:
+- **Exportar Tabla a Excel**: Esta opcion es util cuando quieres tener algo mas estetico y personalizable que el cuadro que se muestra en el programa.
 
+
+- **Mostrar Grafico**:
+    Ofrece la posibilidad de ver los graficos para la tabla de frecuencias actual. Los graficos que podras ver son:
+    - *Grafico de Barras para la Frecuencia Absoluta Simple*
+    - *Grafico de Barras para la Frecuencia Relativa Simple*
+    - *Grafico de Barras para la Frecuencia Relativa Simple Porcentual*
+    - *Grafico de pastel*
+    - *Grafico de Cajas*
+
+    Si anteriormente importaste datos de multiples columnas de un Excel usando la opcion de `Importar datos`,
+    podras elegir de que variable ver los graficos.
+
+    Dentro de la ventana de visualizacion de graficos estara disponible la opcion de exportar los graficos como imagenes.
+
+    - ***Exportar Graficos***: Permite exportar los graficos antes vistos en el apartado `Mostrar Grafico` como imagenes a su computadora, para que puedan ser usados en documentos de Word, PDF, entre otros.
+
+        Dentro de esta ventana encontraras los siguientes elementos:
+        -  ***Nombre de la Imagen***: Permite colocar un nombre a la imagen a exportar, es opcional, este nombre se aplica a todas las imagenes exportadas.
+
+        - ***Formato***: Es una pequeña caja con 3 opciones de formato posibles .jpg .png y .scv
+
+        - ***Ruta de Exportacion***
+
+        - ***Resolucion (DPI)***: Las resoluciones DPI disponibles son de:
+
+            - *72 DPI*: Baja resolución, se utiliza para borradores o documentos que no requieren alta calidad.
+
+            - *96 DPI*: Es una resolución comúnmente utilizada para mostrar imágenes en pantallas de computadora o en la web.
+
+            - *150 DPI*: Es una resolución adecuada para impresiones de documentos simples, como reportes o borradores. Aunque no es lo ideal para imágenes de alta calidad, es suficiente para texto y gráficos básicos.
+
+            - *300 DPI*: Alta Resolucion, es la resolución estándar para imprimir documentos de buena calidad, como folletos, carteles, libros, y fotografías. Es el estándar para impresiones comerciales y fotográficas de calidad.
+
+            - *600 DPI*: Es una resolución excelente para impresoras que necesitan detalles más finos y mayor precisión en las imágenes.
+
+            - *1200 DPI*: Permite la impresión de texto extremadamente pequeño y detalles en gráficos, lo que resulta útil cuando los informes o diagramas incluyen notas, cifras o ecuaciones que necesitan ser legibles con alta precisión.
+
+            - *2000 DPI*: Ultra Alta Resolucion, para impresión ultra detallada y trabajos artísticos de alta precisión.
+
+            Ten en cuenta que exportar graficos con una resolucion alta toma mas tiempo.
+
+        - ***Seleccion de Graficos a Exportar***: Permite elegir si exportar algunos graficos o todos.
+
+        - ***Nombre de los Graficos***: Permite colocar un titulo que describa mejor el grafico a exportar, dependiendo de que graficos exportes podras colocar un nombre al grafico de barras, de pastel y de cajas.
+        Si no colocas ningun nombre, el grafico se exportara sin un titulo.
 ---
 
 #### ***Calculo de Diagramas de Venn***
+Esta caracteristica todavia esta en desarrollo
 
 ---
 
@@ -305,8 +373,8 @@ Aqui te encontraras con los siguientes elementos:
 
 - **Error (e)**:
 
-- **Muestreo Inicial (n_o)**:
+- **Muestreo Inicial (n_o)**: Resulta de aplicar la formula de Muestreo Aleatorio Simple, para poblaciones grandes este valor puede ser proporcionalmente grande, y brinda un tamaño de muestra aproximado en donde los parametros de la investigacion se cumplan. 
 
-- **Muestreo Final Corregido (n_f)**:
+- **Muestreo Final Corregido (n_f)**: Es el resultado de divir el Muestreo Inicial entre 1 mas el Factor de Correccion el cual es igual al Muestreo Inicial sobre el tamaño de la poblacion. Este valor proporciona un tamaño de poblacion mas razonable comparado con el tamaño del Muestreo Inicial en donde los parametros de la investigacion se cumplan.
 
 ---

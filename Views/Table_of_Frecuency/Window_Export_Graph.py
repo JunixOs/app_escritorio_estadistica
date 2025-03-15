@@ -226,7 +226,7 @@ class Widgets_Checkboxes_For_Export_Graphs(Widget_Input_Name_For_Graphs):
 class Widget_Combobox_For_DPI_And_Format():
     def __init__(self , Root_Window):
         self.W_Export_Graph = Root_Window
-        self.Resolutions = [72 , 96 , 150 , 300 , 600 , 1200]
+        self.Resolutions = [72 , 96 , 150 , 300 , 600 , 1200 , 2000]
         self.Formats = [".jpg" , ".png" , ".svg"]
         self.Sizes_In_pX = ["980x700" , "1280x720" , "1920x1080" , "2560x1440"] # (Width x Height)
 
