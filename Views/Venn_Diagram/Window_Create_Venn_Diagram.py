@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Calcs.Venn.Calc_Venn_Diagram import Venn_Diagram
+from Exceptions.Exception_Warning import Raise_Warning
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -18,6 +19,9 @@ def index_to_string(i):
 
 def Create_Window_Create_Venn_Diagram(Main_Window = None):
     def Back():
+        if(Widget_Venn_Graph):
+            Calculate_Again()
+
         for widget in W_Create_Venn_Diagram.winfo_children():
             widget.destroy()
         W_Create_Venn_Diagram.grab_release()
@@ -29,18 +33,41 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
 
     def Process_Data(Widget_Venn_Graph):
         try:
-            Graph = Venn_Diagram(Collection_On_Inputs , Data_From_External_File)
-
-            Veen_Graph = Graph.Generate_Diagrams()
-
             if(Widget_Venn_Graph):
-                Widget_Venn_Graph.destroy()
-            
-            Widget_Venn_Graph = FigureCanvasTkAgg(Veen_Graph , master=W_Create_Venn_Diagram)
-            Widget_Venn_Graph.place(x=30 , y=250 , width=1240 , height=510)
+                Calculate_Again()
+            else:
+                Data_From_Widgets = {f"{key}" : value.get() for key , value in Collection_Of_Inputs_Data.items() if value.get()}
+                if(len(Data_From_Widgets)):
+                    Graph = Venn_Diagram(Data_From_Widgets)
+                else:
+                    raise Raise_Warning("No se ha ingresado ningun valor.")
 
+                Figure_Venn = Graph.Generate_Diagram()
+                
+                Widget_Venn_Graph.append(FigureCanvasTkAgg(Figure_Venn , master=W_Create_Venn_Diagram))
+                Widget_Venn_Graph[0].draw()
+
+                Widget_Venn_Graph[0].get_tk_widget().place(x=30 , y=250)
+
+                for widget_entry in Collection_Of_Widgets_Entry.values():
+                    widget_entry.config(state="disabled")
+
+                Btn_Generate_Venn_Diagram.config(text="Calcular con otros valores")
+                Btn_Import_Data.config(state="disabled")
+        except Raise_Warning as e:
+            messagebox.showwarning("Advertencia" , f"{e}")
         except Exception as e:
             messagebox.showerror("Error" , f"{e}")
+
+    def Calculate_Again():
+        Widget_Venn_Graph[0].get_tk_widget().destroy()
+        Widget_Venn_Graph.pop()
+        Btn_Generate_Venn_Diagram.config(text="Generar diagrama")
+        Btn_Import_Data.config(state="normal")
+
+        for widget_entry , data_widget in zip(Collection_Of_Widgets_Entry.values() , Collection_Of_Inputs_Data.values()):
+            widget_entry.config(state="normal")
+            data_widget.set("")
 
     Main_Window.state(newstate="withdraw")
     W_Create_Venn_Diagram = Toplevel(Main_Window)
@@ -52,9 +79,9 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     W_Create_Venn_Diagram.lift()
     W_Create_Venn_Diagram.config(bg="#9EABC5")
 
-    Collection_On_Inputs = {}
-    Data_From_External_File = set()
-    Widget_Venn_Graph = None
+    Collection_Of_Inputs_Data = {}
+    Collection_Of_Widgets_Entry = {}
+    Widget_Venn_Graph = []
 
     Main_Title = Label(W_Create_Venn_Diagram , text="Crear Diagramas de Venn" , bg="#A7D0D9" , font=("Times New Roman" , 22) , justify=CENTER , foreground="#000000" , highlightthickness=1 , highlightbackground="#000000" , relief="raised")
     Main_Title.place(x=10 , y=10 , width=1280 , height=50)
@@ -77,7 +104,7 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
 
     Canvas_Set.create_window((0, 0), window=Content_Frame_Sets, anchor="nw")
 
-    for i in range(3):
+    for i in range(6):
         Input_Data_Set = StringVar(W_Create_Venn_Diagram)
         Input_Data_Set.set("")
         Set_Name = index_to_string(i)
@@ -88,17 +115,18 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
         Widget_Input_Data_Set = Entry(Content_Frame_Sets, font=("Courier New", 13), relief="sunken", border=1 , width=109 , textvariable=Input_Data_Set)
         Widget_Input_Data_Set.grid(row=i*2, column=1, padx=10, pady=10, sticky="w")
 
-        Collection_On_Inputs[f"{Set_Name}"] = ["" , Widget_Input_Data_Set , Input_Data_Set]
+        Collection_Of_Widgets_Entry[f"{Set_Name}"] = Widget_Input_Data_Set
+        Collection_Of_Inputs_Data[f"{Set_Name}"] =  Input_Data_Set
 
 
     Content_Frame_Sets.update_idletasks()  # Asegura que los widgets estén completamente renderizados
     Canvas_Set.config(scrollregion=Canvas_Set.bbox("all"))  # Actualiza la región desplazable
 
-    Btn_Import_Data = Button(W_Create_Venn_Diagram , text="Importar datos" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command=lambda : Frame_Sets.place(x=30, y=80, width=1240, height=180))
+    Btn_Import_Data = Button(W_Create_Venn_Diagram , text="Importar datos" , font=("Times New Roman" , 13) , bg="#F9FFD1")
     Btn_Import_Data.place(x=80 , y=190)
 
-    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar Diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command= lambda: Process_Data(Widget_Venn_Graph))
-    Btn_Generate_Venn_Diagram.place(x=1080 , y=190)
+    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command= lambda: Process_Data(Widget_Venn_Graph) , width=22)
+    Btn_Generate_Venn_Diagram.place(x=1000 , y=190)
 
     Section_Diagram = Label(W_Create_Venn_Diagram , bg="#CBEFE3" , highlightbackground="#000000" , highlightthickness=1)
     Section_Diagram.place(x=30 , y=250 , width=1240 , height=510)

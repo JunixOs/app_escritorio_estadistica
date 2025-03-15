@@ -1,8 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
+
+from Exceptions.Exception_Warning import Raise_Warning
+
 import matplotlib.pyplot as plt
-import matplotlib_venn as venn # type: ignore
+import venn
 import numpy as np
 
-def Convert_Input_Str_To_Set(a):
+def Convert_Input_Data_To_Set(a):
     """
         ==============================================================================================
         Esta funcion sirve para separar los datos si es que se da el caso de que el usuario introduce
@@ -36,71 +42,68 @@ def Convert_Input_Str_To_Set(a):
     return Data
 
 class Venn_Diagram:
-    def __init__(self , Data_From_Widgets_Sets , Imported_Data):
-        self.Data_From_Sets = Data_From_Widgets_Sets
-        self.Imported_Data = Imported_Data
-        self.Sets_Names = []
-        self.Sets_Values = []
+    def __init__(self , Data_From_Sets):
+        self.Data_From_Sets = Data_From_Sets
 
-        if(self.Imported_Data):
-            for key , s in self.Imported_Data.items():
-                self.Sets_Names.append(key)
-                self.Sets_Values.append(s)
-        elif(self.Data_From_Sets):
-            for key , s in self.Data_From_Sets.items():
-                self.Sets_Names.append(key)
-                Data_In_Sets = Convert_Input_Str_To_Set(s[2].get())
-                self.Sets_Values.append(Data_In_Sets)
-        else:
-            raise Exception("No se ingresaron datos.")
-        self.N_Sets = len(self.Sets_Names)
+        if(not(self.Data_From_Sets)):
+            raise Raise_Warning("No se ingresaron datos.")
+            
+        for key , value in self.Data_From_Sets.items():
+            self.Data_From_Sets[f"{key}"] = Convert_Input_Data_To_Set(value)
 
-    def Calc_ID_For_Sets(self):
-        ID = [str(bin(a)).replace("0b" , "") for a in range(2 ** len(self.Sets_Values)) if a != 0]
-        for i in range(len(ID)):
-            if(len(ID[i]) < self.N_Sets):
-                ID[i] = "0"*(self.N_Sets - len(ID[i])) + ID[i]
-        return ID
+        self.N_Sets = len(self.Data_From_Sets)
 
-    def Generate_Diagrams(self):
-        match(len(self.Sets_Values)):
-            case 2:
-                fiugre_venn = venn.venn2(self.Sets_Values , set_labels=tuple(self.Sets_Names))
-            case 3:
-                fiugre_venn = venn.venn3(self.Sets_Values , set_labels=tuple(self.Sets_Names))
-            case _:
-                raise Exception("Se deben ingresar un minimo de 2 cojuntos de datos")
-        ID = self.Calc_ID_For_Sets()
-        Total_Elements = np.sum(int(fiugre_venn.get_label_by_id(f"{identifier}").get_text()) for identifier in ID)
-        for identifier in ID:
-            old_text = fiugre_venn.get_label_by_id(f"{identifier}").get_text()
-            Percentage = round((int(old_text) / Total_Elements) * 100 , 4)
-            fiugre_venn.get_label_by_id(f"{identifier}").set_text(f"{old_text}\n{Percentage}")
+    def Generate_Diagram(self):
+        if(self.N_Sets < 2):
+            raise Raise_Warning("No se puede calcular el diagrama para un solo conjunto.")
+        elif(self.N_Sets > 6):
+            raise Raise_Warning("No se puede calcular el diagrama para mas de 6 conjuntos")
         
-        return fiugre_venn
+        Values_Labels = venn.generate_petal_labels(self.Data_From_Sets.values())
+        total_elements = np.sum(int(v) for v in Values_Labels.values())
+        New_Labels = {}
+        for key , value in Values_Labels.items():
+            value = int(value)
+            New_Labels[f"{key}"] = f"{value}\n({(value * 100 / total_elements):.1f}%)"
+
+        figure_venn = plt.Figure(figsize=(900/72 , 510/72) , dpi=72)
+
+        ax = figure_venn.add_subplot(111)
+        venn.draw_venn(petal_labels=New_Labels , dataset_labels=self.Data_From_Sets.keys() , hint_hidden=False , colors=venn.generate_colors(n_colors=3) , figsize=(900/72 , 510/72) , fontsize=14, legend_loc="best", ax=ax)
+            
+        return figure_venn
 
 
 # Definir los elementos en cada conjunto
 if(__name__ == "__main__"):
+    """
+        1 2 3 4
+        3 4 5 6
+    """
     set_A = {1, 2, 3, 4}
     set_B = {3, 4, 5, 6}
+    Sets ={
+        "A" : set_A,
+        "B" : set_B,
+    }
     total_elements = len(set_A.union(set_B))
 
     Only_A = (len(set_A - set_B) / total_elements) * 100
     Only_B = (len(set_B - set_A) / total_elements) * 100
     Intersection = (len(set_A & set_B) / total_elements) * 100
-
     # Crear el diagrama de Venn
-    g_ven = venn.venn2([set_A, set_B], set_labels=('A', 'B'))
+    labels = venn.generate_petal_labels(Sets.values())
+    total_elements = np.sum(int(a) for a in labels.values())
+    new_labels = {}
+    for key , value in labels.items():
+        value = int(value)
+        new_labels[f"{key}"] = f"{value}\n{round(value*100/total_elements , 4)}"
 
+    g_ven = venn.draw_venn(petal_labels = new_labels , dataset_labels=Sets.keys() , hint_hidden=False, colors=venn.generate_colors(n_colors=3),
+    figsize=(8, 8), fontsize=14, legend_loc="best", ax=None)
 
-    old_text = g_ven.get_label_by_id("10").get_text()
-    percent = round((int(old_text) / total_elements) * 100 , 4)
-    g_ven.get_label_by_id("10").set_text(f"{old_text}\n{percent:.4f}%")
-    g_ven.get_label_by_id("10").set_backgroundcolor(color="#ffffff")
-    g_ven.get_label_by_id("01").set_text(f"{Only_B:.3f}%")
-    g_ven.get_label_by_id("11").set_text(f"{Intersection:.3f}%")
-
+    """ g_ven[0].suptitle("Diagrama de Venn - 2 Conjuntos")
+    g_ven[0].savefig("C:/Users/yonel/Downloads/grafico2" , dpi=72 , bbox_inches='tight') """
     # Mostrar el gráfico
     plt.title("Diagrama de Venn - 2 Conjuntos")
     plt.show()
