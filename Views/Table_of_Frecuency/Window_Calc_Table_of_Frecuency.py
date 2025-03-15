@@ -390,7 +390,38 @@ class Labels_Summary_Measures:
         self.Canvas_Frame_Summary_Measures.create_window((0, 0), window=self.Content_Frame_Summary_Measures , anchor="nw")
 
         self.Labels_Collection = []
-
+    def Asymmetry_According_Type_Coefficient(self , Type_Coefficient , value):
+            Asymmetry = ""
+            match(Type_Coefficient):
+                case "Pearson":
+                    if(value < 0):
+                        Asymmetry = "Ap < 0\nSesgo hacia\nla derecha"
+                    elif(value == 0):
+                        Asymmetry = "Ap = 0\nSimetrica"
+                    elif(value > 0):
+                        Asymmetry = "Ap > 0\nSesgo hacia\nla izquierda"
+                case "Fisher":
+                    if(value < 0):
+                        Asymmetry = "Af < 0\nSesgo hacia\nla derecha"
+                    elif(value == 0):
+                        Asymmetry = "Af = 0\nSimetrica"
+                    elif(value > 0):
+                        Asymmetry = "Af > 0\nSesgo hacia\nla izquierda"
+                case "Kurtosis":
+                    if(value < 0):
+                        Asymmetry = "K < 0\nPlaticurtica\nConcentracion baja"
+                    elif(value == 0):
+                        Asymmetry = "K = 0\nMesocurtica\nConcentracion normal"
+                    elif(value > 0):
+                        Asymmetry = "K > 0\nLeptocurtica\nConcentracion alta"
+                case "Bowley":
+                    if(value < 0):
+                        Asymmetry = "Ab < 0\nSesgo hacia\nla derecha"
+                    elif(value == 0):
+                        Asymmetry = "Ab = 0\nSimetrica"
+                    elif(value > 0):
+                        Asymmetry = "Ab > 0\nSesgo hacia\nla izquierda"
+            return Asymmetry
     def Create_Labels(self, M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry):
         self.Destroy_Labels()
 
@@ -428,28 +459,7 @@ class Labels_Summary_Measures:
 
         self.Labels_Collection.append(Lab_Coefficient_Asymmetry)
         for key , value in M_Coefficient_Asymmetry.items():
-            match(key):
-                case "Pearson":
-                    if(value < 0):
-                        Asymmetry = "Ap < 0\nSesgo hacia\nla derecha"
-                    elif(value == 0):
-                        Asymmetry = "Ap = 0\nSimetrica"
-                    elif(value > 0):
-                        Asymmetry = "Ap > 0\nSesgo hacia\nla izquierda"
-                case "Fisher":
-                    if(value < 0):
-                        Asymmetry = "Af < 0\nSesgo hacia\nla izquierda"
-                    elif(value == 0):
-                        Asymmetry = "Af = 0\nSimetrica"
-                    elif(value > 0):
-                        Asymmetry = "Af > 0\nSesgo hacia\nla derecha"
-                case "Kurtosis":
-                    if(value < 0):
-                        Asymmetry = "K < 0\nPlaticurtica\nConcentracion baja"
-                    elif(value == 0):
-                        Asymmetry = "K = 0\nMesocurtica\nConcentracion normal"
-                    elif(value > 0):
-                        Asymmetry = "K > 0\nLeptocurtica\nConcentracion alta"
+            Asymmetry = self.Asymmetry_According_Type_Coefficient(key , value)
             lab = Label(self.Content_Frame_Summary_Measures , text=f"Coeficiente de {key}\n{value:.{self.Precision}f}\n{Asymmetry}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
             self.Labels_Collection.append(lab)
         
@@ -470,8 +480,10 @@ class Labels_Summary_Measures:
                     lab.grid(row=6 , column = (b - 6) , padx=20 , pady=10 , sticky="w")
                 elif(b == 9):
                     lab.grid(row = 8 , column = 0 , sticky="nsew" , columnspan = 3)
-                else:
+                elif(b > 9 and b < 13):
                     lab.grid(row = 10 , column = (b - 10) , padx=20 , pady=10 , sticky="w")
+                else:
+                    lab.grid(row = 12 , column = (b - 13) , padx=20 , pady=10 , sticky="w")
     
             self.Content_Frame_Summary_Measures.update_idletasks()
             self.Canvas_Frame_Summary_Measures.config(scrollregion=self.Canvas_Frame_Summary_Measures.bbox("all"))

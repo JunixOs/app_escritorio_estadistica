@@ -136,6 +136,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
     Coef_Pearson = SM_For_Grouped_Data.Calc_Pearson_Coefficient(X_ , Me , S)
     Coef_Fisher = SM_For_Grouped_Data.Calc_Fisher_Coefficient(Arr_xi , X_ , Arr_fi , n , S)
     Coef_Kurtosis = SM_For_Grouped_Data.Calc_Kurtosis_Coefficient(Arr_Percentile , Arr_xi , X_ , Arr_fi , n , S)
+    Coef_Bowley = SM_For_Not_Grouped_Data.Calc_Bowley_Coefficient(Arr_Quartile)
 
     Summary_Measures = {
         "Measures_Of_Central_Tendency_And_Dispersion" : dict([
@@ -156,6 +157,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         "Coefficient_Asymmetry" : dict([
             ("Pearson" , Coef_Pearson),
             ("Fisher" , Coef_Fisher),
+            ("Bowley" , Coef_Bowley),
             ("Kurtosis" , Coef_Kurtosis),
         ]),
     }
@@ -222,8 +224,9 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
     Arr_Percentile = Quantile.Calc_Quantile_For_Not_Grouped_Data(100 , Data)
 
     Coef_Pearson = SM_For_Not_Grouped_Data.Calc_Pearson_Coefficient(X_ , Me , S)
-    Coef_Fisher = SM_For_Not_Grouped_Data.Calc_Fisher_Coefficient(Data , X_ , n , S)
-    Coef_Kurtosis = SM_For_Not_Grouped_Data.Calc_Kurtosis_Coefficient(Data , X_ , n , S)
+    Coef_Fisher = SM_For_Not_Grouped_Data.Calc_Fisher_Coefficient(Arr_xi , X_ , n , S)
+    Coef_Kurtosis = SM_For_Not_Grouped_Data.Calc_Kurtosis_Coefficient(Arr_xi , X_ , n , S)
+    Coef_Bowley = SM_For_Not_Grouped_Data.Calc_Bowley_Coefficient(Arr_Quartile)
 
     Summary_Measures = {
         "Measures_Of_Central_Tendency_And_Dispersion" : dict([
@@ -244,6 +247,7 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
         "Coefficient_Asymmetry" : dict([
             ("Pearson" , Coef_Pearson),
             ("Fisher" , Coef_Fisher),
+            ("Bowley" , Coef_Bowley),
             ("Kurtosis" , Coef_Kurtosis),
         ]),
     }

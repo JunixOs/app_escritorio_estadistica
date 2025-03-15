@@ -100,8 +100,20 @@ def Calc_Kurtosis_Coefficient(Arr_Percentiles , Arr_xi , Arith_Average , Arr_fi 
     """ 
         ==============================================================================================
         Calculo con Percentiles:
-        Descomente para activar el calculo del coeficiente de kurtosis con Percentiles
+        Elimine las comillas en el return para activar el calculo del coeficiente de kurtosis con 
+        Percentiles
         ==============================================================================================
     """
-    """ return ((Arr_Percentiles[74] - Arr_Percentiles[24])/(Arr_Percentiles[89] - Arr_Percentiles[9])) - 0.5 """
+    """ 
+    if(Arr_Percentiles):
+        return ((Arr_Percentiles[74] - Arr_Percentiles[24])/(Arr_Percentiles[89] - Arr_Percentiles[9])) - 0.5 
+    else:
+        return "No se pudo calcular"
+    """
     return (np.sum(((Arr_xi[i] - Arith_Average) ** 4) * Arr_fi[i] for i in range(len(Arr_xi)))/(n * (S ** 4))) - 3
+
+def Calc_Bowley_Coefficient(Arr_Quartile):
+    if(Arr_Quartile):
+        return (Arr_Quartile[2] + Arr_Quartile[0] - (2*Arr_Quartile[1]))/(Arr_Quartile[2] - Arr_Quartile[1])
+    else:
+        return "No se pudo calcular"

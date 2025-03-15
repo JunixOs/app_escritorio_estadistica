@@ -52,8 +52,14 @@ def Calc_Percentage_Coefficient_Variation(Standart_Variation , Arith_Average):
 def Calc_Pearson_Coefficient(Arith_Average , Me , S):
     return 3*(Arith_Average - Me)/S
 
-def Calc_Fisher_Coefficient(Data , Arith_Average , n , S):
-    return np.sum((xi - Arith_Average) ** 3 for xi in Data)/(n * (S ** 3))
+def Calc_Fisher_Coefficient(Arr_xi , Arith_Average , n , S):
+    return np.sum((xi - Arith_Average) ** 3 for xi in Arr_xi)/(n * (S ** 3))
 
-def Calc_Kurtosis_Coefficient(Data , Arith_Average , n , S):
-    return (np.sum((xi - Arith_Average) ** 4 for xi in Data)/(n * (S ** 4))) - 3
+def Calc_Kurtosis_Coefficient(Arr_xi , Arith_Average , n , S):
+    return (np.sum((xi - Arith_Average) ** 4 for xi in Arr_xi)/(n * (S ** 4))) - 3
+
+def Calc_Bowley_Coefficient(Arr_Quartile):
+    if(Arr_Quartile):
+        return (Arr_Quartile[2] + Arr_Quartile[0] - (2*Arr_Quartile[1]))/(Arr_Quartile[2] - Arr_Quartile[1])
+    else:
+        return "No se pudo calcular"
