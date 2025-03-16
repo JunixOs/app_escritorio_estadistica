@@ -34,7 +34,9 @@ class Export_Data:
         self.Fill_Header_Style = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
 
         self.Font_Courier_New_Bold = Font(bold=True , name="Courier New" , size=11)
+        self.Font_Courier_New_Bold_Italic = Font(bold=True , italic=True , name="Courier New" , size=11)
         self.Font_Courier_New_Red_Bold = Font(bold=True , name="Courier New" , size=11 , color="FF0000")
+        self.Font_Courier_New_Red_Bold_Italic = Font(bold=True , italic=True , name="Courier New" , size=11 , color="FF0000")
         self.Font_Courier_New_No_Bold = Font(bold=False , name="Courier New" , size=11)
 
         self.Alignment_To_Cells = Alignment(horizontal="center" , vertical="center")
@@ -69,41 +71,40 @@ class Export_Data:
         new_row = Worksheet.max_row + 1
 
         Worksheet[f"{Col_Total_Text}{new_row}"] = "Total:"
-        Worksheet[f"{Col_Total_Text}{new_row}"].font = self.Font_Courier_New_Bold
+        Worksheet[f"{Col_Total_Text}{new_row}"].font = self.Font_Courier_New_Red_Bold
         Worksheet[f"{Col_Total_Text}{new_row}"].alignment = self.Alignment_To_Cells
         Worksheet[f"{Col_Total_Text}{new_row}"].border = self.Border_With_All_Borders
 
-        Worksheet[f"{Col_fi[0]}{new_row}"] = f"{numpy.sum(Col_fi[1])}"
+        Worksheet[f"{Col_fi[0]}{new_row}"] = numpy.sum(Col_fi[1])
         Worksheet[f"{Col_fi[0]}{new_row}"].font = self.Font_Courier_New_Red_Bold
         Worksheet[f"{Col_fi[0]}{new_row}"].alignment = self.Alignment_To_Cells
         Worksheet[f"{Col_fi[0]}{new_row}"].border = self.Border_With_All_Borders
 
-        Worksheet[f"{Col_hi[0]}{new_row}"] = f"{round(numpy.sum(Col_hi[1]))}"
+        Worksheet[f"{Col_hi[0]}{new_row}"] = round(numpy.sum(Col_hi[1]))
         Worksheet[f"{Col_hi[0]}{new_row}"].font = self.Font_Courier_New_Red_Bold
         Worksheet[f"{Col_hi[0]}{new_row}"].alignment = self.Alignment_To_Cells
         Worksheet[f"{Col_hi[0]}{new_row}"].border = self.Border_With_All_Borders
 
-        Worksheet[f"{Col_hi_percent[0]}{new_row}"] = f"{round(numpy.sum(Col_hi_percent[1]))}"
+        Worksheet[f"{Col_hi_percent[0]}{new_row}"] = round(numpy.sum(Col_hi_percent[1]))/100
         Worksheet[f"{Col_hi_percent[0]}{new_row}"].font = self.Font_Courier_New_Red_Bold
         Worksheet[f"{Col_hi_percent[0]}{new_row}"].alignment = self.Alignment_To_Cells
         Worksheet[f"{Col_hi_percent[0]}{new_row}"].border = self.Border_With_All_Borders
+        Worksheet[f"{Col_hi_percent[0]}{new_row}"].number_format = "0.0000%"
 
-    def Add_Summary_Measures(self , WorkSheet, M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Start_Row , Table_Length):
+    def Add_Summary_Measures(self , WorkSheet, M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Quartiles , Start_Row , Table_Length):
         if(not (M_Central_Tendency_And_Dispersion or M_Coefficient_Asymmetry)):
             raise Exception("Error al exportar las medidas de resumen.")
         Table_Length -= 1 # Como vamos a trabajar con listas quito 1
 
-        Arr_Col = ["O" , "P" , "Q" , "R" , "S" , "T" , "U" , "V" , "W" , "X" , "Y" , "AA" , "AB" , "AC" , "AD" , "AE" , "AF" , "AG" , "AH" , "AI" , "AJ" , "AK" , "AL" , "AM"]
+        Arr_Col = [
+            "N" , "O" , "P" , "Q" , "R" , "S" , "T" , "U" , "V" , "W" , "X" , "Y" , "AA" , "AB" , "AC" , "AD" , "AE" , 
+            "AF" , "AG" , "AH" , "AI" , "AJ" , "AK" , "AL" , "AM" , "AN" , "AO" , "AP" , "AQ" , "AR" , "AS" , "AT" , "AU" , "AV"]
         Move_Col = 0
-        Move_Row = 0
-        WorkSheet[f"N{Start_Row}"] = "Medidas de Tendencia Central y de Dispersion"
-        WorkSheet[f"N{Start_Row}"].font = self.Font_Courier_New_Bold
-        WorkSheet[f"N{Start_Row}"].alignment = self.Alignment_To_Cells
-
+        Move_Row = 1
         for N_Cental_T , (key_Central_T , value_Central_T) in enumerate(M_Central_Tendency_And_Dispersion.items()):
             if(Move_Row > Table_Length and Table_Length <= 7):
-                Move_Col += 3
-                Move_Row = 0
+                Move_Col += 2
+                Move_Row = 1
         
             if(N_Cental_T != 3):
                 WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"] = f"{key_Central_T}"
@@ -117,9 +118,9 @@ class Export_Data:
                 WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].alignment = self.Alignment_To_Cells
                 WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].border = self.Border_With_All_Borders
             else:
-                if(Move_Row + len(value_Central_T) > Table_Length and len(value_Central_T) > 1):
-                    Move_Col += 3
-                    Move_Row = 0
+                if(Move_Row + len(value_Central_T) > Table_Length + 2 and len(value_Central_T) > 1):
+                    Move_Col += 2
+                    Move_Row = 1
                 
                 WorkSheet.merge_cells(f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}:{Arr_Col[Move_Col]}{Start_Row + len(value_Central_T) - 1 + Move_Row}")
                 WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"] = f"{key_Central_T}"
@@ -129,7 +130,7 @@ class Export_Data:
                 WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"].fill = self.Fill_Header_Style
                 if(len(value_Central_T) > 1):
                     for n , Mo in enumerate(value_Central_T , start=1):
-                        WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"] = f"Mo_{n} : {Mo}"
+                        WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"] = f"Mo_{n}: {Mo}"
                         WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].font = self.Font_Courier_New_No_Bold
                         WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].alignment = self.Alignment_To_Cells
                         WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].border = self.Border_With_All_Borders
@@ -141,16 +142,23 @@ class Export_Data:
                     WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].alignment = self.Alignment_To_Cells
                     WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].border = self.Border_With_All_Borders
             Move_Row += 1
+        WorkSheet.merge_cells(f"{Arr_Col[0]}{Start_Row}:{Arr_Col[Move_Col + 1]}{Start_Row}")
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"] = "Medidas de Tendencia Central y de Dispersion"
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].font = self.Font_Courier_New_Red_Bold_Italic
+        for i in range(Move_Col + 2):
+            WorkSheet[f"{Arr_Col[i]}{Start_Row}"].border = self.Border_With_All_Borders
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].fill = self.Fill_Header_Style
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].alignment = self.Alignment_To_Cells
 
-        
-        WorkSheet[f"{Arr_Col[Move_Col + 3]}{Start_Row}"] = "Coeficientes de Asimetria"
-        WorkSheet[f"{Arr_Col[Move_Col + 3]}{Start_Row}"].font = self.Font_Courier_New_Bold
-        WorkSheet[f"{Arr_Col[Move_Col + 3]}{Start_Row}"].alignment = self.Alignment_To_Cells
 
-        Arr_Col = [col for i , col in enumerate(Arr_Col) if i > Move_Col + 3]
-        Move_Row = 0
+        Arr_Col = [col for i , col in enumerate(Arr_Col) if i >= Move_Col + 2]
         Move_Col = 0
+        Move_Row = 1
         for key_Coef_Asymmetry , value_Coef_Asymmetry in M_Coefficient_Asymmetry.items():
+            if(Move_Row > Table_Length and Table_Length <= 7):
+                Move_Col += 2
+                Move_Row = 1
+            
             WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"] = f"Coeficiente de {key_Coef_Asymmetry}"
             WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"].font = self.Font_Courier_New_Bold
             WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"].alignment = self.Alignment_To_Cells
@@ -162,6 +170,43 @@ class Export_Data:
             WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].alignment = self.Alignment_To_Cells
             WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].border = self.Border_With_All_Borders
             Move_Row += 1
+        
+        WorkSheet.merge_cells(f"{Arr_Col[0]}{Start_Row}:{Arr_Col[Move_Col + 1]}{Start_Row}")
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"] = "Coeficientes de Asimetria"
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].font = self.Font_Courier_New_Red_Bold_Italic
+        for i in range(Move_Col + 2):
+            WorkSheet[f"{Arr_Col[i]}{Start_Row}"].border = self.Border_With_All_Borders
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].fill = self.Fill_Header_Style
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].alignment = self.Alignment_To_Cells
+
+        Arr_Col = [col for i , col in enumerate(Arr_Col) if i >= Move_Col + 2]
+        Move_Col = 0
+        Move_Row = 1
+
+        for i , quartil in enumerate(Quartiles , start=1):
+            if(Move_Row > Table_Length and Table_Length <= 7):
+                Move_Col += 2
+                Move_Row = 1
+            WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"] = f"Q_{i}"
+            WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"].font = self.Font_Courier_New_Bold
+            WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"].alignment = self.Alignment_To_Cells
+            WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"].border = self.Border_With_All_Borders
+            WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"].fill = self.Fill_Header_Style
+            
+            WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"] = quartil
+            WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].font = self.Font_Courier_New_No_Bold
+            WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].alignment = self.Alignment_To_Cells
+            WorkSheet[f"{Arr_Col[Move_Col + 1]}{Start_Row + Move_Row}"].border = self.Border_With_All_Borders
+            Move_Row += 1
+
+        WorkSheet.merge_cells(f"{Arr_Col[0]}{Start_Row}:{Arr_Col[Move_Col + 1]}{Start_Row}")
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"] = "Cuartiles"
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].font = self.Font_Courier_New_Red_Bold_Italic
+        for i in range(Move_Col + 2):
+            WorkSheet[f"{Arr_Col[i]}{Start_Row}"].border = self.Border_With_All_Borders
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].fill = self.Fill_Header_Style
+        WorkSheet[f"{Arr_Col[0]}{Start_Row}"].alignment = self.Alignment_To_Cells
+
 
     def Adjust_Width(self , Worksheet):
         Font_Factor = 1.3 # Para Courier New tamaño 12
@@ -191,9 +236,20 @@ class Export_Data:
                 Worksheet[f"{col}{row}"].border = self.Border_With_All_Borders
                 Worksheet[f"{col}{row}"].font = self.Font_Courier_New_No_Bold
 
+                if((col == "J" or col == "K") and Type_Of_Data == "Cuantitative_Grouped" and row >= Start_Row + 1):
+                    Old_Value = float(Worksheet[f"{col}{row}"].value)
+                    New_Value = Old_Value/100
+                    Worksheet[f"{col}{row}"].value = New_Value
+                    Worksheet[f"{col}{row}"].number_format = "0.0000%"
+                elif((col == "I" or col == "J") and (Type_Of_Data == "Cuantitative_Not_Grouped" or Type_Of_Data == "Cualitative") and row >= Start_Row + 1):
+                    Old_Value = float(Worksheet[f"{col}{row}"].value)
+                    New_Value = Old_Value/100
+                    Worksheet[f"{col}{row}"].value = New_Value
+                    Worksheet[f"{col}{row}"].number_format = "0.0000%"
+
             cell = Worksheet[f"{col}{Start_Row}"] # Accedo a por ejemplo A4 o D4
             
-            cell.font = self.Font_Courier_New_Red_Bold
+            cell.font = self.Font_Courier_New_Bold_Italic
             cell.fill = self.Fill_Header_Style
             cell.border = self.Border_With_Double_Line_Bottom
 
@@ -230,12 +286,15 @@ class Export_Data:
 
             M_Central_Tendency_And_Dispersion = None
             M_Coefficient_Asymmetry = None
+            Quartiles = None
             if("Summary_Measures_For_Grouped_Data" in Copy_Data):
                 M_Central_Tendency_And_Dispersion = Copy_Data["Summary_Measures_For_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
                 M_Coefficient_Asymmetry = Copy_Data["Summary_Measures_For_Grouped_Data"]["Coefficient_Asymmetry"]
+                Quartiles = Copy_Data["Summary_Measures_For_Grouped_Data"]["Quantiles"]["Cuartil"]
             elif("Summary_Measures_For_Not_Grouped_Data" in Copy_Data):
                 M_Central_Tendency_And_Dispersion = Copy_Data["Summary_Measures_For_Not_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
                 M_Coefficient_Asymmetry = Copy_Data["Summary_Measures_For_Not_Grouped_Data"]["Coefficient_Asymmetry"]
+                Quartiles = Copy_Data["Summary_Measures_For_Not_Grouped_Data"]["Quantiles"]["Cuartil"]
 
             if("Frecuences_Cuant_Grouped" in Copy_Data):
                 Copy_Data =  Copy_Data["Frecuences_Cuant_Grouped"]
@@ -263,11 +322,11 @@ class Export_Data:
                 case "Cuantitative_Grouped":
                     self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable , Start_Row)
                     self.Create_Row_Total(Worksheet_1 , "D" , ["F" , Copy_Data["fi"]] , ["H" , Copy_Data["hi"]] , ["J" , Copy_Data["hi%"]])
-                    self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Start_Row , Table_Length)
+                    self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Quartiles , Start_Row , Table_Length)
                 case "Cuantitative_Not_Grouped":
                     self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable , Start_Row)
                     self.Create_Row_Total(Worksheet_1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]])
-                    self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Start_Row , Table_Length)
+                    self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Quartiles , Start_Row , Table_Length)
                 case "Cualitative":
                     self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable , Start_Row)
                     self.Create_Row_Total(Worksheet_1 , "D" , ["E" , Copy_Data["fi"]] , ["G" , Copy_Data["hi"]] , ["I" , Copy_Data["hi%"]])
@@ -291,13 +350,16 @@ class Export_Data:
 
                 M_Central_Tendency_And_Dispersion = None
                 M_Coefficient_Asymmetry = None
+                Quartiles = None
                 if("Summary_Measures_For_Grouped_Data" in value):
                     M_Central_Tendency_And_Dispersion = value["Summary_Measures_For_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
                     M_Coefficient_Asymmetry = value["Summary_Measures_For_Grouped_Data"]["Coefficient_Asymmetry"]
+                    Quartiles = value["Summary_Measures_For_Grouped_Data"]["Quantiles"]["Cuartil"]
                     value.pop("Summary_Measures_For_Grouped_Data")
                 elif("Summary_Measures_For_Not_Grouped_Data" in value):
                     M_Central_Tendency_And_Dispersion = value["Summary_Measures_For_Not_Grouped_Data"]["Measures_Of_Central_Tendency_And_Dispersion"]
                     M_Coefficient_Asymmetry = value["Summary_Measures_For_Not_Grouped_Data"]["Coefficient_Asymmetry"]
+                    Quartiles = value["Summary_Measures_For_Not_Grouped_Data"]["Quantiles"]["Cuartil"]
                     value.pop("Summary_Measures_For_Not_Grouped_Data")
                 
                 if("Frecuences_Cuant_Grouped" in value):
@@ -330,11 +392,11 @@ class Export_Data:
                     case "Cuantitative_Grouped":
                         self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable[key] , Start_Row)
                         self.Create_Row_Total(Worksheet_1 , "D" , ["F" , value["fi"]] , ["H" , value["hi"]] , ["J" , value["hi%"]])
-                        self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Start_Row , Table_Length)
+                        self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Quartiles , Start_Row , Table_Length)
                     case "Cuantitative_Not_Grouped":
                         self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable[key] , Start_Row)
                         self.Create_Row_Total(Worksheet_1 , "D" , ["E" , value["fi"]] , ["G" , value["hi"]] , ["I" , value["hi%"]])
-                        self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Start_Row , Table_Length)
+                        self.Add_Summary_Measures(Worksheet_1 , M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry , Quartiles , Start_Row , Table_Length)
                     case "Cualitative":
                         self.Align_And_Style_Values_In_Table_Cells(Worksheet_1 , Table_Length , self.Type_Of_Variable[key] , Start_Row)
                         self.Create_Row_Total(Worksheet_1 , "D" , ["E" , value["fi"]] , ["G" , value["hi"]] , ["I" , value["hi%"]])

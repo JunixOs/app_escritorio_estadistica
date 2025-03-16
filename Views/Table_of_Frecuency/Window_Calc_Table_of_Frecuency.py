@@ -5,12 +5,13 @@ import numpy
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Path_Manager import Get_Resource_Path
+from Exceptions.Exception_Warning import Raise_Warning
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
 from Views.Table_of_Frecuency.Window_Export_Excel import Generate_Window_Export_Excel
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import Views.Table_of_Frecuency.Window_Import_Excel as W_Import_Excel
+import Views.Window_Import_Excel as W_Import_Excel
 import Views.Table_of_Frecuency.Window_Show_Graph as W_Show_Graph
 
 # Variables Globales
@@ -19,7 +20,7 @@ Global_Results_From_Single_Column = {}
 Global_Results_From_Multiple_Columns = {}
 Global_Type_Of_Variable_Single_Column = "" # Obtiene el tipo de variable, solo para analisis que involucren una columna de datos
 Global_Type_Of_Variable_Multiple_Column = {} # Obtiene el tipo de variable, solo para analisis que involucren multiples columnas de datos
-Global_Views = {} # Se encarga de almacenar todos los calculos y tablas que resultan de cada columna analizada
+Global_Views = {} # Se encarga de almacenar todas las tablas que resultan de cada columna analizada
 #
 class TreeviewFrame(ttk.Frame):
     def __init__(self, *args, **kwargs):
@@ -639,7 +640,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Main_Window.state(newstate="withdraw")
 
     def Back_to_main_window():
-        Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
+        Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
         for widget in Window_Frecuences_Table.winfo_children():
             widget.destroy()
 
@@ -659,12 +660,12 @@ def Create_Window_Frecuences_Table(Main_Window):
         Global_Views[f"{Selection}"].Display_Widgets_For_Results()
         Precision.set(Global_Views[f"{Selection}"].Precision)
 
-    def Display_Results_For_Single_Column_Data(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column):
+    def Display_Results_For_Single_Column_Data(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel):
         global Global_Views
-        if(Global_Views == {}):
-            if(Imported_Data_From_Single_Column != {}):
+        if(not Global_Views):
+            if(Imported_Data_From_Excel):
                 Results_From_Single_Column = {}
-                key, value = next(iter(Imported_Data_From_Single_Column.items()))
+                key, value = next(iter(Imported_Data_From_Excel.items()))
                 Results_On_Window_For_Single_Variable = Process_Column_Of_Data(Window_Frecuences_Table , value , Precision , key) # Para datos importados de Excel
                 Results_On_Window_For_Single_Variable.Calc_Results(False)
                 Results_From_Single_Column[f"{key}"] = Results_On_Window_For_Single_Variable.Results
@@ -688,12 +689,12 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Global_Views["S_Column"].Display_Widgets_For_Results()
 
-    def Display_Results_For_Multiple_Column_Data(Precision , Imported_Data_From_Multiple_Columns):
+    def Display_Results_For_Multiple_Column_Data(Precision , Imported_Data_From_Excel):
         global Global_Views
         Results_From_Multiple_Columns = {}
         Type_Of_Variable_For_Multiple_Columns = {}
-        if(Global_Views == {}):
-            for key , values in Imported_Data_From_Multiple_Columns.items():
+        if(not Global_Views):
+            for key , values in Imported_Data_From_Excel.items():
                 Results_On_Window_For_Multiple_Variables = None
 
                 Results_On_Window_For_Multiple_Variables = Process_Column_Of_Data(Window_Frecuences_Table , values , Precision , key , True)
@@ -723,38 +724,47 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Global_Views[f"{Selection}"].Display_Widgets_For_Results()
 
-    def Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns):
+    def Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel):
         global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column
         try:
             Data_From_Widget_Entry = str(Data_From_Widget_Entry.get())
             if(Data_From_Widget_Entry == ""):
-                raise Exception("No se han ingresado datos")
+                raise Raise_Warning("No se han ingresado datos")
             try:
                 Precision = int(Precision.get())
             except Exception:
-                raise Exception("Valor de precision invalida, intente nuevamente.")
+                raise Raise_Warning("Valor de precision invalida, intente nuevamente.")
 
-            if(not Imported_Data_From_Multiple_Columns):
-                if(not Global_Results_From_Single_Column and Global_Type_Of_Variable_Single_Column == ""):
-                    Dictionary_Values , Type_Of_Variable = Display_Results_For_Single_Column_Data(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column)
-                    Global_Type_Of_Variable_Single_Column = Type_Of_Variable
-                    Global_Results_From_Single_Column = Dictionary_Values
-                else:
-                    Display_Results_For_Single_Column_Data(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column)
-
-            elif(not Imported_Data_From_Single_Column):
+            if(len(Imported_Data_From_Excel) > 1):
                 if(not Global_Results_From_Multiple_Columns and not Global_Type_Of_Variable_Multiple_Column):
-                    Dictionary_Values , Type_Of_Variable = Display_Results_For_Multiple_Column_Data(Precision , Imported_Data_From_Multiple_Columns)
+                    Dictionary_Values , Type_Of_Variable = Display_Results_For_Multiple_Column_Data(Precision , Imported_Data_From_Excel)
                     Global_Type_Of_Variable_Multiple_Column = Type_Of_Variable
                     Global_Results_From_Multiple_Columns = Dictionary_Values
                 else:
-                    Display_Results_For_Multiple_Column_Data(Precision , Imported_Data_From_Multiple_Columns)
+                    Display_Results_For_Multiple_Column_Data(Precision , Imported_Data_From_Excel)
+            elif(len(Imported_Data_From_Excel) == 1):
+                if(not Global_Results_From_Single_Column and Global_Type_Of_Variable_Single_Column == ""):
+                    Dictionary_Values , Type_Of_Variable = Display_Results_For_Single_Column_Data(Precision , {} , Imported_Data_From_Excel)
+                    Global_Type_Of_Variable_Single_Column = Type_Of_Variable
+                    Global_Results_From_Single_Column = Dictionary_Values
+                else:
+                    Display_Results_For_Single_Column_Data(Precision , {} , Imported_Data_From_Excel)
+            elif(Data_From_Widget_Entry):
+                if(not Global_Results_From_Single_Column and Global_Type_Of_Variable_Single_Column == ""):
+                    Dictionary_Values , Type_Of_Variable = Display_Results_For_Single_Column_Data(Precision , Data_From_Widget_Entry , {})
+                    Global_Type_Of_Variable_Single_Column = Type_Of_Variable
+                    Global_Results_From_Single_Column = Dictionary_Values
+                else:
+                    Display_Results_For_Single_Column_Data(Precision , Data_From_Widget_Entry , {})
             else:
-                raise Exception("No se han ingresado datos.")
+                raise Raise_Warning("No se han ingresado datos.")
 
-        except (IndexError , ValueError , NameError , TypeError , Exception) as e:
+        except Raise_Warning as e:
+            messagebox.showinfo("Advertencia" , f"{e}")
+            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
+        except Exception as e:
             messagebox.showerror("Error" , f"{e}")
-            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
+            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
         else:
             Input_Data.config(state="disabled")
 
@@ -763,7 +773,7 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Show_Graph.config(state="normal")
             Btn_Import_Data_From_File.config(state="disabled")
 
-    def Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns):
+    def Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel):
         global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Views
 
         Input_Data.config(state="normal")
@@ -771,8 +781,8 @@ def Create_Window_Frecuences_Table(Main_Window):
         Precision.set(3)
         Btn_Import_Data_From_File.config(state="normal")
 
-        Imported_Data_From_Multiple_Columns.clear()
-        Imported_Data_From_Single_Column.clear()
+        Imported_Data_From_Excel.clear()
+
         Global_Results_From_Single_Column.clear()
         Global_Results_From_Multiple_Columns.clear()
         Global_Type_Of_Variable_Single_Column = ""
@@ -800,15 +810,15 @@ def Create_Window_Frecuences_Table(Main_Window):
     def Interact_Precision():
         global Global_Results_From_Multiple_Columns , Global_Results_From_Single_Column
         if(Global_Results_From_Single_Column or Global_Results_From_Multiple_Columns):
-            Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
+            Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel)
 
-    def Interact_Btn_Generate_Table(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns , Columns_Name , Column_Selection):
+    def Interact_Btn_Generate_Table(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel , Columns_Name , Column_Selection):
         global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns
         if(Global_Results_From_Multiple_Columns or Global_Results_From_Single_Column):
-            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
+            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
             Btn_Generate_Table.config(text="Calcular Tabla")
         else:
-            Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns)
+            Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
     Window_Frecuences_Table.geometry("1400x800+60+55")
@@ -821,8 +831,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Data_From_Widget_Entry.set("")
     Precision = IntVar(Window_Frecuences_Table)
     Columns_Name = []
-    Imported_Data_From_Multiple_Columns = {}
-    Imported_Data_From_Single_Column = {}
+    Imported_Data_From_Excel = {}
     Graphs = {}
 
     Main_Title = Label(Window_Frecuences_Table , text="Calculo de Tablas de Frecuencia" , font=("Times New Roman" , 22), foreground="#ffffff", justify=CENTER , bg="#9DAEC6" , highlightthickness=1 ,highlightbackground="#ffffff")
@@ -838,10 +847,10 @@ def Create_Window_Frecuences_Table(Main_Window):
     Input_Data.place(x=180 , y=90 , width=1179)
     Input_Data.focus()
 
-    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Importar Datos" , font=("Times New Roman" , 13) , width=16 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data_From_Widget_Entry , Input_Data , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns))
+    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Importar Datos" , font=("Times New Roman" , 13) , width=16 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data_From_Widget_Entry , Input_Data , Imported_Data_From_Excel , "Table_Of_Frecuency"))
     Btn_Import_Data_From_File.place(x=70 , y=130)
 
-    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Calcular Tabla" , font=("Times New Roman" , 13) , width=22 , bg="#F4B0C0" , command= lambda: Interact_Btn_Generate_Table(Precision , Data_From_Widget_Entry , Imported_Data_From_Single_Column , Imported_Data_From_Multiple_Columns , Columns_Name , Column_Selection)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
+    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Calcular Tabla" , font=("Times New Roman" , 13) , width=22 , bg="#F4B0C0" , command= lambda: Interact_Btn_Generate_Table(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel , Columns_Name , Column_Selection)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
     Btn_Generate_Table.place(x=1120 , y=130)
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
