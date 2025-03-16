@@ -66,12 +66,17 @@ class Validator:
         if(Sheet_Number > len(Sheets)):
             raise Raise_Warning("No existe el numero de hoja especificado.")
         
-    def Validate_Data_Imported_Is_Null(self , Imported_Data):
-        if(Imported_Data.isnull().all().all()):
-            raise Raise_Warning("Los datos seleccionados están vacíos o contienen solo valores nulos.")
-        if(Imported_Data.isnull().any().any()):
-            raise Raise_Warning("Los datos seleccionados contienen algun valor nulo. Por favor, revise si los datos tienen un formato adecuado.")
-
+    def Validate_Data_Imported_Is_Null(self , Imported_Data , Validate_All_Imported_Data = True):
+        if(Validate_All_Imported_Data):
+            if(Imported_Data.isnull().all().all()):
+                raise Raise_Warning("Los datos seleccionados están vacíos o contienen solo valores nulos.")
+            if(Imported_Data.isnull().any().any()):
+                raise Raise_Warning("Los datos seleccionados contienen algun valor nulo. Por favor, revise si los datos tienen un formato adecuado.")
+        else:
+            if(Imported_Data.isnull().all()):
+                raise Raise_Warning("Los datos seleccionados están vacíos o contienen solo valores nulos.")
+            if(Imported_Data.isnull().any()):
+                raise Raise_Warning("Los datos seleccionados contienen algun valor nulo. Por favor, revise si los datos tienen un formato adecuado.")
 
 class Import_Preview:
     def __init__(self , Table_Preview_Data , Imported_Data):
@@ -92,21 +97,25 @@ class Import_Preview:
             self.Table_Preview_Data.treeview.column(col , anchor="center" , width=120 , stretch=False)
 
         Dot_Text = tuple(["......."] for _ in range(0 , len(self.Table_Preview_Data.treeview["columns"])))
+        N_Imported_Columns = self.Imported_Data.count().tolist()
+        Total_Row_Text = tuple(["Filas Importadas:"] + N_Imported_Columns)
 
         # Insertar los datos fila por fila
         if(End_Row - Start_Row + 1 >= 100):
-            for (index, row) in (self.Imported_Data.head().iterrows()):
+            for (index, row) in (self.Imported_Data.head(20).iterrows()):
                     values = tuple([index + 2] + row.tolist())
                     self.Table_Preview_Data.treeview.insert("" , "end" , values=values)
             for i in range(0 , 3):
                 self.Table_Preview_Data.treeview.insert("" , "end" , values=Dot_Text)
-            for (index, row) in (self.Imported_Data.tail().iterrows()):
+            for (index, row) in (self.Imported_Data.tail(10).iterrows()):
                     values = tuple([index + 2] + row.tolist())
                     self.Table_Preview_Data.treeview.insert("" , "end" , values=values)
+            self.Table_Preview_Data.treeview.insert("" , "end" , values=Total_Row_Text)
         else:
             for (index, row) in (self.Imported_Data.iterrows()):
                     values = tuple([index + 1] + row.tolist())
                     self.Table_Preview_Data.treeview.insert("" , "end" , values=values)
+            self.Table_Preview_Data.treeview.insert("" , "end" , values=Total_Row_Text)
 
         self.Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
 
@@ -114,23 +123,21 @@ class Import_Preview:
 
 
 class Load_Data_In_Preview:
-    def Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns , Import_Multiple_Columns , Imported_Data , Imported_Column_Names , Start_Row , End_Row):
+    def Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs , Import_Multiple_Columns , Imported_Data , Imported_Column_Names , Start_Row , End_Row):
         Table_Preview_Data.clear_table()
         Load_Preview = Import_Preview(Table_Preview_Data , Imported_Data)
 
         if(Data_From_Entry_Widget.get()):
             Data_From_Entry_Widget.set("")
-        if(Data_From_Single_Column):
-            Data_From_Single_Column.clear()
-        if(Data_From_Multiple_Columns):
-            Data_From_Multiple_Columns.clear()
+        if(Imported_Data_From_Excel_For_Calcs):
+            Imported_Data_From_Excel_For_Calcs.clear()
 
         match(Import_Multiple_Columns):
             case True:
                 text = "columnas importadas: "
 
                 for column in Imported_Column_Names:
-                    Data_From_Multiple_Columns[column] = [value for value in Imported_Data[column].dropna()]
+                    Imported_Data_From_Excel_For_Calcs[column] = [value for value in Imported_Data[column].dropna()]
                     text = text + column + "  "
 
                 Widget_Input_Data.config(state="disabled")
@@ -139,42 +146,39 @@ class Load_Data_In_Preview:
                 Load_Preview.Insert_Imported_Data_To_Preview(Start_Row , End_Row)
 
             case False:
-                Data_From_Single_Column[f"{Imported_Column_Names[0]}"] = [value[0] for value in Imported_Data.values]
+                Imported_Data_From_Excel_For_Calcs[f"{Imported_Column_Names[0]}"] = [value[0] for value in Imported_Data.values]
 
                 Widget_Input_Data.config(state="disabled")
                 Data_From_Entry_Widget.set(f"Columna Importada: {Imported_Column_Names[0]}")
 
                 Load_Preview.Insert_Imported_Data_To_Preview(Start_Row , End_Row)
 
-    def Module_Venn_Diagram(self , Table_Preview_Data , Info_From_Entry_Widgets , Data_From_Columns , Imported_Data , Imported_Column_Names , Start_Row , End_Row):
+    def Module_Venn_Diagram(self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs , Imported_Data , Imported_Column_Names , Start_Row , End_Row):
         Table_Preview_Data.clear_table()
         Load_Preview = Import_Preview(Table_Preview_Data , Imported_Data)
 
-        for info in Info_From_Entry_Widgets.values():
-            if(info[0]):
-                info[0] = ""
-            if(info[1].get()):
-                info[1].set("")
-            elif(info[2]):
-                info[2].clear()
+        for data_widget in Data_From_Entry_Widgets.values():
+            if(data_widget.get()):
+                data_widget.set("")
 
-        for imported in Imported_Data:
+        for imported in Imported_Data_From_Excel_For_Calcs:
             if(imported):
                 imported.clear()
 
-        for i , info in enumerate(Info_From_Entry_Widgets.values()):
+        for i , (data_widget , widget) in enumerate(zip(Data_From_Entry_Widgets.values() , Widgets_Input_Data.values())):
             if(i < len(Imported_Column_Names)):
-                Data_From_Columns[Imported_Column_Names[i]] = [value for value in Imported_Data[Imported_Column_Names[i]].dropna()]
+                Imported_Data_From_Excel_For_Calcs[Imported_Column_Names[i]] = [value for value in Imported_Data[Imported_Column_Names[i]].dropna()]
 
-                info[0] = f"{Imported_Column_Names[i]}"
-                info[1].config(state="disabled")
-                info[2].set(f"Columna Importada: {Imported_Column_Names[i]}")
+                widget.config(state="disabled")
+                data_widget.set(f"Columna Importada: {Imported_Column_Names[i]}")
+            else:
+                widget.config(state="disabled")
 
         Load_Preview.Insert_Imported_Data_To_Preview(Start_Row , End_Row)
 
 
 class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview):
-    def __init__(self , File_Path , Sheet_Number , Range_Cells , Module_Name):
+    def __init__(self , File_Path , Sheet_Number , Range_Cells):
         """ 
             Esta clase permite importar datos de un Excel externo, siempre y cuando
             el rango de celdas a importar sea de 1.
@@ -191,7 +195,6 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
         self.Sheet_Number = Sheet_Number - 1
         self.Range_Cells = Range_Cells
         self.Import_Multiple_Columns = False
-        self.Module_Name = Module_Name
 
     def Process_Input_Data(self):
         """  
@@ -210,13 +213,13 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
         if(self.End_Column != self.Start_Column):
             self.Import_Multiple_Columns = True
     
-    def Manage_Import_For_Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns):
+    def Manage_Import_For_Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs):
         try:
     
             self.Import_Data()
 
             Load_Data_In_Preview.Module_Table_Of_Frecuency(
-                self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns , 
+                self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs , 
                 self.Import_Multiple_Columns , self.Imported_Data , self.Imported_Column_Names , self.Start_Row , self.End_Row)
     
         except Raise_Warning as e:
@@ -225,7 +228,25 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
         except Exception as e:
             Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
-    
+
+    def Manage_Import_For_Module_Venn_Diagram(self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs):
+        try:
+            self.Import_Data()
+
+            if(len(self.Imported_Data) < 2):
+                raise Raise_Warning("No se puede importar menos de 2 columnas.")
+            
+            Load_Data_In_Preview.Module_Venn_Diagram(
+                self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Imported_Data , self.Imported_Columns_Name , self.Start_Row , self.End_Row
+            )
+
+        except Raise_Warning as e:
+            Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
+            messagebox.showwarning("Advertencia" , f"{e}")
+        except Exception as e:
+            Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
+            messagebox.showerror("Error" , f"{e}")
+
     def Import_Data(self):
         Previous_Loaded_Excel = openpyxl.load_workbook(self.File_Path , read_only=True)
 
@@ -255,14 +276,14 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
 
 
 class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Preview):
-    def __init__(self , File_Path , Sheet_Number , Range_Cells , Module_Name):
+    def __init__(self , File_Path , Sheet_Number , Range_Cells):
         Validator.__init__(self)
         Load_Data_In_Preview.__init__(self)
 
         self.File_Path = File_Path
         self.Sheet_Number = Sheet_Number - 1
         self.Range_Cells = Range_Cells
-        self.Module_Name = Module_Name
+
         self.Collection_Of_Cells = {
             "Columns" : [],
             "Rows" : [],
@@ -284,13 +305,33 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
             self.Collection_Of_Cells["Columns"].append([self.Start_Column , self.End_Column])
             self.Collection_Of_Cells["Rows"].append([self.Start_Row , self.End_Row])
         
-    def Manage_Import_For_Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Data_From_Multiple_Columns):
+    def Manage_Import_For_Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs):
         try:
             self.Import_Data()
 
             Load_Data_In_Preview.Module_Table_Of_Frecuency(
-                self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , {} , Data_From_Multiple_Columns , self.Import_Mutiple_Columns ,
+                self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Import_Mutiple_Columns ,
                 self.Imported_Data , self.Imported_Columns_Name , self.Start_Row , self.End_Row
+            )
+
+        except Raise_Warning as e:
+            Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
+            messagebox.showwarning("Advertencia" , f"{e}")
+        except Exception as e:
+            Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
+            messagebox.showerror("Error" , f"{e}")
+
+    def Manage_Import_For_Module_Venn_Diagram(self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs):
+        try:
+            self.Import_Data()
+
+            if(len(self.Imported_Data) < 2):
+                raise Raise_Warning("No se puede importar menos de 2 columnas.")
+            elif(len(self.Imported_Data) > 6):
+                raise Raise_Warning("No se puede importar mas de 6 columnas.")
+            
+            Load_Data_In_Preview.Module_Venn_Diagram(
+                self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Imported_Data , self.Imported_Columns_Name , self.Start_Row , self.End_Row
             )
 
         except Raise_Warning as e:
@@ -369,21 +410,21 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
                     for c in col:
                         column_i = Load_Excel.iloc[self.Collection_Of_Cells["Rows"][i][0]-Adjustment_Value:self.Collection_Of_Cells["Rows"][i][1]-1 , c]
                         column_i.dropna()
+                        Validator.Validate_Data_Imported_Is_Null(self , column_i , False)
                         Concat_Columns.append(column_i)
                 else:
                     column_i = Load_Excel.iloc[self.Collection_Of_Cells["Rows"][i][0]-Adjustment_Value:self.Collection_Of_Cells["Rows"][i][1]-1 , col]
                     column_i.dropna()
+                    Validator.Validate_Data_Imported_Is_Null(self , column_i , False)
                     Concat_Columns.append(column_i)
 
-            self.Imported_Data = pd.concat(Concat_Columns , axis=1 , ignore_index=True)
+            self.Imported_Data = pd.concat(Concat_Columns , axis=1 , ignore_index=True , join="outer")
             self.Imported_Data.columns = self.Imported_Columns_Name
         except Exception as e:
-            raise Exception("Algo salio mal, asegurese de que el rango de celdas ingresado no tenga intersecciones.\nCorrecto: A1:D1001;F1:H1001 \nIncorrecto: A1:D1001;C1:E1001")
+            raise Raise_Warning("Algo salio mal, asegurese de que el rango de celdas ingresado no tenga intersecciones.\nCorrecto: A1:D1001;F1:H1001 \nIncorrecto: A1:D1001;C1:E1001")
         self.Imported_Data.dropna()
         
         Previous_Loaded_Excel.close()
 
         self.Start_Row = min(Arr_Rows)
         self.End_Row = max(Arr_Rows)
-
-        Validator.Validate_Data_Imported_Is_Null(self , self.Imported_Data)

@@ -24,8 +24,8 @@ def index_to_string(i):
         Letter = chr(Temp % 26 + 65) + Letter
         Temp = Temp // 26 - 1
     return Letter
+
 class TreeviewFrame(ttk.Frame):
-    """ SEPARAR EN UN MODULO DIFERENTE """
     def __init__(self , *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hscrollbar = ttk.Scrollbar(self, orient=HORIZONTAL)
@@ -137,7 +137,7 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
             Preview.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
-def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns):
+def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
     """ Separar en diferentes ventanas, uno para importar de un .xlsx y otro para importar de un .txt """
     try:
         Preview.Progress_Bar.Start_Progress_Bar()
@@ -146,18 +146,29 @@ def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , D
             raise Raise_Warning("No se ha ingresado un rango de celdas.")
         
         if(";" in Cell_Range.get()):
-            Import_Excel = Import_Excel_Using_Multiple_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get() , "Table_Of_Frecuency")
+            Import_Excel = Import_Excel_Using_Multiple_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
 
             Import_Excel.Process_Input_Data()
 
-            threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Multiple_Columns)).start()
-
+            match(Source_Module_Name):
+                case "Table_Of_Frecuency":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case "Venn_Diagram":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Venn_Diagram(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case _:
+                    raise Exception("Error al resolver el modulo de origen.")
         elif(":" in Cell_Range.get()):
-            Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get() , "Table_Of_Frecuency")
+            Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
 
             Import_Excel.Process_Input_Data()
 
-            threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns)).start()
+            match(Source_Module_Name):
+                case "Table_Of_Frecuency":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case "Venn_Diagram":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Venn_Diagram(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case _:
+                    raise Exception("Error al resolver el modulo de origen.")
         else:
             raise Raise_Warning("El rango de celdas ingresado es invalido.")
 
@@ -168,7 +179,7 @@ def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , D
         Preview.Progress_Bar.Close_Progress_Bar()
         messagebox.showerror("Error" , f"{e}")
 
-def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns):
+def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
     def Back():
         for widget in W_Import_Excel.winfo_children():
             widget.destroy()
@@ -230,7 +241,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     for a in range(1 , 7):
         Table_Preview_Data.treeview.column(f"{a}" , anchor="center" , width=106 , stretch=True)
 
-    Btn_Process_Data = Button(W_Import_Excel , text="Procesar Archivo" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Path , Sheet_Number , Cell_Range , Table_Preview_Data , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns))
+    Btn_Process_Data = Button(W_Import_Excel , text="Importar Datos" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Path , Sheet_Number , Cell_Range , Table_Preview_Data , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name))
     Btn_Process_Data.pack(side=BOTTOM)
 
     W_Import_Excel.resizable(False,False)

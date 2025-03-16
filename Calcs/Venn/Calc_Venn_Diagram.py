@@ -42,14 +42,19 @@ def Convert_Input_Data_To_Set(a):
     return Data
 
 class Venn_Diagram:
-    def __init__(self , Data_From_Sets):
+    def __init__(self , Data_From_Sets , Imported_From_Excel = False):
         self.Data_From_Sets = Data_From_Sets
+        self.Imported_From_Excel = Imported_From_Excel
 
         if(not(self.Data_From_Sets)):
             raise Raise_Warning("No se ingresaron datos.")
             
-        for key , value in self.Data_From_Sets.items():
-            self.Data_From_Sets[f"{key}"] = Convert_Input_Data_To_Set(value)
+        if(self.Imported_From_Excel):
+            for key , value in self.Data_From_Sets.items():
+                self.Data_From_Sets[f"{key}"] = set(value)
+        else:
+            for key , value in self.Data_From_Sets.items():
+                self.Data_From_Sets[f"{key}"] = Convert_Input_Data_To_Set(value)
 
         self.N_Sets = len(self.Data_From_Sets)
 
@@ -69,7 +74,7 @@ class Venn_Diagram:
         figure_venn = plt.Figure(figsize=(900/72 , 510/72) , dpi=72)
 
         ax = figure_venn.add_subplot(111)
-        venn.draw_venn(petal_labels=New_Labels , dataset_labels=self.Data_From_Sets.keys() , hint_hidden=False , colors=venn.generate_colors(n_colors=3) , figsize=(900/72 , 510/72) , fontsize=14, legend_loc="best", ax=ax)
+        venn.draw_venn(petal_labels=New_Labels , dataset_labels=self.Data_From_Sets.keys() , hint_hidden=False , colors=venn.generate_colors(n_colors=3) , figsize=(900/72 , 510/72) , fontsize=10, legend_loc="best", ax=ax)
             
         return figure_venn
 

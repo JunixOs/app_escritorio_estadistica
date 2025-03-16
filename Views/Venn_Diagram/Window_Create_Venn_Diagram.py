@@ -2,7 +2,9 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import Views.Window_Import_Excel as W_Import_Excel
 from Calcs.Venn.Calc_Venn_Diagram import Venn_Diagram
+import Views.Venn_Diagram.Window_Export_Venn_Diagram as W_Export_Venn_Diagram
 from Exceptions.Exception_Warning import Raise_Warning
 from tkinter import *
 from tkinter import ttk
@@ -31,20 +33,24 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
         Main_Window.state(newstate="normal")
         Main_Window.lift()
 
-    def Process_Data(Widget_Venn_Graph):
+    def Process_Data(Widget_Venn_Graph , Figure_Venn_Graph):
         try:
             if(Widget_Venn_Graph):
                 Calculate_Again()
             else:
                 Data_From_Widgets = {f"{key}" : value.get() for key , value in Collection_Of_Inputs_Data.items() if value.get()}
-                if(len(Data_From_Widgets)):
+                if(Imported_Data_From_Excel):
+                    Copy_Data = Imported_Data_From_Excel.copy()
+                    Graph = Venn_Diagram(Copy_Data , True)
+                elif(len(Data_From_Widgets)):
                     Graph = Venn_Diagram(Data_From_Widgets)
                 else:
                     raise Raise_Warning("No se ha ingresado ningun valor.")
 
                 Figure_Venn = Graph.Generate_Diagram()
+                Figure_Venn_Graph.append(Figure_Venn)
                 
-                Widget_Venn_Graph.append(FigureCanvasTkAgg(Figure_Venn , master=W_Create_Venn_Diagram))
+                Widget_Venn_Graph.append(FigureCanvasTkAgg(Figure_Venn_Graph[0] , master=W_Create_Venn_Diagram))
                 Widget_Venn_Graph[0].draw()
 
                 Widget_Venn_Graph[0].get_tk_widget().place(x=30 , y=250)
@@ -54,6 +60,7 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
 
                 Btn_Generate_Venn_Diagram.config(text="Calcular con otros valores")
                 Btn_Import_Data.config(state="disabled")
+                Btn_Export_Graph.config(state="normal")
         except Raise_Warning as e:
             messagebox.showwarning("Advertencia" , f"{e}")
         except Exception as e:
@@ -62,12 +69,16 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     def Calculate_Again():
         Widget_Venn_Graph[0].get_tk_widget().destroy()
         Widget_Venn_Graph.pop()
+        Figure_Venn_Graph.pop()
         Btn_Generate_Venn_Diagram.config(text="Generar diagrama")
         Btn_Import_Data.config(state="normal")
+        Btn_Export_Graph.config(state="disabled")
 
         for widget_entry , data_widget in zip(Collection_Of_Widgets_Entry.values() , Collection_Of_Inputs_Data.values()):
             widget_entry.config(state="normal")
             data_widget.set("")
+
+        Imported_Data_From_Excel.clear()
 
     Main_Window.state(newstate="withdraw")
     W_Create_Venn_Diagram = Toplevel(Main_Window)
@@ -82,8 +93,10 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     Collection_Of_Inputs_Data = {}
     Collection_Of_Widgets_Entry = {}
     Widget_Venn_Graph = []
+    Figure_Venn_Graph = []
+    Imported_Data_From_Excel = {}
 
-    Main_Title = Label(W_Create_Venn_Diagram , text="Crear Diagramas de Venn" , bg="#A7D0D9" , font=("Times New Roman" , 22) , justify=CENTER , foreground="#000000" , highlightthickness=1 , highlightbackground="#000000" , relief="raised")
+    Main_Title = Label(W_Create_Venn_Diagram , text="Crear Diagramas de Venn" , foreground="#ffffff" , bg="#A7D0D9" , font=("Times New Roman" , 22) , justify=CENTER , highlightthickness=1 , highlightbackground="#ffffff")
     Main_Title.place(x=10 , y=10 , width=1280 , height=50)
 
     Section_Input = Label(W_Create_Venn_Diagram , bg="#CDC4FF" , highlightbackground="#000000" , highlightthickness=1)
@@ -122,10 +135,10 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     Content_Frame_Sets.update_idletasks()  # Asegura que los widgets estén completamente renderizados
     Canvas_Set.config(scrollregion=Canvas_Set.bbox("all"))  # Actualiza la región desplazable
 
-    Btn_Import_Data = Button(W_Create_Venn_Diagram , text="Importar datos" , font=("Times New Roman" , 13) , bg="#F9FFD1")
+    Btn_Import_Data = Button(W_Create_Venn_Diagram , text="Importar datos" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(W_Create_Venn_Diagram , Collection_Of_Inputs_Data , Collection_Of_Widgets_Entry , Imported_Data_From_Excel , "Venn_Diagram"))
     Btn_Import_Data.place(x=80 , y=190)
 
-    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command= lambda: Process_Data(Widget_Venn_Graph) , width=22)
+    Btn_Generate_Venn_Diagram = Button(W_Create_Venn_Diagram , text="Generar diagrama" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command= lambda: Process_Data(Widget_Venn_Graph , Figure_Venn_Graph) , width=22)
     Btn_Generate_Venn_Diagram.place(x=1000 , y=190)
 
     Section_Diagram = Label(W_Create_Venn_Diagram , bg="#CBEFE3" , highlightbackground="#000000" , highlightthickness=1)
@@ -134,8 +147,9 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     Section_Graph_Venn = Label(W_Create_Venn_Diagram , text="Tu grafico se mostrara aqui" , font=("Times New Roman" , 13)  , anchor="center" , bg="#ffffff" , highlightbackground="#000000" , highlightthickness=1)
     Section_Graph_Venn.place(x=30 , y=250 , width=900 , height=510)
 
-    Btn_Export_Graph = Button(W_Create_Venn_Diagram , text="Exportar Grafico" , font=("Times New Roman" , 13) , bg="#FFD9FA")
+    Btn_Export_Graph = Button(W_Create_Venn_Diagram , text="Exportar Grafico" , font=("Times New Roman" , 13) , bg="#FFD9FA" , command= lambda: W_Export_Venn_Diagram.Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph[0]))
     Btn_Export_Graph.place(x=990 , y=490 , width=210)
+    Btn_Export_Graph.config(state="disabled")
 
     Btn_Volver = Button(W_Create_Venn_Diagram , text="Volver" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command=Back)
     Btn_Volver.pack(side=BOTTOM , fill=BOTH)

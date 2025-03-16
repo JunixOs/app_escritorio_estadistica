@@ -191,12 +191,12 @@ Statphi/
 │   │   ├── Window_Calc_Table_of_Frecuency.py
 │   │   ├── Window_Export_Excel.py
 │   │   ├── Window_Export_Graph.py
-│   │   ├── Window_Import_Excel.py
 │   │   └── Window_Show_Graph.py
 │   ├── Venn_Diagram/
 │   │   └── Window_Create_Venn_Diagram.py
 │   ├── Main_Window.py
 │   ├── Window_Create_Multiple_Graphs.py
+│   ├── Window_Import_Excel.py
 │   └── Window_Progress_Bar.py
 ├── Path_Manager.py
 ├── .gitignore
@@ -300,6 +300,8 @@ Aqui te encontraras con los siguientes elementos:
 
         - *Para multiples columnas de datos no consecutivas*: `A1:C1001;E1:E1001;G1:H1001`
 
+        - *Para una o multiples columnas de datos de diferente tamaño*: `A1:A300;B1:B500;C1:D100`
+
     4. Finalmente, si no ocurre ningun error, podras ver los datos seleccionados en el cuadro de previsualizacion y en la ventana de calculo. Si lo deseas puedes salir de la ventana de importacion o corregir la seleccion actual.
 > [!WARNING]
 > Evite ingresar rangos de celdas como A1:C1001;B1:D1001.
@@ -328,7 +330,7 @@ Aqui te encontraras con los siguientes elementos:
         Dentro de esta ventana encontraras los siguientes elementos:
         -  ***Nombre de la Imagen***: Permite colocar un nombre a la imagen a exportar, es opcional, este nombre se aplica a todas las imagenes exportadas.
 
-        - ***Formato***: Es una pequeña caja con 3 opciones de formato posibles .jpg .png y .scv
+        - ***Formato***: Es una pequeña caja con 3 opciones de formato posibles .jpg .png y .svg
 
         - ***Ruta de Exportacion***
 
