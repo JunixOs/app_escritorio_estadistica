@@ -131,12 +131,12 @@ Si ingresar los datos de manera manual es un problema, o si tienes que analizar 
 ---
 <table style="margin: 0 auto;">
     <tr>
-        <th>Para datos ingresadas manualmente</th>
-        <th>Para datos importadas de un excel</th>
+        <th>Para datos ingresados manualmente</th>
+        <th>Para datos importados de un excel</th>
     </tr>
     <tr>
-        <td><img src="./Images/DEMO/Venn_Diagram/Calc_Venn_Diagram_DEMO_2_Data_From_Input.png" alt="Crear diagrama de Venn para datos ingresadas manualmente"></img></td>
-        <td><img src="./Images/DEMO/Venn_Diagram/Calc_Venn_Diagram_DEMO_2_Imported_Data_Diagram.png" alt="Crear diagrama de Venn para datos importadas de un excel"></img></td>
+        <td><img src="./Images/DEMO/Venn_Diagram/Calc_Venn_Diagram_DEMO_2_Data_From_Input.png" alt="Crear diagrama de Venn para datos ingresados manualmente"></img></td>
+        <td><img src="./Images/DEMO/Venn_Diagram/Calc_Venn_Diagram_DEMO_2_Imported_Data_Diagram.png" alt="Crear diagrama de Venn para datos importados de un excel"></img></td>
     </tr>
 </table>
 
@@ -349,7 +349,7 @@ Aqui te encontraras con los siguientes elementos:
 > [!WARNING]
 > Evite ingresar rangos de celdas como A1:C1001;B1:D1001.
 
-> [!INFO]
+> [!TIP]
 > Para evitar errores de importacion, por favor asegurese de que el formato de los datos sea el adecuado, que no existan celdas vacias dentro del rango de celdas a exportar y que todo tu dataset se encuentre en la primera fila del excel.
 
 - **Calcular Tabla**: Una vez que hayas introducido los datos manualmente o que los hayas importado de un excel, podras calcular la tabla de frecuencias junto con las demas medidas de resumen. 
@@ -406,7 +406,7 @@ Aqui te encontraras con los siguientes elementos:
 Aqui te encontraras con los siguientes elementos:
 - **Campos de texto**: Aqui puedes introducir los datos correspondientes a cada conjunto, el nombre de cada conjunto va de A hasta F, solo se pueden ingresar como maximo datos para 6 conjuntos. Si se cuenta con muchos datos es mejor importarlos de un excel y no importarlos manualmente ya que podria congelar el programa.
 
-- **Importar Datos de un Excel**: Permite importar datos de una o varias columnas de un archivo `.xlsx` externo. Su funcionamiento es similar a la detallada en el apartado `Calculo de Tablas de Frecuencias`, con la unica diferencia de que solo podras importar de 2 a 6 columnas de datos.
+- **Importar Datos**: Permite importar datos de una o varias columnas de un archivo `.xlsx` externo. Su funcionamiento es similar a la detallada en el apartado `Calculo de Tablas de Frecuencias`, con la unica diferencia de que solo podras importar de 2 a 6 columnas de datos.
 
 - **Generar diagrama**: Una vez que hayas introducido los datos manualmente o que los hayas importado de un excel, podras generar el diagrama de Venn.
 
@@ -415,7 +415,7 @@ Aqui te encontraras con los siguientes elementos:
 
     - ***Ruta de exportacion***
 
-    - ***Resolucion (DPI)***: Las resoluciones disponibles son de 72 , 96 , 150 , 300 , 600 , 1200 y 2000 DPI, todas cumpliendo las mismas caracteristicas detalladas en `Exportar Graficos` dentro del apartado de  `Calculo de Tablas de Frecuencia`.
+    - ***Resolucion (DPI)***: Las resoluciones disponibles son de 72 , 96 , 150 , 300 , 600 , 1200 y 2000 DPI, todas cumpliendo las mismas caracteristicas detalladas en `Exportar Graficos` dentro del apartado de  `Calculo de Tablas de Frecuencias`.
 
     - ***Titulo para el diagrama de Venn***: Permite colocar un titulo que describa mejor el grafico a exportar. Si no se coloca uno, el grafico se exportara sin un titulo.
 
