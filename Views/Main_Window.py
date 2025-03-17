@@ -24,7 +24,7 @@ Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
 
 Main_Window.geometry("1240x700")
 Center(Main_Window , 1240 , 700)
-Main_Window.title("StatPhi beta v1.8")
+Main_Window.title("StatPhi beta v1.9")
 Main_Window.config(bg="#9DAEC6")
 Main_Window.iconphoto(False , Icon)
 

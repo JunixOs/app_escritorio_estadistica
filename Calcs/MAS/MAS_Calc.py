@@ -41,7 +41,7 @@ def Calc_Samplings(e , Confidence_Level , N , Finite_Population , Infinite_Popul
             if(e == 0):
                 raise Exception("El error no puede ser igual a cero.")
             initial = round(((Z**2)*p*q)/e**2)
-            final = 0
+            final = "NaN"
         else:
             raise Raise_Warning("No se ha seleccionado la naturaleza de la poblacion.")
 

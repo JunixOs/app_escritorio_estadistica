@@ -106,9 +106,9 @@ def Create_Window_MAS(Main_Window=None):
     Main_Text = Label(Window_MAS , text="Ingrese los valores en porcentaje. ej: 20% => 20 \n usar punto \".\" en lugar de coma \",\" para los decimales", font=("Times New Roman" , 13) , justify=CENTER , bg="#F8E6CE")
     Main_Text.pack(side=TOP , fill=BOTH)
 
-    Checkbox_Finite_Population = Checkbutton(Window_MAS , text="Poblacion Finita" , font=("Times New Roman" , 13) , variable=Checked_Finite_Population , command=Only_Check_Finite_Population , bg="#CBEFE3")
+    Checkbox_Finite_Population = Checkbutton(Window_MAS , text="Poblacion finita" , font=("Times New Roman" , 13) , variable=Checked_Finite_Population , command=Only_Check_Finite_Population , bg="#CBEFE3")
     Checkbox_Finite_Population.place(x=50 , y=50)
-    Checkbox_Infinite_Population = Checkbutton(Window_MAS , text="Poblacion Infinita" , font=("Times New Roman" , 13) , variable=Checked_Infinite_Population , command=Only_Check_Infinite_Population , bg="#CBEFE3")
+    Checkbox_Infinite_Population = Checkbutton(Window_MAS , text="Poblacion infinita" , font=("Times New Roman" , 13) , variable=Checked_Infinite_Population , command=Only_Check_Infinite_Population , bg="#CBEFE3")
     Checkbox_Infinite_Population.place(x=340 , y=50)
 
     Text_Input_N = Label(Window_MAS , text="Poblacion (N): ", font=("Times New Roman" , 13) , bg="#CBEFE3")

@@ -8,6 +8,7 @@ def Create_Window_Multiple_Graphs(Father_Window):
         raise Exception("La caracteristica aun esta en desarrollo y no esta disponible por el momento.")
     except Exception as e:
         messagebox.showwarning("Advertencia" , f"{e}")
+        return 0
 
     if(__name__ != "__main__"):
         W_Multiple_Grahps = Toplevel(Father_Window)
@@ -23,7 +24,6 @@ def Create_Window_Multiple_Graphs(Father_Window):
     W_Multiple_Grahps.grab_set()
 
     
-
 
     W_Multiple_Grahps.resizable(False , False)
     W_Multiple_Grahps.mainloop()
