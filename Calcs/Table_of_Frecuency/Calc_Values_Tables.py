@@ -8,7 +8,6 @@ import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cualitative as Cuali
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Not_Grouped as Cuant_Not_Grouped
 import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Not_Grouped_Data as SM_For_Not_Grouped_Data
 import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Grouped_Data as SM_For_Grouped_Data
-import Quantiles.Quantil as Quantile
 
 def Check_Contains_Only_Numbers(Data):
     return not any(caracter.isalpha() for caracter in Data)
@@ -103,7 +102,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         """
         N_Decimals_Most_Common = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
         C_N_Decimals = int(N_Decimals_Most_Common[0][0]) + 1
-        C = round(R/m , C_N_Decimals)
+        C = round(R/m , C_N_Decimals) #Averiguar si es bueno no redondear este valor
 
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
@@ -125,18 +124,20 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
     X_h = SM_For_Grouped_Data.Calc_Armonic_Average(len(Data) , Arr_xi , Arr_fi)
     X_g = SM_For_Grouped_Data.Calc_Geometric_Average(len(Data) , Arr_xi , Arr_fi)
 
+    Arr_Quartile = SM_For_Grouped_Data.Calc_Quantile(4 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
+    Arr_Decile = SM_For_Grouped_Data.Calc_Quantile(10 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
+    Arr_Percentile = SM_For_Grouped_Data.Calc_Quantile(100 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
+
     S_2 = SM_For_Grouped_Data.Calc_Variance(len(Data) , Arr_xi , Arr_fi , X_)
     S = SM_For_Grouped_Data.Calc_Standard_Deviation(S_2)
     CV_Percent = SM_For_Grouped_Data.Calc_Percentage_Coefficient_Variation(S , X_)
-
-    Arr_Quartile = Quantile.Calc_Quantile_For_Grouped_Data(4 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
-    Arr_Decile = Quantile.Calc_Quantile_For_Grouped_Data(10 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
-    Arr_Percentile = Quantile.Calc_Quantile_For_Grouped_Data(100 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
+    Intercuartile_Range = SM_For_Grouped_Data.Calc_Interquartile_Range(Arr_Quartile)
 
     Coef_Pearson = SM_For_Grouped_Data.Calc_Pearson_Coefficient(X_ , Me , S)
     Coef_Fisher = SM_For_Grouped_Data.Calc_Fisher_Coefficient(Arr_xi , X_ , Arr_fi , n , S)
     Coef_Kurtosis = SM_For_Grouped_Data.Calc_Kurtosis_Coefficient(Arr_Percentile , Arr_xi , X_ , Arr_fi , n , S)
-    Coef_Bowley = SM_For_Not_Grouped_Data.Calc_Bowley_Coefficient(Arr_Quartile)
+    Coef_Bowley = SM_For_Grouped_Data.Calc_Bowley_Coefficient(Arr_Quartile)
+    Coef_Kelly = SM_For_Grouped_Data.Calc_Kelly_Coefficient(Arr_Decile)
 
     Summary_Measures = {
         "Measures_Of_Central_Tendency_And_Dispersion" : dict([
@@ -147,7 +148,8 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
             ("Mediana (Me)" , Me),
             ("Varianza (S^2)" , S_2),
             ("Desviacion Estandar (S)" , S),
-            ("CV%" , CV_Percent),
+            ("Coeficiente de Variacion Porcentual (CV%)" , CV_Percent),
+            ("Rango Intercuartilico (IQR)" , Intercuartile_Range),
         ]),
         "Quantiles" : dict([
             ("Cuartil" , Arr_Quartile),
@@ -159,6 +161,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
             ("Fisher" , Coef_Fisher),
             ("Bowley" , Coef_Bowley),
             ("Kurtosis" , Coef_Kurtosis),
+            ("Kelly" , Coef_Kelly),
         ]),
     }
 
@@ -215,18 +218,20 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
     X_h = SM_For_Not_Grouped_Data.Calc_Armonic_Average(Data)
     X_g = SM_For_Not_Grouped_Data.Calc_Geometric_Average(Data)
 
+    Arr_Quartile = SM_For_Not_Grouped_Data.Calc_Quantile(4 , Data)
+    Arr_Decile = SM_For_Not_Grouped_Data.Calc_Quantile(10 , Data)
+    Arr_Percentile = SM_For_Not_Grouped_Data.Calc_Quantile(100 , Data)
+
     S_2 = SM_For_Not_Grouped_Data.Calc_Variance(X_ , Data)
     S = SM_For_Not_Grouped_Data.Calc_Standard_Deviation(S_2)
     CV_Percent = SM_For_Not_Grouped_Data.Calc_Percentage_Coefficient_Variation(S , X_)
-
-    Arr_Quartile = Quantile.Calc_Quantile_For_Not_Grouped_Data(4 , Data)
-    Arr_Decile = Quantile.Calc_Quantile_For_Not_Grouped_Data(10 , Data)
-    Arr_Percentile = Quantile.Calc_Quantile_For_Not_Grouped_Data(100 , Data)
+    Intercuartile_Range = SM_For_Not_Grouped_Data.Calc_Interquartile_Range(Arr_Quartile)
 
     Coef_Pearson = SM_For_Not_Grouped_Data.Calc_Pearson_Coefficient(X_ , Me , S)
-    Coef_Fisher = SM_For_Not_Grouped_Data.Calc_Fisher_Coefficient(Arr_xi , X_ , n , S)
-    Coef_Kurtosis = SM_For_Not_Grouped_Data.Calc_Kurtosis_Coefficient(Arr_xi , X_ , n , S)
+    Coef_Fisher = SM_For_Not_Grouped_Data.Calc_Fisher_Coefficient(Data , X_ , n , S)
+    Coef_Kurtosis = SM_For_Not_Grouped_Data.Calc_Kurtosis_Coefficient(Data , X_ , n , S)
     Coef_Bowley = SM_For_Not_Grouped_Data.Calc_Bowley_Coefficient(Arr_Quartile)
+    Coef_Kelly = SM_For_Not_Grouped_Data.Calc_Kelly_Coefficient(Arr_Decile)
 
     Summary_Measures = {
         "Measures_Of_Central_Tendency_And_Dispersion" : dict([
@@ -237,7 +242,8 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
             ("Mediana (Me)" , Me),
             ("Varianza (S^2)" , S_2),
             ("Desviacion Estandar (S)" , S),
-            ("CV%" , CV_Percent),
+            ("Coeficiente de Variacion Porcentual (CV%)" , CV_Percent),
+            ("Rango Intercuartilico (IQR)" , Intercuartile_Range),
         ]),
         "Quantiles" : dict([
             ("Cuartil" , Arr_Quartile),
@@ -249,6 +255,7 @@ def Calculate_Results_Cuantitative_For_Not_Grouped_Data(Data):
             ("Fisher" , Coef_Fisher),
             ("Bowley" , Coef_Bowley),
             ("Kurtosis" , Coef_Kurtosis),
+            ("Kelly" , Coef_Kelly),
         ]),
     }
 

@@ -391,23 +391,24 @@ class Labels_Summary_Measures:
         self.Canvas_Frame_Summary_Measures.create_window((0, 0), window=self.Content_Frame_Summary_Measures , anchor="nw")
 
         self.Labels_Collection = []
+        
     def Asymmetry_According_Type_Coefficient(self , Type_Coefficient , value):
             Asymmetry = ""
             match(Type_Coefficient):
                 case "Pearson":
                     if(value < 0):
-                        Asymmetry = "Ap < 0\nSesgo hacia\nla derecha"
+                        Asymmetry = "Ap < 0\nSesgo hacia la derecha"
                     elif(value == 0):
                         Asymmetry = "Ap = 0\nSimetrica"
                     elif(value > 0):
-                        Asymmetry = "Ap > 0\nSesgo hacia\nla izquierda"
+                        Asymmetry = "Ap > 0\nSesgo hacia la izquierda"
                 case "Fisher":
                     if(value < 0):
-                        Asymmetry = "Af < 0\nSesgo hacia\nla derecha"
+                        Asymmetry = "Af < 0\nSesgo hacia la derecha"
                     elif(value == 0):
                         Asymmetry = "Af = 0\nSimetrica"
                     elif(value > 0):
-                        Asymmetry = "Af > 0\nSesgo hacia\nla izquierda"
+                        Asymmetry = "Af > 0\nSesgo hacia la izquierda"
                 case "Kurtosis":
                     if(value < 0):
                         Asymmetry = "K < 0\nPlaticurtica\nConcentracion baja"
@@ -417,12 +418,20 @@ class Labels_Summary_Measures:
                         Asymmetry = "K > 0\nLeptocurtica\nConcentracion alta"
                 case "Bowley":
                     if(value < 0):
-                        Asymmetry = "Ab < 0\nSesgo hacia\nla derecha"
+                        Asymmetry = "Ab < 0\nSesgo hacia la derecha"
                     elif(value == 0):
                         Asymmetry = "Ab = 0\nSimetrica"
                     elif(value > 0):
-                        Asymmetry = "Ab > 0\nSesgo hacia\nla izquierda"
+                        Asymmetry = "Ab > 0\nSesgo hacia la izquierda"
+                case "Kelly":
+                    if(value < 0):
+                        Asymmetry = "Ak < 0\nSesgo hacia la derecha"
+                    elif(value == 0):
+                        Asymmetry = "Ak = 0\nSimetrica"
+                    elif(value > 0):
+                        Asymmetry = "Ak > 0\nSesgo hacia la izquierda"
             return Asymmetry
+
     def Create_Labels(self, M_Central_Tendency_And_Dispersion , M_Coefficient_Asymmetry):
         self.Destroy_Labels()
 
@@ -433,9 +442,9 @@ class Labels_Summary_Measures:
         for b , (key,value) in enumerate(M_Central_Tendency_And_Dispersion.items()):
             if(b < 3):
                 if(value == "Indeterminado"):
-                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
                 else:
-                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
             elif(b == 3):
                 if(len(value) > 1):
                     sub=1
@@ -447,21 +456,25 @@ class Labels_Summary_Measures:
                         else:
                             String += f"Mo_{sub}: {value[a]:.{self.Precision}f}\n"
                         sub += 1
-                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{String}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{String}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
 
                 else:
-                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\nMo: {value[0]:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
+                    lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\nMo: {value[0]:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
 
-            elif(b < 6):
-                lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
-            else:
-                lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
+            elif(b > 3 and b < 7):
+                lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
+            elif(b == 7):
+                New_Text = "Coeficiente de\nVariacion Porcentual\n(CV%)"
+                lab = Label(self.Content_Frame_Summary_Measures , text=f"{New_Text}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
+            elif(b > 7):
+                lab = Label(self.Content_Frame_Summary_Measures , text=f"{key}\n{value:.{self.Precision}f}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
+
             self.Labels_Collection.append(lab)
 
         self.Labels_Collection.append(Lab_Coefficient_Asymmetry)
         for key , value in M_Coefficient_Asymmetry.items():
             Asymmetry = self.Asymmetry_According_Type_Coefficient(key , value)
-            lab = Label(self.Content_Frame_Summary_Measures , text=f"Coeficiente de {key}\n{value:.{self.Precision}f}\n{Asymmetry}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21)
+            lab = Label(self.Content_Frame_Summary_Measures , text=f"Coeficiente de {key}\n{value:.{self.Precision}f}\n{Asymmetry}" , font=("Times New Roman" , 12) , bg="#CBEFE3" , justify=CENTER , width=21 , highlightbackground="#000000" , highlightthickness=1)
             self.Labels_Collection.append(lab)
         
     def Display_Labels(self):
@@ -471,20 +484,22 @@ class Labels_Summary_Measures:
             for b , lab in enumerate(self.Labels_Collection):
                 if(b == 0):
                     lab.grid(row=0 , column = 0 , sticky="nsew" , columnspan = 3)
-                elif(b < 4):
-                    lab.grid(row=2 , column = b - 1 , padx=20 , pady=10 , sticky="w")
+                elif(b > 0 and b < 4):
+                    lab.grid(row=2 , column = b - 1 , padx=20 , pady=10 , sticky="nsew")
                 elif(b == 4):
                     lab.grid(row=4 , column = (b - 4) , padx=20 , pady=10 , sticky="nsew" , rowspan=3)
-                elif(b < 7):
-                    lab.grid(row=4 , column = (b - 4) , padx=20 , pady=10 , sticky="w")
-                elif(b < 9):
-                    lab.grid(row=6 , column = (b - 6) , padx=20 , pady=10 , sticky="w")
-                elif(b == 9):
-                    lab.grid(row = 8 , column = 0 , sticky="nsew" , columnspan = 3)
-                elif(b > 9 and b < 13):
-                    lab.grid(row = 10 , column = (b - 10) , padx=20 , pady=10 , sticky="w")
-                else:
-                    lab.grid(row = 12 , column = (b - 13) , padx=20 , pady=10 , sticky="w")
+                elif(b > 4 and b < 7):
+                    lab.grid(row=4 , column = (b - 4) , padx=20 , pady=10 , sticky="nsew")
+                elif(b >= 7 and b < 9):
+                    lab.grid(row=6 , column = (b - 6) , padx=20 , pady=10 , sticky="nsew")
+                elif(b < 10):
+                    lab.grid(row=8 , column = (b - 8) , padx=20 , pady=10 , sticky="nsew")
+                elif(b == 10):
+                    lab.grid(row = 10 , column = 0 , sticky="nsew" , columnspan = 3)
+                elif(b > 10 and b < 14):
+                    lab.grid(row = 12 , column = (b - 11) , padx=20 , pady=10 , sticky="nsew")
+                elif(b >= 14 and b < 17):
+                    lab.grid(row = 14 , column = (b - 14) , padx=20 , pady=10 , sticky="nsew")
     
             self.Content_Frame_Summary_Measures.update_idletasks()
             self.Canvas_Frame_Summary_Measures.config(scrollregion=self.Canvas_Frame_Summary_Measures.bbox("all"))
@@ -649,7 +664,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Window_Frecuences_Table.destroy()
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("StatPhi beta v1.8")
+        Main_Window.title("StatPhi beta v1.9")
         Main_Window.lift()
 
     def Display_Results_By_Column_Name(Event = None):
@@ -778,7 +793,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
-        Precision.set(3)
+        Precision.set(1)
         Btn_Import_Data_From_File.config(state="normal")
 
         Imported_Data_From_Excel.clear()
@@ -847,15 +862,15 @@ def Create_Window_Frecuences_Table(Main_Window):
     Input_Data.place(x=180 , y=90 , width=1179)
     Input_Data.focus()
 
-    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Importar Datos" , font=("Times New Roman" , 13) , width=16 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data_From_Widget_Entry , Input_Data , Imported_Data_From_Excel , "Table_Of_Frecuency"))
+    Btn_Import_Data_From_File = Button(Window_Frecuences_Table , text="Importar datos" , font=("Times New Roman" , 13) , width=16 , bg="#EBF3F7" , command= lambda: W_Import_Excel.Create_Window_Import_Excel(Window_Frecuences_Table , Data_From_Widget_Entry , Input_Data , Imported_Data_From_Excel , "Table_Of_Frecuency"))
     Btn_Import_Data_From_File.place(x=70 , y=130)
 
-    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Calcular Tabla" , font=("Times New Roman" , 13) , width=22 , bg="#F4B0C0" , command= lambda: Interact_Btn_Generate_Table(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel , Columns_Name , Column_Selection)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
+    Btn_Generate_Table = Button(Window_Frecuences_Table , text="Calcular tabla" , font=("Times New Roman" , 13) , width=22 , bg="#F4B0C0" , command= lambda: Interact_Btn_Generate_Table(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel , Columns_Name , Column_Selection)) # Si no colocas lambda: o colocas parentesis a la funcion, esta se ejecuta cuando el boton se crea, y puede generar problemas
     Btn_Generate_Table.place(x=1120 , y=130)
 
     Text_Input_Precision_Results = Label(Window_Frecuences_Table , text="Precision:" , font=("Times New Roman" , 13) , bg="#FEE1AB")
     Text_Input_Precision_Results.place(x=960 , y=135)
-    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=3 , textvariable=Precision , from_=3 , to=10 , increment=1 , font=("Courier New" , 13) , bg="#ffffff" , state="readonly" , command= lambda: Interact_Precision())
+    Input_Precision_Results = Spinbox(Window_Frecuences_Table , width=3 , textvariable=Precision , from_=1 , to=10 , increment=1 , font=("Courier New" , 13) , bg="#ffffff" , state="readonly" , command= lambda: Interact_Precision())
     Input_Precision_Results.place(x=1050 , y=135)
 
     Text_Column_Selection = Label(Window_Frecuences_Table , text="Seleccione el nombre de la columna: " , font=("Times New Roman", 13) , bg="#FEE1AB")

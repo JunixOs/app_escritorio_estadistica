@@ -48,18 +48,59 @@ def Calc_Standard_Deviation(Variance):
 def Calc_Percentage_Coefficient_Variation(Standart_Variation , Arith_Average):
     return (Standart_Variation/Arith_Average)*100
 
+def Calc_Interquartile_Range(Arr_Quartile):
+    return Arr_Quartile[2] - Arr_Quartile[0]
+
+
 ###### Coef de Asimetria
 def Calc_Pearson_Coefficient(Arith_Average , Me , S):
     return 3*(Arith_Average - Me)/S
 
-def Calc_Fisher_Coefficient(Arr_xi , Arith_Average , n , S):
-    return np.sum((xi - Arith_Average) ** 3 for xi in Arr_xi)/(n * (S ** 3))
+def Calc_Fisher_Coefficient(Data , Arith_Average , n , S):
+    return np.sum((xi - Arith_Average) ** 3 for xi in Data)/(n * (S ** 3))
 
-def Calc_Kurtosis_Coefficient(Arr_xi , Arith_Average , n , S):
-    return (np.sum((xi - Arith_Average) ** 4 for xi in Arr_xi)/(n * (S ** 4))) - 3
+def Calc_Kurtosis_Coefficient(Data , Arith_Average , n , S):
+    return (np.sum((xi - Arith_Average) ** 4 for xi in Data)/(n * (S ** 4))) - 3
 
 def Calc_Bowley_Coefficient(Arr_Quartile):
     if(Arr_Quartile):
-        return (Arr_Quartile[2] + Arr_Quartile[0] - (2*Arr_Quartile[1]))/(Arr_Quartile[2] - Arr_Quartile[1])
+        return (Arr_Quartile[2] + Arr_Quartile[0] - (2*Arr_Quartile[1]))/(Arr_Quartile[2] - Arr_Quartile[0])
+    else:
+        return "No se pudo calcular"    
+
+def Calc_Kelly_Coefficient(Arr_Decile):
+    if(Arr_Decile):
+        return (Arr_Decile[8] + Arr_Decile[0] - (2 * Arr_Decile[4]))/(Arr_Decile[8] - Arr_Decile[0])
     else:
         return "No se pudo calcular"
+
+
+###### Cuantiles (Cuartiles , Deciles , Percentiles)
+def Calc_Quantile(N_Quantile , Data):
+    if((N_Quantile == 4 and len(Data) < 5) or ((N_Quantile == 10 or N_Quantile == 100) and len(Data) < 10)):
+        return []
+
+    Arr_Quantile = []
+    n = len(Data)
+    for k in range(1 , N_Quantile):
+        Q_k = k*(n+1)/N_Quantile
+        if(isinstance(Q_k , float)):
+            Pos_E1 = math.floor(Q_k) - 1
+            if(round(Q_k) == Pos_E1):
+                Pos_E2 = round(Q_k + 1) - 1
+            else:
+                Pos_E2 = round(Q_k) - 1
+            
+            e = Q_k - math.floor(Q_k)
+            if(Pos_E2 >= n):
+                Q_k = Data[Pos_E1] + (Data[-1] - Data[Pos_E1]) * e
+            else:
+                Q_k = Data[Pos_E1] + (Data[Pos_E2] - Data[Pos_E1]) * e
+            Arr_Quantile.append(Q_k)
+        else:
+            if(Q_k >= n):
+                Arr_Quantile.append(Data[-1])
+            else:
+                Arr_Quantile.append(Data[Q_k - 1])
+
+    return Arr_Quantile

@@ -78,7 +78,8 @@ def Calc_Mode_Mo(Arr_fi , Arr_Intervals , C):
             Mo.append(Arr_Intervals[Pos][0]+(d1/(d1 + d2))*C)
 
         return Mo
-    
+
+
 ##### Medidas de Variabilidad o de dispresion Muestral
 def Calc_Variance(n , Arr_xi , Arr_fi , Arith_Average):
     return np.sum(math.pow(Arr_xi[pos] - Arith_Average , 2)*Arr_fi[pos] for pos in range (0 , len(Arr_xi)))/(n-1)
@@ -88,6 +89,10 @@ def Calc_Standard_Deviation(Variance):
 
 def Calc_Percentage_Coefficient_Variation(Standart_Deviation , Arith_Average):
     return (Standart_Deviation/Arith_Average)*100
+
+def Calc_Interquartile_Range(Arr_Quartile):
+    return Arr_Quartile[2] - Arr_Quartile[0]
+
 
 ##### Coef de Asimetria
 def Calc_Pearson_Coefficient(Arith_Average , Me , S):
@@ -114,6 +119,36 @@ def Calc_Kurtosis_Coefficient(Arr_Percentiles , Arr_xi , Arith_Average , Arr_fi 
 
 def Calc_Bowley_Coefficient(Arr_Quartile):
     if(Arr_Quartile):
-        return (Arr_Quartile[2] + Arr_Quartile[0] - (2*Arr_Quartile[1]))/(Arr_Quartile[2] - Arr_Quartile[1])
+        return (Arr_Quartile[2] + Arr_Quartile[0] - (2*Arr_Quartile[1]))/(Arr_Quartile[2] - Arr_Quartile[0])
     else:
         return "No se pudo calcular"
+
+def Calc_Kelly_Coefficient(Arr_Decile):
+    if(Arr_Decile):
+        return (Arr_Decile[8] + Arr_Decile[0] - (2 * Arr_Decile[4]))/(Arr_Decile[8] - Arr_Decile[0])
+    else:
+        return "No se pudo calcular"
+
+
+##### Cuantiles (Cuartiles , Deciles , Percentiles)
+def Calc_Quantile(N_Quantile , Data , Intervals , Arr_fi , Arr_Fi , C):
+    if((N_Quantile == 4 and len(Intervals) < 5) or ((N_Quantile == 10 or N_Quantile == 100) and len(Intervals) < 5)):
+        return []
+
+    Arr_Quantile = []
+    n = len(Data)
+    for k in range(1 , N_Quantile):
+        P = (k*n)/N_Quantile
+
+        pos = None
+        for a in range(0 , len(Arr_Fi)):
+            if(Arr_Fi[a] >= P):
+                pos = a
+                break
+
+        if(pos == 0):
+            Arr_Quantile.append(Intervals[pos][0] + ((P - 0)/Arr_fi[pos])*C)
+        else:
+            Arr_Quantile.append(Intervals[pos][0] + ((P - Arr_Fi[pos - 1])/Arr_fi[pos])*C)
+
+    return Arr_Quantile

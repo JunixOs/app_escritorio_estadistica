@@ -22,25 +22,25 @@ class Widget_Input_Name_For_Graphs:
         self.Name_Boxplot_Graph.set("")
 
     def Create_Widgets(self):
-        self.Input_Name_Bar_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Bar_Graph , width=58)
+        self.Input_Name_Bar_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Bar_Graph)
         self.Input_Name_Bar_Graph.config(state="disabled")
 
-        self.Input_Name_Píe_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Pie_Graph , width=58)
+        self.Input_Name_Píe_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Pie_Graph)
         self.Input_Name_Píe_Graph.config(state="disabled")
 
         if(self.There_Are_Boxplot):
-            self.Input_Name_Boxplot_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Boxplot_Graph , width=58)
+            self.Input_Name_Boxplot_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Boxplot_Graph)
             self.Input_Name_Boxplot_Graph.config(state="disabled")
         else:
             self.Input_Name_Boxplot_Graph = None
     
     def Display_Widgets(self):
-        self.Input_Name_Bar_Graph.place(x=200 , y=520)
+        self.Input_Name_Bar_Graph.place(x=250 , y=520 , width=630)
 
-        self.Input_Name_Píe_Graph.place(x=200 , y=570)
+        self.Input_Name_Píe_Graph.place(x=250 , y=570 , width=630)
 
         if(self.Input_Name_Boxplot_Graph):
-            self.Input_Name_Boxplot_Graph.place(x=200 , y=620)
+            self.Input_Name_Boxplot_Graph.place(x=250 , y=620 , width=630)
 
     def Hidden_Widgets(self):
         self.Input_Name_Bar_Graph.place_forget()
@@ -243,7 +243,7 @@ class Widget_Combobox_For_DPI_And_Format():
     def Display_Widgets(self):
         self.Input_dpi.place(x=250 , y=150)
         # self.Input_Sizes.place(x=670 , y=150) # Importacion con tamaño personalizado, caracteristica sin terminar
-        self.Input_Format.place(x=800 , y=39)
+        self.Input_Format.place(x=820 , y=39)
 
     def Hidden_Widgets(self):
         self.Input_dpi.place_forget()
@@ -331,16 +331,16 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
     Section_1 = Label(W_Export_Graph , bg="#E4DBD5" , width=128 , height=14 , borderwidth=2 , relief="solid")
     Section_1.place(x=0 , y=0)
 
-    Label_Input_File_Name = Label(W_Export_Graph , text="Nombre de la Imagen: " , font=("Times New Roman" , 13) , bg="#E4DBD5")
+    Label_Input_File_Name = Label(W_Export_Graph , text="Nombre de la imagen (opcional): " , font=("Times New Roman" , 13) , bg="#E4DBD5")
     Label_Input_File_Name.place(x=20 , y=40)
-    Input_File_Name = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=File_Name , width=58)
-    Input_File_Name.place(x=200 , y=40)
+    Input_File_Name = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=File_Name)
+    Input_File_Name.place(x=250 , y=40 , width=560)
     Input_File_Name.focus()
 
-    Label_Input_Páth = Label(W_Export_Graph , text="Ruta de destino: " , font=("Times New Roman" , 13) , bg="#E4DBD5")
+    Label_Input_Páth = Label(W_Export_Graph , text="Ruta de exportacion: " , font=("Times New Roman" , 13) , bg="#E4DBD5")
     Label_Input_Páth.place(x=20 , y=80)
-    Input_Path = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=Path , width=58 , state="readonly")
-    Input_Path.place(x=200 , y=80)
+    Input_Path = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=Path , state="readonly")
+    Input_Path.place(x=250 , y=80 , width=630)
     Btn_Examine = Button(W_Export_Graph , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_Path(W_Export_Graph , Path , Btn_Examine) , bg="#F3F3E9")
     Btn_Examine.place(x=40 , y=110)
 
@@ -356,15 +356,15 @@ def Create_Windows_Export_Graphs(W_Show_Graph , Graphs , Results_From_Single_Col
     Texto_Exportar_Graficos = Label(W_Export_Graph , text="Seleccione los graficos que exportara" , font=("Times New Roman" , 13) , bg="#E7E4C1")
     Texto_Exportar_Graficos.place(x=310 , y=239)
 
-    Text_Change_Name_Bar_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de barras: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
+    Text_Change_Name_Bar_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de barras (opcional): " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
     Text_Change_Name_Bar_Graph.place(x=20 , y=510)
 
-    Text_Change_Name_Pie_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de pastel: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
+    Text_Change_Name_Pie_Graph = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de pastel (opcional): " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
     Text_Change_Name_Pie_Graph.place(x=20 , y=560)
 
-    Text_Change_Name_Boxplot = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de cajas: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
+    Text_Change_Name_Boxplot = Label(W_Export_Graph , text="Ingrese un titulo para el \ngrafico de cajas (opcional): " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E7E4C1")
 
-    Btn_Export_Graph = Button(W_Export_Graph , text="Descargar Graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5")
+    Btn_Export_Graph = Button(W_Export_Graph , text="Descargar graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5")
     Btn_Export_Graph.place(x=300 , y=660)
     if(Results_From_Single_Column):
         if(len(Results_From_Single_Column) == 1):

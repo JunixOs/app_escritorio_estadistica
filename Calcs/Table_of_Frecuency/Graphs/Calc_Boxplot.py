@@ -12,7 +12,6 @@ def Draw_Boxplot_For_Single_Column_Data(Data_List , Column_Name = None):
 
     sns.boxplot(data=Data_List , flierprops=dict(markerfacecolor='red', marker='o', markersize=8) , ax=ax)
 
-    ax.set_title("Grafico de cajas")
     ax.set_ylabel("Valores")
     plt.xticks([0] , [f"{Key}"])
 

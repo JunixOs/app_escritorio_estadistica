@@ -98,11 +98,12 @@ class Export_Data:
 
         Arr_Col = [
             "N" , "O" , "P" , "Q" , "R" , "S" , "T" , "U" , "V" , "W" , "X" , "Y" , "AA" , "AB" , "AC" , "AD" , "AE" , 
-            "AF" , "AG" , "AH" , "AI" , "AJ" , "AK" , "AL" , "AM" , "AN" , "AO" , "AP" , "AQ" , "AR" , "AS" , "AT" , "AU" , "AV"]
+            "AF" , "AG" , "AH" , "AI" , "AJ" , "AK" , "AL" , "AM" , "AN" , "AO" , "AP" , "AQ" , "AR" , "AS" , "AT" , "AU" , "AV" , 
+            "AW" , "AX" , "AY" , "AZ" , "BA"]
         Move_Col = 0
         Move_Row = 1
         for N_Cental_T , (key_Central_T , value_Central_T) in enumerate(M_Central_Tendency_And_Dispersion.items()):
-            if(Move_Row > Table_Length and Table_Length <= 7):
+            if(Move_Row > Table_Length and Table_Length <= 8):
                 Move_Col += 2
                 Move_Row = 1
         
@@ -155,7 +156,7 @@ class Export_Data:
         Move_Col = 0
         Move_Row = 1
         for key_Coef_Asymmetry , value_Coef_Asymmetry in M_Coefficient_Asymmetry.items():
-            if(Move_Row > Table_Length and Table_Length <= 7):
+            if(Move_Row > Table_Length and Table_Length <= 4):
                 Move_Col += 2
                 Move_Row = 1
             
@@ -184,7 +185,7 @@ class Export_Data:
         Move_Row = 1
 
         for i , quartil in enumerate(Quartiles , start=1):
-            if(Move_Row > Table_Length and Table_Length <= 7):
+            if(Move_Row > Table_Length and Table_Length <= 3):
                 Move_Col += 2
                 Move_Row = 1
             WorkSheet[f"{Arr_Col[Move_Col]}{Start_Row + Move_Row}"] = f"Q_{i}"
