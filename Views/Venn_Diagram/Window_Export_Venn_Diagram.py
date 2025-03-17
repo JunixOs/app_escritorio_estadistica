@@ -61,7 +61,7 @@ def Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph):
     Input_Format.place(x=720 , y=20)
     Input_Format.set(Formats[0])
 
-    Text_Input_File_Path = Label(W_Export_Venn_Diagram , text="Ruta de destino: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#FFD9FA")
+    Text_Input_File_Path = Label(W_Export_Venn_Diagram , text="Ruta de exportacion: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#FFD9FA")
     Text_Input_File_Path.place(x=20 , y=60)
     Input_File_Path = Entry(W_Export_Venn_Diagram , font=("Courier New" , 13) , textvariable=File_Path , state="readonly")
     Input_File_Path.place(x=270 , y=60 , width=500)

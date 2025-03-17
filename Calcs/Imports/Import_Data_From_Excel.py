@@ -161,9 +161,8 @@ class Load_Data_In_Preview:
             if(data_widget.get()):
                 data_widget.set("")
 
-        for imported in Imported_Data_From_Excel_For_Calcs:
-            if(imported):
-                imported.clear()
+        if(Imported_Data_From_Excel_For_Calcs):
+            Imported_Data_From_Excel_For_Calcs.clear()
 
         for i , (data_widget , widget) in enumerate(zip(Data_From_Entry_Widgets.values() , Widgets_Input_Data.values())):
             if(i < len(Imported_Column_Names)):
@@ -325,9 +324,9 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
         try:
             self.Import_Data()
 
-            if(len(self.Imported_Data) < 2):
+            if(len(self.Imported_Columns_Name) < 2):
                 raise Raise_Warning("No se puede importar menos de 2 columnas.")
-            elif(len(self.Imported_Data) > 6):
+            elif(len(self.Imported_Columns_Name) > 6):
                 raise Raise_Warning("No se puede importar mas de 6 columnas.")
             
             Load_Data_In_Preview.Module_Venn_Diagram(
