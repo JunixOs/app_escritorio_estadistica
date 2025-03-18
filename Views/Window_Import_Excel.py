@@ -62,7 +62,7 @@ class TreeviewFrame(ttk.Frame):
     def Load_Excel_File(self , File_Path , Sheet_Number):
         try:
             if(File_Path):
-                self.data = pd.ExcelFile(File_Path)
+                self.data = pd.ExcelFile(File_Path , engine="openpyxl")
                 self.sheets = self.data.sheet_names
 
                 if(Sheet_Number.get() > len(self.sheets)):
@@ -84,7 +84,7 @@ class TreeviewFrame(ttk.Frame):
 
         data = self.data.parse(sheet_name=Sheet_Number)
 
-        data = data.head(50)
+        data = data.head(100)
 
         self.treeview["columns"] = []
         self.treeview["columns"] = ["N° fila/columna"] + [f"{i}" for i in range(len(data.columns))]
