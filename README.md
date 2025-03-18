@@ -282,7 +282,6 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 3. Crear el entorno virtual. Si no sabes como, ingresa los siguientes comandos dentro de la terminal:
     ```bash
     python -m venv nombre_del_entorno
-    python -m venv venv
     ```
 
 4. Activar el entorno virtual:
