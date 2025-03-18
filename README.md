@@ -264,7 +264,7 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 4. `openpyxl 3.1.5`
 5. `scipy 1.15.1`
 6. `seaborn 0.13.2`
-7. `matplotlib-venn 1.1.2`
+7. `venn 0.1.3`
 
 > [!WARNING]
 > Si ya tienes librerias instaladas, es recomendable crear un entorno virtual para evitar conflictos con las diferentes librerias de tu sistema.
@@ -292,12 +292,11 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 5. Instalar las librerias necesarias.
     - Usando `pip`:
         ```bash
-        pip install tkinter pandas==2.2.3 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 matplotlib-venn==1.1.2
+        pip install tkinter pandas==2.2.3 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 venn==0.1.3
         ```
     - Usando `conda`:
         ```bash
-        conda install pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2
-        pip install matplotlib-venn==1.1.2
+        conda install tkinter pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2 venn=0.1.3
         ```
 6. Verificar si los paquetes se instalaron correctamente:
     - Usando `pip`:
