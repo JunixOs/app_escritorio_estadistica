@@ -1,4 +1,13 @@
+import sys
+import os
+# Esto añade la carpeta raiz
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from Path_Manager import Get_Resource_Path
+from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
+from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
+from Exceptions.Exception_Warning import Raise_Warning
 
 from tkinter import *
 import os
@@ -6,10 +15,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
 import pandas as pd # type: ignore
-import openpyxl
-from openpyxl.utils import column_index_from_string
 import threading
-import re
 
 def index_to_string(i):
     Letter = ''
@@ -18,6 +24,7 @@ def index_to_string(i):
         Letter = chr(Temp % 26 + 65) + Letter
         Temp = Temp // 26 - 1
     return Letter
+
 class TreeviewFrame(ttk.Frame):
     def __init__(self , *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,54 +59,22 @@ class TreeviewFrame(ttk.Frame):
     def Hidden(self):
         self.place_forget()
 
-    def Insert_Imported_Data_To_Preview(self, data , start_row , end_row):
-        # encabezados
-        self.treeview.delete(*self.treeview.get_children())
-
-        data = data.dropna(axis=1, how='all')
-        self.treeview["columns"] = []
-        self.treeview["columns"] = ["fila"] + data.columns.tolist()
-
-        self.treeview.heading("fila" , text="N° fila")
-        self.treeview.column("fila" , anchor="center" , width=120 , stretch=False)
-        for col in data.columns:
-            self.treeview.heading(col , text=col)
-            self.treeview.column(col , anchor="center" , width=120 , stretch=False)
-
-        Dot_Text = tuple(["......."] for _ in range(0 , len(self.treeview["columns"])))
-
-        # Insertar los datos fila por fila
-        if(end_row - start_row + 1 >= 100):
-            for (index, row) in (data.head().iterrows()):
-                    values = tuple([index + 2] + row.tolist())
-                    self.treeview.insert("" , "end" , values=values)
-            for i in range(0 , 3):
-                self.treeview.insert("" , "end" , values=Dot_Text)
-            for (index, row) in (data.tail().iterrows()):
-                    values = tuple([index + 2] + row.tolist())
-                    self.treeview.insert("" , "end" , values=values)
-        else:
-            for (index, row) in (data.iterrows()):
-                    values = tuple([index + 1] + row.tolist())
-                    self.treeview.insert("" , "end" , values=values)
-
-        self.Progress_Bar.Close_Progress_Bar()
-
-        messagebox.showinfo("Success" , "Datos procesados con exito.\nYa puede salir de la ventana de importacion.")
-
     def Load_Excel_File(self , File_Path , Sheet_Number):
         try:
             if(File_Path):
-                self.data = pd.ExcelFile(File_Path)
+                self.data = pd.ExcelFile(File_Path , engine="openpyxl")
                 self.sheets = self.data.sheet_names
 
                 if(Sheet_Number.get() > len(self.sheets)):
                     Sheet_Number.set(Sheet_Number.get() - len(self.sheets))
-                    raise Exception(f"El numero de hoja {Sheet_Number.get() + len(self.sheets)} no existe.")
+                    raise Raise_Warning(f"El numero de hoja {Sheet_Number.get() + len(self.sheets)} no existe.")
                 
                 Sheet_N = Sheet_Number.get() - 1
 
                 self.Load_Sheet_Data(Sheet_N)
+        except Raise_Warning as e:
+            self.Progress_Bar.Close_Progress_Bar()
+            messagebox.showwarning("Advertencia" , f"{e}")
         except Exception as e:
             self.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
@@ -109,7 +84,7 @@ class TreeviewFrame(ttk.Frame):
 
         data = self.data.parse(sheet_name=Sheet_Number)
 
-        data = data.head(50)
+        data = data.head(100)
 
         self.treeview["columns"] = []
         self.treeview["columns"] = ["N° fila/columna"] + [f"{i}" for i in range(len(data.columns))]
@@ -148,272 +123,63 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
 
             if (not os.path.exists(Path.get())):
                 Path.set("")
-                raise Exception("El archivo Excel no existe en la ruta especificada.")
+                raise Raise_Warning("El archivo Excel no existe en la ruta especificada.")
 
             if(isinstance(Sheet_Number.get() , float)):
                 Sheet_Number.set(1)
-                raise Exception("Numero de hoja no valido, solo valores enteros")
+                raise Raise_Warning("Numero de hoja no valido, solo valores enteros")
 
             threading.Thread(target= lambda: Preview.Load_Excel_File(Path.get() , Sheet_Number)).start()
+        except Raise_Warning as e:
+            Preview.Progress_Bar.Close_Progress_Bar()
+            messagebox.showwarning("Advertencia" , f"{e}")
         except Exception as e:
             Preview.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
-def Import_Data_From_Single_Column(File_Path , Widget_Sheet_Number , column , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Single_Column , Input_Data):
-    try:
-
-        Load_Excel = openpyxl.load_workbook(File_Path.get() , read_only=True)
-        Sheet_Number = Widget_Sheet_Number.get()
-        Sheet_Number -= 1
-
-        Sheet_Name = Load_Excel.sheetnames[Sheet_Number]
-        Sheet = Load_Excel[Sheet_Name]
-
-        total_rows = Sheet.max_row
-        total_columns = Sheet.max_column
-        column_index = column_index_from_string(column)
-
-        if(end_row > total_rows):
-            raise Exception("Se intento acceder a una fila no valida, intente nuevamente.")
-        elif(column_index > total_columns):
-            raise Exception("Se intento acceder a una columna no valida, intente nuevamente.")
-
-
-        Excel = pd.read_excel(File_Path.get() , sheet_name=Sheet_Number , engine="openpyxl" , usecols=f"{column}:{column}" , nrows=end_row + 10)
-        if("Unnamed" in Excel.columns):
-            raise Exception("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
-        
-        if(start_row == 1):
-            data = Excel.iloc[start_row-1:end_row-1]
-        else:
-            data = Excel.iloc[start_row-2:end_row-1]
-
-        if data.isnull().all().all():
-            raise Exception("Los datos seleccionados están vacíos o contienen solo valores nulos. Por favor, intente con otra columna")
-        
-        if data.isnull().any().any():
-            raise Exception("Los datos seleccionados contienen algun valor nulo. Por favor, revise si los datos tienen un formato adecuado o si el rango de celdas que ingreso cubre solamente los datos a importar y ninguna celda mas.")
-        if("Unnamed" in Excel.columns[0]):
-            raise Exception("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
-        
-        Preview.clear_table()
-        Preview.Insert_Imported_Data_To_Preview(data , start_row , end_row)
-
-        if(Data_From_Widget_Entry):
-            Data_From_Widget_Entry.set("")
-        if(Data_From_Single_Column):
-            Data_From_Single_Column.clear()
-        Data_From_Single_Column[f"{Excel.columns[0]}"] = [value[0] for value in data.values]
-        
-        Load_Excel.close()
-
-        Data_From_Widget_Entry.set(f"Columna Importada: {Excel.columns[0]}")
-
-    except (FileNotFoundError , Exception) as e:
-        Preview.Progress_Bar.Close_Progress_Bar()
-        messagebox.showerror("Error" , f"{e}")
-    else:
-        Input_Data.config(state="disabled")
-
-def Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , start_column , end_column , start_row , end_row , Ranges , Preview , Data_From_Widget_Entry , Data_From_Multiple_Columns , Input_Data):
-    try:
-        Load_Excel = openpyxl.load_workbook(File_Path.get() , read_only=True)
-        Sheet_Number = Widget_Sheet_Number.get()
-        Sheet_Number -= 1
-
-        Sheet_Name = Load_Excel.sheetnames[Sheet_Number]
-        Sheet = Load_Excel[Sheet_Name]
-
-        total_rows = Sheet.max_row
-        total_columns = Sheet.max_column
-        start_column_index = column_index_from_string(start_column)
-        end_column_index = column_index_from_string(end_column)
-
-        if(Ranges):
-            Columns = []
-            Rows = []
-            for r in (Ranges["Rows"]):
-                if(r[0] > total_rows or r[1] > total_rows):
-                    raise Exception("Se intento acceder a una fila no valida, intente nuevamente.")
-                Rows.append(r[0])
-                Rows.append(r[1])
-
-            for c in (Ranges["Columns"]):
-                col_start = column_index_from_string(c[0])
-                col_end = column_index_from_string(c[1])
-                if(col_start > total_columns or col_end > total_columns):
-                    raise Exception("Se intento acceder a una columna no valida, intente nuevamente.")
-                Columns.append(c[0])
-                if(col_end - col_start > 1):
-                    for col in range(col_start , col_end - 1):
-                        Letter = index_to_string(col)
-                        Columns.append(Letter)
-                Columns.append(c[1])
-            Unique_Columns = list(set(Columns))
-            String_Columns = ",".join(Unique_Columns)
-    
-            Excel = pd.read_excel(File_Path.get() , sheet_name=Sheet_Number , engine="openpyxl" , usecols=String_Columns , nrows=max(Rows) + 10)
-            if("Unnamed" in Excel.columns):
-                raise Exception("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
-            
-            Columns_Name = Excel.columns
-            Concat_Columns = []
-
-            try:
-                n = 0
-                for i in range(0 , len(Ranges["Rows"])):
-                    prev_n = n
-                    if(column_index_from_string(Ranges["Columns"][i][1]) - column_index_from_string(Ranges["Columns"][i][0]) >= 1):
-                        n += column_index_from_string(Ranges["Columns"][i][1]) - column_index_from_string(Ranges["Columns"][i][0])
-                        col = [val for val in range(prev_n , n+1)]
-                        n += 1
-                    else:
-                        col = n
-                        n += 1
-                    
-                    if(Ranges["Rows"][i][0] == 1):
-                        column_i = Excel.iloc[Ranges["Rows"][i][0]-1:Ranges["Rows"][i][1]-1 , col]
-                    else:
-                        column_i = Excel.iloc[Ranges["Rows"][i][0]-2:Ranges["Rows"][i][1]-1 , col]
-                    column_i.dropna(inplace=True)
-                    Concat_Columns.append(column_i)# El * desempaqueta directamente todos los valores de la lista
-
-                data = pd.concat(Concat_Columns , axis=1 , ignore_index=True)
-                data.columns = Columns_Name
-            except Exception:
-                raise Exception("Algo salio mal, asegurese de que el rango de celdas ingresado no tenga intersecciones.\nCorrecto: A1:D1001;F1:H1001 \nIncorrecto: A1:D1001;C1:E1001")
-        else:
-            if(start_row > total_rows or end_row > total_rows):
-                raise Exception("Se intento acceder a una fila no valida, intente nuevamente.")
-            elif(start_column_index > total_columns or end_column_index > total_columns):
-                raise Exception("Se intento acceder a una columna no valida, intente nuevamente.")
-
-            Excel = pd.read_excel(File_Path.get() , sheet_name=Sheet_Number , engine="openpyxl" , usecols=f"{start_column}:{end_column}" , nrows=end_row + 10)
-            if("Unnamed" in Excel.columns):
-                raise Exception("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
-            if(start_row == 1):
-                data = Excel.iloc[start_row-1:end_row-1]
-            else:
-                data = Excel.iloc[start_row-2:end_row-1]
-
-        if data.isnull().all().all():
-            raise Exception("Los datos seleccionados están vacíos o contienen solo valores nulos.")
-        
-        if data.isnull().any().any():
-            raise Exception("Los datos seleccionados contienen algun valor nulo. Por favor, revise si los datos tienen un formato adecuado.")
-
-        Preview.clear_table()
-        Preview.Insert_Imported_Data_To_Preview(data , start_row , end_row)
-        
-        if(Data_From_Widget_Entry):
-            Data_From_Widget_Entry.set("")
-        if(Data_From_Multiple_Columns):
-            Data_From_Multiple_Columns.clear()
-
-        text = "columnas importadas: "
-        for Column in Excel.columns:
-            Data_From_Multiple_Columns[Column] = [value for value in data[Column].dropna()]
-            text = text + Column + "  "
-
-        Load_Excel.close()
-
-        Data_From_Widget_Entry.set(text)
-
-    except (FileNotFoundError , Exception) as e:
-        Preview.Progress_Bar.Close_Progress_Bar()
-        messagebox.showerror("Error" , f"{e}")
-    else:
-        Input_Data.config(state="disabled")
-
-def Validate_Range_Of_Cells(Range):
-    Range = Range.upper()
-    return re.match(r"([A-Z]{1,3})(\d+):([A-Z]{1,3})(\d+)" , Range.strip())
-
-def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns):
+def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
     """ Separar en diferentes ventanas, uno para importar de un .xlsx y otro para importar de un .txt """
     try:
         Preview.Progress_Bar.Start_Progress_Bar()
 
-        Dict_Cell_Ranges = {
-            "Columns": [],
-            "Rows": [],
-        }
-        Non_Consecutive_Columns = False
-
-        Sheet_Number = Widget_Sheet_Number.get()
-        if(not File_Path.get()):
-            raise Exception("No se ha ingresado la ruta del archivo.")
-        
-        if (not os.path.exists(File_Path.get())):
-            raise Exception("El archivo Excel no existe en la ruta especificada.")
-
-        if(isinstance(Sheet_Number , float)):
-            raise Exception("Numero de hoja no valido, solo valores enteros")
-        
-        Unload_Excel = pd.ExcelFile(f"{File_Path.get()}")
-        Sheets = Unload_Excel.sheet_names
-        if(Sheet_Number > len(Sheets)):
-            raise Exception("No existe el numero de hoja especificado")
         if(not Cell_Range.get()):
-            raise Exception("No se ha ingresado un rango de celdas.")
+            raise Raise_Warning("No se ha ingresado un rango de celdas.")
         
         if(";" in Cell_Range.get()):
-            Ranges = Cell_Range.get().split(";")
-            for ran in Ranges:
-                ran = Validate_Range_Of_Cells(ran)
-                if(not ran):
-                    raise Exception("El rango de celdas ingresado es invalido.")
+            Import_Excel = Import_Excel_Using_Multiple_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
 
-                column_start, start_row, column_end, end_row = ran.groups()
+            Import_Excel.Process_Input_Data()
 
-                start_row = int(start_row)
-                end_row = int(end_row)
-
-                if column_start == column_end and start_row == end_row:
-                    raise Exception("Una de las selecciones corresponde una celda individual, este no es un rango válido.")
-                elif(start_row > end_row):
-                    start_row , end_row = end_row , start_row
-                elif(column_start > column_end):
-                    column_start , column_end = column_end , column_start
-
-                Dict_Cell_Ranges["Columns"].append([column_start , column_end])
-
-                Dict_Cell_Ranges["Rows"].append([start_row , end_row])
-
-            Non_Consecutive_Columns = True
-
+            match(Source_Module_Name):
+                case "Table_Of_Frecuency":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case "Venn_Diagram":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Venn_Diagram(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case _:
+                    raise Exception("Error al resolver el modulo de origen.")
         elif(":" in Cell_Range.get()):
-            Range = Validate_Range_Of_Cells(Cell_Range.get())
-            if(not Range):
-                raise Exception("El rango de celdas ingresado es invalido.")
-            column_start, start_row, column_end, end_row = Range.groups()
+            Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
 
-            start_row = int(start_row)
-            end_row = int(end_row)
+            Import_Excel.Process_Input_Data()
 
-            if (column_start == column_end and start_row == end_row):
-                raise Exception("Seleccionaste una celda individual, no es un rango válido.")
-            elif(start_row > end_row):
-                start_row , end_row = end_row , start_row
-            elif(column_start > column_end):
-                column_start , column_end = column_end , column_start
-            Dict_Cell_Ranges = {}
+            match(Source_Module_Name):
+                case "Table_Of_Frecuency":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case "Venn_Diagram":
+                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Venn_Diagram(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
+                case _:
+                    raise Exception("Error al resolver el modulo de origen.")
         else:
-            raise Exception("El rango de celdas ingresado es invalido.")
-        
-        match(column_start != column_end or Non_Consecutive_Columns):
-            case True:
-                threading.Thread(target= lambda: Import_Data_From_Multiple_Columns(File_Path , Widget_Sheet_Number , column_start , column_end , start_row , end_row , Dict_Cell_Ranges , Preview , Data_From_Widget_Entry , Data_From_Multiple_Columns , Input_Data)).start()
-            case False:
-                threading.Thread(target= lambda: Import_Data_From_Single_Column(File_Path , Widget_Sheet_Number , column_start , start_row , end_row , Preview , Data_From_Widget_Entry , Data_From_Single_Column , Input_Data)).start()
-            case _:
-                raise Exception("Hubo un error al realizar la importacion.")
+            raise Raise_Warning("El rango de celdas ingresado es invalido.")
 
-    except (FileNotFoundError , Exception) as e:
+    except (FileNotFoundError , Raise_Warning) as e:
+        Preview.Progress_Bar.Close_Progress_Bar()
+        messagebox.showwarning("Advertencia" , f"{e}")
+    except Exception as e:
         Preview.Progress_Bar.Close_Progress_Bar()
         messagebox.showerror("Error" , f"{e}")
 
-def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns):
+def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
     def Back():
         for widget in W_Import_Excel.winfo_children():
             widget.destroy()
@@ -427,7 +193,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     else:
         W_Import_Excel = Toplevel(Father_Window)
 
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
 
     W_Import_Excel.grab_set()
     W_Import_Excel.geometry("800x550+350+170")
@@ -454,7 +220,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     Input_Sheet_Number = Spinbox(W_Import_Excel , font=("Courier New" , 13) , textvariable=Sheet_Number , from_=1 , to=100 , width=4 , state="readonly" , command= lambda: Load_Excel_To_Preview(Path , Sheet_Number , Table_Preview_Data))
     Input_Sheet_Number.place(x=210 , y=410)
 
-    Text_Input_Cells_Range = Label(W_Import_Excel , text="Ingrese el rango de celdas:\nSolo los datos" , bg="#d1e7d2" , font=("Times New Roman" , 13))
+    Text_Input_Cells_Range = Label(W_Import_Excel , text="Ingrese el rango de celdas:" , bg="#d1e7d2" , font=("Times New Roman" , 13))
     Text_Input_Cells_Range.place(x=20 , y=440)
     Cells_Range = Entry(W_Import_Excel , font=("Courier New" , 13) , textvariable=Cell_Range , width=55)
     Cells_Range.place(x=210 , y=440)
@@ -475,7 +241,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Input_Da
     for a in range(1 , 7):
         Table_Preview_Data.treeview.column(f"{a}" , anchor="center" , width=106 , stretch=True)
 
-    Btn_Process_Data = Button(W_Import_Excel , text="Procesar Archivo" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Path , Sheet_Number , Cell_Range , Table_Preview_Data , Data_From_Widget_Entry , Input_Data , Data_From_Single_Column , Data_From_Multiple_Columns))
+    Btn_Process_Data = Button(W_Import_Excel , text="Importar Datos" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Path , Sheet_Number , Cell_Range , Table_Preview_Data , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name))
     Btn_Process_Data.pack(side=BOTTOM)
 
     W_Import_Excel.resizable(False,False)

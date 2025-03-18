@@ -1,3 +1,8 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from Path_Manager import Get_Resource_Path
 from tkinter import ttk
 from tkinter import *
 import time
@@ -9,10 +14,15 @@ class W_Progress_Bar:
         self.Progress_Window = None
         self.Progress_Window = None
 
+    def Back(self):
+        pass
     def Start_Progress_Bar(self , Text_Progress_Bar = "Procesando, esto podria tomar un tiempo."):
         self.Progress_Window = Toplevel(self.Root_Window)
         self.Progress_Window.title("Cargando")
         self.Progress_Window.geometry("500x100+500+400")
+        self.Progress_Window.protocol("WM_DELETE_WINDOW" , self.Back)
+        Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+        self.Progress_Window.iconphoto(False , Icon)
         self.Progress_Window.grab_set()
         self.Progress_Window.lift()
 
