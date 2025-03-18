@@ -98,7 +98,7 @@ class Import_Preview:
 
         Dot_Text = tuple(["......."] for _ in range(0 , len(self.Table_Preview_Data.treeview["columns"])))
         N_Imported_Columns = self.Imported_Data.count().tolist()
-        Total_Row_Text = tuple(["Filas Importadas:"] + N_Imported_Columns)
+        Total_Row_Text = tuple(["Datos Importados:"] + N_Imported_Columns)
 
         # Insertar los datos fila por fila
         if(End_Row - Start_Row + 1 >= 100):
@@ -232,11 +232,11 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
         try:
             self.Import_Data()
 
-            if(len(self.Imported_Data) < 2):
+            if(len(self.Imported_Column_Names) < 2):
                 raise Raise_Warning("No se puede importar menos de 2 columnas.")
             
             Load_Data_In_Preview.Module_Venn_Diagram(
-                self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Imported_Data , self.Imported_Columns_Name , self.Start_Row , self.End_Row
+                self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Imported_Data , self.Imported_Column_Names , self.Start_Row , self.End_Row
             )
 
         except Raise_Warning as e:
@@ -324,13 +324,13 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
         try:
             self.Import_Data()
 
-            if(len(self.Imported_Columns_Name) < 2):
+            if(len(self.Imported_Column_Names) < 2):
                 raise Raise_Warning("No se puede importar menos de 2 columnas.")
-            elif(len(self.Imported_Columns_Name) > 6):
+            elif(len(self.Imported_Column_Names) > 6):
                 raise Raise_Warning("No se puede importar mas de 6 columnas.")
             
             Load_Data_In_Preview.Module_Venn_Diagram(
-                self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Imported_Data , self.Imported_Columns_Name , self.Start_Row , self.End_Row
+                self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Imported_Data , self.Imported_Column_Names , self.Start_Row , self.End_Row
             )
 
         except Raise_Warning as e:
@@ -371,7 +371,7 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
         if("unnamed" in Load_Excel.columns):
             raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
         
-        self.Imported_Columns_Name = Load_Excel.columns
+        self.Imported_Column_Names = Load_Excel.columns
         Concat_Columns = []
 
         try:
@@ -418,7 +418,7 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
                     Concat_Columns.append(column_i)
 
             self.Imported_Data = pd.concat(Concat_Columns , axis=1 , ignore_index=True , join="outer")
-            self.Imported_Data.columns = self.Imported_Columns_Name
+            self.Imported_Data.columns = self.Imported_Column_Names
         except Exception as e:
             raise Raise_Warning("Algo salio mal, asegurese de que el rango de celdas ingresado no tenga intersecciones.\nCorrecto: A1:D1001;F1:H1001 \nIncorrecto: A1:D1001;C1:E1001")
         self.Imported_Data.dropna()

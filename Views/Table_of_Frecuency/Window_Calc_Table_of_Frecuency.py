@@ -793,7 +793,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
-        Precision.set(1)
+        Precision.set(3)
         Btn_Import_Data_From_File.config(state="normal")
 
         Imported_Data_From_Excel.clear()
@@ -845,6 +845,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Data_From_Widget_Entry = StringVar(Window_Frecuences_Table) # Estos datos se introducen como texto en el campo de texto de la ventana
     Data_From_Widget_Entry.set("")
     Precision = IntVar(Window_Frecuences_Table)
+    Precision.set(3)
     Columns_Name = []
     Imported_Data_From_Excel = {}
     Graphs = {}
