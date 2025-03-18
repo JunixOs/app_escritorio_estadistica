@@ -261,7 +261,7 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
         Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=100)
         Datatypes_Collection = Excel_For_Detect_Datatype.dtypes.to_dict()
 
-        Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=self.End_Row + 10 , dtype=Datatypes_Collection)
+        Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=self.End_Row-1 , dtype=Datatypes_Collection)
         if("Unnamed" in Load_Excel.columns):
             raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
 
@@ -370,10 +370,14 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
         Only_Unique_Columns = list(set(Arr_Columns))
         Columns_List_To_String = ",".join(Only_Unique_Columns)
 
-        Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=100)
-        Datatypes_Collection = Excel_For_Detect_Datatype.dtypes.to_dict()
+        try:
+            Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=100)
+            Datatypes_Collection = Excel_For_Detect_Datatype.dtypes.to_dict()
 
-        Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=max(Arr_Rows) + 10 , dtype=Datatypes_Collection)
+            Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=max(Arr_Rows)-1 , dtype=Datatypes_Collection)
+        except Exception:
+            Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=max(Arr_Rows)-1)
+
         if("unnamed" in Load_Excel.columns):
             raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
         
