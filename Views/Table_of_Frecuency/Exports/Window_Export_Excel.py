@@ -1,7 +1,7 @@
 import sys
 import os
 # Esto añade la carpeta raiz
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
 
 from Path_Manager import Get_Resource_Path
 from Calcs.Center_Window import Center
@@ -18,18 +18,19 @@ def Select_File(Path):
         else:
             Path.set(Path_File)
 
-def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
+def Create_Window_Export_Excel(W_Export_As_File , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
     def Back():
         for widget in W_Export_Excel.winfo_children():
             widget.destroy()
-        W_Export_Excel.grab_release()
         W_Export_Excel.quit()
         W_Export_Excel.destroy()
+        W_Export_As_File.state(newstate="normal")
     if __name__== "__main__":
         W_Export_Excel = Tk()
     else:
-        W_Export_Excel = Toplevel(Father_Window)
-        W_Export_Excel.grab_set()
+        W_Export_As_File.state(newstate="withdraw")
+        W_Export_Excel = Toplevel(W_Export_As_File)
+        W_Export_Excel.lift()
 
     W_Export_Excel.geometry("700x180+430+350")
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
@@ -76,14 +77,14 @@ def Generate_Window_Export_Excel(Father_Window , Results_From_Single_Column , Re
         W_Export_Excel.geometry(f"700x{Max_Height + 100}")
         Center(W_Export_Excel , 700 , Max_Height + 100)
 
-    Btn_Export = Button(W_Export_Excel , text="Exportar" , font=("Times New Roman" , 13) , width=20 , bg="#FDA8C0" , command=lambda: Export_Table_In_Excel(W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column , Path.get() , Columns_To_Export , File_Name.get()))
+    Btn_Export = Button(W_Export_Excel , text="Exportar" , font=("Times New Roman" , 13) , width=20 , bg="#FDA8C0" , command=lambda: Export_Table_In_Excel(W_Export_As_File , W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column , Path.get() , Columns_To_Export , File_Name.get()))
     Btn_Export.pack(side=BOTTOM)
 
     W_Export_Excel.resizable(False , False)
     W_Export_Excel.mainloop()
 
 if __name__ == "__main__":
-    Generate_Window_Export_Excel(
+    Create_Window_Export_Excel(
         None , 
         None , 
         {

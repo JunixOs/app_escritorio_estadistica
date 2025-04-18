@@ -182,6 +182,8 @@ Algunas caracteristicas importantes de StatPhi son:
 
 ✅ Creacion de Diagramas de Venn.
 
+⬜ Exportar tablas en PDF.
+
 ⬜ Creacion y exportacion de multiples graficos en una sola imagen.
 
 ⬜ Importacion de datos de archivos .csv .txt .sql
@@ -421,13 +423,17 @@ Aqui te encontraras con los siguientes elementos:
 
 #### ***Calculo de Tamaño de Muestra por M.A.S.***
 Aqui te encontraras con los siguientes elementos:
+- **Seleccion del tipo de variable**: Permite especificar con que tipo de variable se realizara el estudio, si es Cuantitativa o Cualitativa.
+
 - **Seleccion de tipo de poblacion**: Permite especificar el tamaño de la poblacion a investigar, si es finita (Cantidad Conocida) o infinita (Cantidad no conocida).
 
 - **Poblacion (N)**: Si la poblacion a añalizar es finita, podras ingresar el tamaño de la poblacion del cual se calculara el tamaño de muestra.
 
 - **Nivel de Confianza (1 - α)**: Corresponde al valor crítico de la distribución normal estándar que se utiliza para calcular el intervalo de confianza.
 
-- **Probabilidad de Exito (p)**: Proporción estimada de la población con una característica específica (si no se conoce, se puede asumir 0.5 para maximizar la muestra).
+- **Varianza (S^2)**: 
+
+- **Probabilidad de Exito (p)**: Este parametro solo estara disponible al seleccionar la opcion de Variable Cualitativa. Es la proporción estimada de la población con una característica específica (si no se conoce, se puede tomar una valor de 50% para maximizar la muestra).
 
 - **Error (e)**: Margen de error permitido.
 

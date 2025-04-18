@@ -12,8 +12,8 @@ def Change_Key(dictionary, old_key, new_key):
 
 
 class Export_Data:
-    def __init__(self , Data_To_Import , Type_Of_Variable , Route , File_Name):
-        self.Data_To_Import = Data_To_Import
+    def __init__(self , Data_To_Export , Type_Of_Variable , Route , File_Name):
+        self.Data_To_Export = Data_To_Export
         self.Type_Of_Variable = Type_Of_Variable
         self.Route = Route
         self.File_Name = File_Name
@@ -259,8 +259,9 @@ class Export_Data:
                     cell = Worksheet[f"{col}{row}"]
 
                     if cell.value is not None and Type_Of_Data == "Cuantitative_Grouped":
-                        Old_Text = str(cell.value)
-                        Old_Text = Old_Text.replace("[","").replace("]","").replace(",","").replace(" "," - ").replace("np.float64(","").replace(")","")
+                        Old_Text = str(cell.value).replace("[" , "").replace("]" , "").split(",")
+                        Old_Text = " -".join(Old_Text)
+                        Old_Text = Old_Text.replace("np.float64(","").replace("np.int64(","").replace(")","")
 
                         if(row != Worksheet.max_row):
                             New_Text = "[ " + Old_Text + " >"
@@ -272,18 +273,18 @@ class Export_Data:
 
     def Export_Excel_With_Single_Table(self):
         Full_Route = self.Create_Full_Route()
-        Key_Data_To_Import = None
-        Value_Data_To_Import = None
+        Key_Data_To_Export = None
+        Value_Data_To_Export = None
         with pd.ExcelWriter(Full_Route) as writer:
             Workboox = writer.book
             Worksheet_1 = Workboox.create_sheet("Hoja1")
 
             Start_Row = 4
-            if(len(self.Data_To_Import) == 1 and isinstance(self.Data_To_Import , dict)):
-                Key_Data_To_Import , Value_Data_To_Import = next(iter(self.Data_To_Import.items()))
-                Copy_Data = copy.deepcopy(Value_Data_To_Import)
+            if(len(self.Data_To_Export) == 1 and isinstance(self.Data_To_Export , dict)):
+                Key_Data_To_Export , Value_Data_To_Export = next(iter(self.Data_To_Export.items()))
+                Copy_Data = copy.deepcopy(Value_Data_To_Export)
             else:
-                Copy_Data = copy.deepcopy(self.Data_To_Import)
+                Copy_Data = copy.deepcopy(self.Data_To_Export)
 
             M_Central_Tendency_And_Dispersion = None
             M_Coefficient_Asymmetry = None
@@ -312,8 +313,8 @@ class Export_Data:
             Data_Excel = pd.DataFrame(Copy_Data)
             Data_Excel.to_excel(writer , sheet_name="Hoja1" , index=False , startrow=Start_Row-1 , startcol=3)
 
-            if(Key_Data_To_Import):
-                Worksheet_1[f"C{Start_Row}"] = f"Tabla para: \"{Key_Data_To_Import}\""
+            if(Key_Data_To_Export):
+                Worksheet_1[f"C{Start_Row}"] = f"Tabla para: \"{Key_Data_To_Export}\""
                 Worksheet_1[f"C{Start_Row}"].font = Font(bold=True)
                 Worksheet_1[f"C{Start_Row}"].alignment = Alignment(horizontal="center" , vertical="center")
 
@@ -339,7 +340,7 @@ class Export_Data:
     def Export_Excel_With_Multiple_Tables(self , Columns_To_Export):
         Full_Route = self.Create_Full_Route(True)
 
-        Copy_Data = copy.deepcopy(self.Data_To_Import)
+        Copy_Data = copy.deepcopy(self.Data_To_Export)
         
         with pd.ExcelWriter(Full_Route) as writer:
             Workbook = writer.book
@@ -413,7 +414,7 @@ class Export_Data:
             self.Adjust_Width(Worksheet_1)
 
 def Export_Table_In_Excel(
-        W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Columns , Type_Of_Variable_Single_Column , Type_Of_Variable_Multiple_Column, 
+        W_Export_As_File , W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Columns , Type_Of_Variable_Single_Column , Type_Of_Variable_Multiple_Column, 
         Route , Columns_To_Export , File_Name = ""
     ):
     try:
@@ -429,6 +430,10 @@ def Export_Table_In_Excel(
         messagebox.showerror("Error" , f"Hubo un error al exportar el Excel\n{e}")
     else:
         messagebox.showinfo("Sucess" , f"Excel exportado correctamente a {Route}")
+        
+        W_Export_As_File.state(newstate="normal")
+        W_Export_As_File.lift()
+
         W_Export_Excel.quit()
         W_Export_Excel.destroy()
 
