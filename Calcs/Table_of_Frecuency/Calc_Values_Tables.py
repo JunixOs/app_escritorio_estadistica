@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
 from math import *
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Grouped as Cuant_Grouped
@@ -23,11 +23,12 @@ def Convert_Input_Str_To_List(a):
     """
     Value = ""
     Data = []
+    Spacers = [" " , "\n" , "," , ";" , "\t"]
     for n in range(0,len(a)):
         char = a[n]
-        if(char == " " or n==len(a)-1 or char=="\n"):
+        if(char in Spacers or n==len(a)-1):
             """ Primero se comprueba que no haya un salto en blanco o un salto de linea o si la cadena esta a punto de terminar"""
-            if(n==len(a)-1 and char!=" "):
+            if(n==len(a)-1 and not char in Spacers):
                 """ Si la cadena esta por terminar, se añade el ultimo caracter para no quedar incompleta"""
                 Value+=char
 
@@ -369,7 +370,7 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
 
                         Luego se determina si la cantidad de estas variables es mayor o menor al 20% de
                         la cantidad total de datos ingresados.
-                        Si llega a ser mayor al 20% del total, entonces los datos se agrupan en 
+                        Si llega a ser mayor al 30% del total, entonces los datos se agrupan en 
                         intervalos y se consideran los datos como variables Cuantitativas Continuas.
                         Este criterio es util para evitar el calculo sin agrupar de variables
                         cuantitativas continuas cuyos valores ingresados son enteros 
@@ -389,7 +390,7 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                     """
                     Arr_xi , Arr_fi = Cuant_Not_Grouped.Calc_fi_And_xi(Data)
 
-                    if(len(Arr_xi) > (1/5)*(len(Data))):
+                    if(len(Arr_xi) > (3/10)*(len(Data))):
                         Is_Continue[0].set(True)
                         Is_Continue[1].config(state="disabled")
                     elif(Is_Float and m > 5):
@@ -426,14 +427,18 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
 if (__name__ == "__main__"):
     Data = "Casa Casa Trabajo Trabajo Trabajo Casa Casa Cibercafe Otros Cibercafe Trabajo Trabajo Otros Cibercafe Cibercafe Cibercafe Casa Cibercafe Otros Cibercafe Casa Casa Cibercafe Trabajo Otros Otros Cibercafe Cibercafe Cibercafe Cibercafe "
     Data_2 = "118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582  "
-    Results = Main_Function(Data_2)
+    Data_3 = "5, 2, 4, 9, 7, 4, 5, 6, 5, 7, 7, 5, 5, 2, 10, 5, 6, 5, 4, 5, 8, 8, 4, 0, 8, 4, 8, 6, 6, 3, 6, 7, 6, 6, 7, 6, 7, 3, 5, 6,9, 6, 1, 4, 6, 3, 5, 5, 6, 7"
+    
+    print(Convert_Input_Str_To_List(Data_3))
+
+    """ Results = Main_Function(Data_2)
     for key, value in Results.items():
         print(f"{key} : {value}")
         if(value != None):
             for k , v in value.items():
                 print(f"{k} : {v}")
         else:
-            print(f"{key} : None")
+            print(f"{key} : None") """
     """ 
         Error en la funcion  Cuant_Not_Grouped.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
         Solucion, usar el metodo copy() para crear una copia del objeto. No usar otras variables, colo copy()
