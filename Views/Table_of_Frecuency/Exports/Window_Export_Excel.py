@@ -59,7 +59,7 @@ def Create_Window_Export_Excel(W_Export_As_File , Results_From_Single_Column , R
     Columns_To_Export = {}
     Label_Columns_To_Export = Label(W_Export_Excel , text="Seleccione las columnas a exportar: " , font=("Times New Roman" , 13) , justify="center" , bg="#CDC4FF")
 
-    if(Results_From_Multiple_Column != {}):
+    if(Results_From_Multiple_Column):
         Label_Columns_To_Export.place(x=200 , y=130 , width=300)
         Max_Height = 0
         for b , key in enumerate(Results_From_Multiple_Column.keys()):

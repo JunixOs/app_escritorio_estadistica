@@ -1,3 +1,9 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
+
+from Exceptions.Exception_Warning import Raise_Warning
+
 from tkinter import messagebox
 from datetime import datetime
 import copy
@@ -57,12 +63,12 @@ class Export_Data:
                     self.File_Name += f'_ST_{time}.xlsx'
         
         if (self.Route == ""):
-            raise Exception("No se ha ingresado ninguna ruta de exportacion.")
+            raise Raise_Warning("No se ha ingresado ninguna ruta de exportacion.")
         if not self.Route.endswith("/"):
             self.Route += "/"
 
         if(not os.path.exists(self.Route) or not os.path.isdir(self.Route)):
-            raise Exception("Ruta de exportacion no valida")
+            raise Raise_Warning("Ruta de exportacion no valida")
         
         Full_Route = self.Route + self.File_Name
         return Full_Route
@@ -421,11 +427,13 @@ def Export_Table_In_Excel(
         if(Results_From_Single_Column != {}):
             For_Single_Column_Data( Results_From_Single_Column , Type_Of_Variable_Single_Column , Route , File_Name)
         elif(Results_From_Multiple_Columns != {}):
-            if(all(value == False for value in Columns_To_Export)):
-                raise Exception("No se ha seleccionado ninguna columna a exportar.")
+            if(all(value.get() == False for value in Columns_To_Export.values())):
+                raise Raise_Warning("No se ha seleccionado ninguna tabla a exportar.")
             For_Multiple_Column_Data(Results_From_Multiple_Columns , Type_Of_Variable_Multiple_Column , Route , File_Name , Columns_To_Export)
         else:
             raise Exception("No se encontraron los datos a exportar.")
+    except Raise_Warning as e:
+        messagebox.showwarning("Advertencia" , f"{e}")
     except Exception as e:
         messagebox.showerror("Error" , f"Hubo un error al exportar el Excel\n{e}")
     else:

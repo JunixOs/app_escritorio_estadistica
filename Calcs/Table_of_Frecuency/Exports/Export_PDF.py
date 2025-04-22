@@ -306,14 +306,18 @@ class Export_Data:
 
         PDF_Document.build(Elements_In_PDF_Dcoument)
 
-    def Export_PDF_With_Multiple_Tables(self):
+    def Export_PDF_With_Multiple_Tables(self , Columns_To_Export):
         Export_Route = self.Create_Full_Route()
         PDF_Document = SimpleDocTemplate(f"{Export_Route}" , pagesize=A4)
         Elements_In_PDF_Dcoument = []
 
         Copy_Data = copy.deepcopy(self.Data_To_Export)
 
+        roman_index = 1
         for variable_name , variable_data_results in Copy_Data.items():
+            if(not Columns_To_Export[variable_name].get()):
+                continue
+
             Frecuences_Table_PDF = None
             Frecuences_Table_PDF , Length_Frecuences_Table = self.Process_Data_For_Frecuences_Table(variable_data_results)
 
@@ -340,7 +344,7 @@ class Export_Data:
             ]
 
             if(variable_name):
-                Elements_In_PDF_Dcoument.append(Paragraph(f"{Int_To_Roman(1)}. Resultados para {variable_name}" , self.PDF_Text_Styles["Heading1"]))
+                Elements_In_PDF_Dcoument.append(Paragraph(f"{Int_To_Roman(roman_index)}. Resultados para {variable_name}" , self.PDF_Text_Styles["Heading1"]))
 
             for i , (title_table , table) in enumerate(Data_For_PDF , start=1):
                 if(isinstance(table , Table) or isinstance(table , Flowable)):
@@ -353,18 +357,23 @@ class Export_Data:
 
                     Elements_In_PDF_Dcoument.append(table)
             Elements_In_PDF_Dcoument.append(Spacer(1 , 12))
+
+            roman_index += 1
         
         PDF_Document.build(Elements_In_PDF_Dcoument)
 
-def Export_Table_In_PDF(W_Export_As_File , W_Export_PDF , Results_From_Single_Column , Results_From_Multiple_Column , Route , File_Name = "" , Descriptions = ""):
+def Export_Table_In_PDF(W_Export_As_File , W_Export_PDF , Results_From_Single_Column , Results_From_Multiple_Column , Route , File_Name = "" , Descriptions = "" , Columns_To_Export = None):
     try:
         if(Results_From_Single_Column):
             Export = Export_Data(Results_From_Single_Column , File_Name , Route , Descriptions)
             Export.Export_PDF_With_Single_Table()
 
         elif(Results_From_Multiple_Column):
+            if(all(export.get() == False for export in Columns_To_Export.values())):
+                raise Raise_Warning("No se ha seleccionado ninguna tabla a exportar.")
+            
             Export = Export_Data(Results_From_Multiple_Column , File_Name , Route , Descriptions)
-            Export.Export_PDF_With_Multiple_Tables()
+            Export.Export_PDF_With_Multiple_Tables(Columns_To_Export)
         else:
             raise Exception("No se encontraron los datos a exportar.")
     except Raise_Warning as e:
