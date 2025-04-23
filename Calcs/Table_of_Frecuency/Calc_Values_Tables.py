@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
 from math import *
+from decimal import Decimal , getcontext
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Grouped as Cuant_Grouped
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cualitative as Cuali
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Not_Grouped as Cuant_Not_Grouped
@@ -11,6 +12,33 @@ import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Grouped_Data as SM_For
 
 def Check_Contains_Only_Numbers(Data):
     return not any(caracter.isalpha() for caracter in Data)
+
+def Avoid_Float_Error(Data):
+    getcontext().prec = 35
+    New_Data = []
+    for data in Data:
+        try:
+            decimal_list = list(str(data).split(".")[1])
+            if(decimal_list.count("0") > 5 or decimal_list.count("9") > 5):
+                zero_nine_counter = 0
+                decimals_to_round = 0
+                for letter in decimal_list:
+                    if(letter == "0" or letter == "9"):
+                        zero_nine_counter += 1
+                    else:
+                        zero_nine_counter = 0
+                    
+                    decimals_to_round += 1
+                    if(zero_nine_counter >= 4):
+                        break
+                str_to_round = "0." + "0"*(decimals_to_round - 1) + "1"
+                data = Decimal(data)
+                New_Data.append(float(data.quantize(Decimal(str_to_round))))
+            else:
+                New_Data.append(data)
+        except Exception:
+            New_Data.append(data)
+    return New_Data
 
 def Convert_Input_Str_To_List(a):
     """
@@ -86,10 +114,10 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         """ 
             **********************************************************************************
             Si no existe ningun valor decimal entre todos los datos, entonces la amplitud se
-            redondea con un maximo de 1 decimal.
+            redondea por exceso con un maximo de 1 decimal.
             **********************************************************************************
         """
-        C = round(R/m , 1)
+        C = Cuant_Grouped.Rounding_Up(R/m , 1)
         C_N_Decimals = 1
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
@@ -97,13 +125,13 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         """ 
             **********************************************************************************
             Si por el contrario, existe algun valor decimal entre todos los datos, entonces 
-            la amplitud se redondea a la cantidad de decimales mas comun entre todos los 
-            datos.
+            la amplitud se redondea por exceso a la cantidad maxima de decimales entre 
+            todos los datos.
             **********************************************************************************
         """
-        N_Decimals_Most_Common = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
-        C_N_Decimals = int(N_Decimals_Most_Common[0][0]) + 1
-        C = round(R/m , C_N_Decimals) #Averiguar si es bueno no redondear este valor
+        Max_N_Decimals_In_Data = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
+        C_N_Decimals = Max_N_Decimals_In_Data
+        C = Cuant_Grouped.Rounding_Up(R/m , C_N_Decimals)
 
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
@@ -359,8 +387,9 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                         if(int(a) != a):
                             Is_Float = True
                             break
+                
                 Data.sort()
-                m = round(1 + (3.322*log10(len(Data))))
+                m = round(1 + (3.322*log10(len(Data)))) # Python redondea usando el "round half to even".
                 
                 if(not Repeated_Calc):
                     """ 
@@ -399,6 +428,9 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                     else:
                         Is_Continue[0].set(Is_Float)
 
+                    if(Is_Continue[0].get()):
+                        Data = Avoid_Float_Error(Data)
+
                 match(Is_Continue[0].get()):
                     case True:
                         if(m < 5):
@@ -428,17 +460,12 @@ if (__name__ == "__main__"):
     Data = "Casa Casa Trabajo Trabajo Trabajo Casa Casa Cibercafe Otros Cibercafe Trabajo Trabajo Otros Cibercafe Cibercafe Cibercafe Casa Cibercafe Otros Cibercafe Casa Casa Cibercafe Trabajo Otros Otros Cibercafe Cibercafe Cibercafe Cibercafe "
     Data_2 = "118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582  "
     Data_3 = "5, 2, 4, 9, 7, 4, 5, 6, 5, 7, 7, 5, 5, 2, 10, 5, 6, 5, 4, 5, 8, 8, 4, 0, 8, 4, 8, 6, 6, 3, 6, 7, 6, 6, 7, 6, 7, 3, 5, 6,9, 6, 1, 4, 6, 3, 5, 5, 6, 7"
-    
-    print(Convert_Input_Str_To_List(Data_3))
 
-    """ Results = Main_Function(Data_2)
-    for key, value in Results.items():
-        print(f"{key} : {value}")
-        if(value != None):
-            for k , v in value.items():
-                print(f"{k} : {v}")
-        else:
-            print(f"{key} : None") """
+    Data_2 = Convert_Input_Str_To_List(Data_2)
+    Data_2 , There_Are_Floats = Conv_Data_To_Numbers(Data_2)
+    Results = Calculate_Results_Cuantitative_For_Grouped_Data(Data_2 , There_Are_Floats , round(1+(3.322*log10(len(Data_2)))))
+    
+    print(Results)
     """ 
         Error en la funcion  Cuant_Not_Grouped.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
         Solucion, usar el metodo copy() para crear una copia del objeto. No usar otras variables, colo copy()

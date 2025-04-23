@@ -1,8 +1,16 @@
 from math import *
 import numpy as np
-import collections
-from decimal import Decimal , getcontext
+from decimal import Decimal , getcontext , ROUND_UP
 import decimal
+
+def Rounding_Up(Number , N_Decimals):
+    if(Number - round(Number) != 0):
+        Number = Decimal(str(Number))
+        Decimals_To_Round = "1." + "0"*N_Decimals if N_Decimals > 0 else "1"
+
+        return float(Number.quantize(Decimal(Decimals_To_Round) , rounding=ROUND_UP))
+    else:
+        return Number
 
 def Calc_Max_Decimal_Number(Numbers):
     N_Decimals = []
@@ -14,8 +22,7 @@ def Calc_Max_Decimal_Number(Numbers):
         else:
             N_Decimals.append(0)
 
-    Ocurrences = collections.Counter(N_Decimals)
-    return Ocurrences.most_common(1)
+    return max(N_Decimals)
 
 def Calc_Max(Data):
     return max(Data)

@@ -1,6 +1,17 @@
 import numpy as np
 import collections
 
+def Order_Variable_Cuantitative_Ordinal(Data):
+    Dictionary_Possible_Orders = {
+        "Likert_Scale" : ["muy malo" , "malo" , "regular" , "bueno" , "excelente"],
+        "Likert_Scale_Initials" : ["m" , "r" , "b" , "e"],
+        "Grade" : ["inicial" , "primaria" , "secundaria" , "superior" , "maestria" , "doctorado"],
+    }
+
+    Ordered_Data = [value for value_list in Dictionary_Possible_Orders.values() for value in value_list if value in Data]
+
+    return Ordered_Data
+
 def Calc_fi_And_ai(Data):
     Counts = collections.Counter(Data)
     return [ai for ai in Counts.keys()] , [fi for fi in Counts.values()]
