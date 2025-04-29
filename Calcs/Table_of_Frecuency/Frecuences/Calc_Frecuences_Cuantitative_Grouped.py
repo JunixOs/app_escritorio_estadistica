@@ -4,6 +4,7 @@ from decimal import Decimal , getcontext , ROUND_UP
 import decimal
 
 def Rounding_Up(Number , N_Decimals):
+    print(Number)
     if(Number - round(Number) != 0):
         Number = Decimal(str(Number))
         Decimals_To_Round = "1." + "0"*N_Decimals if N_Decimals > 0 else "1"

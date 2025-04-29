@@ -13,32 +13,63 @@ import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Grouped_Data as SM_For
 def Check_Contains_Only_Numbers(Data):
     return not any(caracter.isalpha() for caracter in Data)
 
-def Avoid_Float_Error(Data):
-    getcontext().prec = 35
+def Fix_Float_Error_For_Lists(Data):
+    """
+        ==============================================================================================
+        Esta es una version de la funcion para arreglar el error los tipos de datos float en python,
+        sirve para una lista de datos importada de un archivo externo.
+        ==============================================================================================
+    """
     New_Data = []
     for data in Data:
-        try:
-            decimal_list = list(str(data).split(".")[1])
-            if(decimal_list.count("0") > 5 or decimal_list.count("9") > 5):
-                zero_nine_counter = 0
-                decimals_to_round = 0
-                for letter in decimal_list:
-                    if(letter == "0" or letter == "9"):
-                        zero_nine_counter += 1
-                    else:
-                        zero_nine_counter = 0
-                    
-                    decimals_to_round += 1
-                    if(zero_nine_counter >= 4):
-                        break
-                str_to_round = "0." + "0"*(decimals_to_round - 1) + "1"
-                data = Decimal(data)
-                New_Data.append(float(data.quantize(Decimal(str_to_round))))
-            else:
-                New_Data.append(data)
-        except Exception:
-            New_Data.append(data)
+        Fixed_Number = Fix_Float_Number(data)
+        New_Data.append(Fixed_Number)
     return New_Data
+
+def Fix_Float_Number(data):
+    """ 
+        ==============================================================================================
+        Esta funcion tiene el proposito de solucionar el error de los tipos de datos float en python,
+        este error puede ocurrir al importar datos de un excel o al realizar demasiados calculos con
+        decimales.
+        El error se presenta asi, si realizamos la operacion 137/100 podemos esperar 0.0137, pero hay
+        ocasiones donde el resultado es 0.01370000000000001, esto es un problema ya que al realizar
+        operaciones con el, ese valor adicional tambien afectara los resultados.
+
+        La funcion Fix_Float_Number toma el numero 0.01370000000000001 y
+        extrae la parte decimal 01370000000000001 para luego comprobar si existen muchos 0's o 9's (
+        tambien hay versiones del error con 0.99999...) y si encuentra muchos de esos valores entonces
+        recorre el numero de izquierda a derecha para comprobar si el error esta presente (llevando 
+        una cuenta de la cantidad de decimales que se estan revisando).
+        Si se cuentan 4 o mas 0's o 9's entonces se para de revisar y se hace el redondeo con Decimal
+        teniendo en cuenta la cantidad de decimales a redondear extraida del bucle for.
+        ==============================================================================================
+    """
+    getcontext().prec = 35
+    Fixed_Number = None
+
+    try:
+        decimal_list = list(str(data).split(".")[1])
+        if(decimal_list.count("0") > 5 or decimal_list.count("9") > 5):
+            zero_nine_counter = 0
+            decimals_to_round = 0
+            for letter in decimal_list:
+                if(letter == "0" or letter == "9"):
+                    zero_nine_counter += 1
+                else:
+                    zero_nine_counter = 0
+                
+                decimals_to_round += 1
+                if(zero_nine_counter >= 4):
+                    break
+            str_to_round = "0." + "0"*(decimals_to_round - 1) + "1"
+            data = Decimal(data)
+            Fixed_Number = float(data.quantize(Decimal(str_to_round)))
+        else:
+            Fixed_Number = data
+    except Exception:
+        Fixed_Number = data
+    return Fixed_Number
 
 def Convert_Input_Str_To_List(a):
     """
@@ -117,7 +148,8 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
             redondea por exceso con un maximo de 1 decimal.
             **********************************************************************************
         """
-        C = Cuant_Grouped.Rounding_Up(R/m , 1)
+        C = Fix_Float_Number(R/m)
+        C = Cuant_Grouped.Rounding_Up(C , 1)
         C_N_Decimals = 1
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
@@ -131,11 +163,12 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         """
         Max_N_Decimals_In_Data = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
         C_N_Decimals = Max_N_Decimals_In_Data
-        C = Cuant_Grouped.Rounding_Up(R/m , C_N_Decimals)
+        C = Fix_Float_Number(R/m)
+        C = Cuant_Grouped.Rounding_Up(C , C_N_Decimals)
 
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
-
+    print(C)
     Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
     Arr_fi = Cuant_Grouped.Calc_fi(Data , Arr_Intervals , m)
@@ -429,7 +462,7 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                         Is_Continue[0].set(Is_Float)
 
                     if(Is_Continue[0].get()):
-                        Data = Avoid_Float_Error(Data)
+                        Data = Fix_Float_Error_For_Lists(Data)
 
                 match(Is_Continue[0].get()):
                     case True:
