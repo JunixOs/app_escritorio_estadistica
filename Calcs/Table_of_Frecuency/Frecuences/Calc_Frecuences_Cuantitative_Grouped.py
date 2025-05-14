@@ -1,17 +1,61 @@
 from math import *
 import numpy as np
-from decimal import Decimal , getcontext , ROUND_UP
+from decimal import Decimal , getcontext
 import decimal
 
 def Rounding_Up(Number , N_Decimals):
-    print(Number)
+    """
+        ==============================================================================================
+        Esta funcion se encarga de redondear la amplitud, recibe un valor y le añade una decima de mas 
+        para que el ultimo intervalo se pase un poco del valor maximo del dataset.
+        Ejemplos de uso:
+            Input: 1.3456 , N_Decimals = 2
+            Output: 1.346
+
+            Input: 0.02 , N_Decimals = 2
+            Output: 0.021
+        ==============================================================================================
+    """
+    """ 
+        antes de redondear revisar si el ultimo decimal es >=5 o <5
+    """
     if(Number - round(Number) != 0):
+        print(f"{Number=}")
+        Integer_Part = str(Number).split(".")[0]
+        Decimal_Part = str(Number).split(".")[1]
+
+        N_Decimals = N_Decimals if N_Decimals < len(Decimal_Part) else len(Decimal_Part)
+        if(N_Decimals > len(Decimal_Part) - 1):
+            Decimal_Part += "0"
+    
+        if(int(Decimal_Part[N_Decimals]) >= 5):
+            Decimal_Part = "".join([val for i , val in enumerate(Decimal_Part , start=1) if i <= N_Decimals])
+            Value_To_Add = float("0." + "0"*(N_Decimals - 1) + "1")
+        else:
+            Decimal_Part = "".join([val for i , val in enumerate(Decimal_Part , start=1) if i <= N_Decimals + 1])
+            Value_To_Add = "0." + "0"*N_Decimals + "1"
+            N_Decimals += 1
+
+        Number = float(Integer_Part + "." + Decimal_Part)
+        
+        print("Numero cortado: " , Number)
+
+        Decimals_To_Round = "1." + "0"*(N_Decimals) if N_Decimals > 0 else "1"
+
+        Number + float(Value_To_Add)
+
+        Number = float(Decimal(str(Number)).quantize(Decimal(Decimals_To_Round)))
+        
+        """ 
         Number = Decimal(str(Number))
         Decimals_To_Round = "1." + "0"*N_Decimals if N_Decimals > 0 else "1"
+        return float(Number.quantize(Decimal(Decimals_To_Round) , rounding=ROUND_UP)) """
+        Number += float(Value_To_Add)
+        print(f"{Number=}")
 
-        return float(Number.quantize(Decimal(Decimals_To_Round) , rounding=ROUND_UP))
+        return round(Number , N_Decimals)
     else:
-        return Number
+        return Number + 0.1
 
 def Calc_Max_Decimal_Number(Numbers):
     N_Decimals = []
@@ -44,12 +88,12 @@ def Calc_Intervals(Min , C , Max , m , Precision):
                 Arr_Intervals[a][b] = Acumulate
             else:
                 Acumulate = Acumulate + C
-            
-            if(Acumulate>Max):
-                Acumulate=Max
-            if(Acumulate<Max and a==m-1 and b==1):
-                Acumulate=Max
 
+            """ if((Acumulate != Max) and (a == m-1 and b == 1)):
+                Arr_Intervals[a][b] = Max
+            else:
+                Arr_Intervals[a][b] = round(Acumulate , Precision) """
+            
             Arr_Intervals[a][b] = round(Acumulate , Precision)
 
     return Arr_Intervals
@@ -127,3 +171,8 @@ def Calc_hi_percent(hi):
 
 def Calc_Hi_percent(Hi):
     return [value*100 for value in Hi]
+
+if(__name__ == "__main__"):
+    Number = float(input("Ingrese la amplitud: "))
+    Precision = int(input("Ingrese la precision: "))
+    print("El valor redondeado de la amplitud es: " , Rounding_Up(Number , Precision))

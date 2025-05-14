@@ -151,7 +151,8 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         C = Fix_Float_Number(R/m)
         C = Cuant_Grouped.Rounding_Up(C , 1)
         C_N_Decimals = 1
-        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals + 1)
+        C_N_Decimals += 1
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
     else:
         """ 
@@ -166,9 +167,11 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         C = Fix_Float_Number(R/m)
         C = Cuant_Grouped.Rounding_Up(C , C_N_Decimals)
 
-        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-        # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals + 1)
+        C_N_Decimals += 1
+
     print(C)
+    print(Arr_Intervals)
     Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
     Arr_fi = Cuant_Grouped.Calc_fi(Data , Arr_Intervals , m)
