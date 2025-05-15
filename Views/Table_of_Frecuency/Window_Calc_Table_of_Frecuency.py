@@ -4,7 +4,7 @@ import numpy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Path_Manager import Get_Resource_Path
+from Path_Manager import Get_Resource_Path , Get_Version
 from Exceptions.Exception_Warning import Raise_Warning
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
 from Views.Table_of_Frecuency.Window_Export_As_File import Create_Window_Export_As_File
@@ -664,7 +664,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Window_Frecuences_Table.destroy()
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("StatPhi beta v1.9")
+        Main_Window.title(f"StatPhi {Get_Version()}")
         Main_Window.lift()
 
     def Display_Results_By_Column_Name(Event = None):
