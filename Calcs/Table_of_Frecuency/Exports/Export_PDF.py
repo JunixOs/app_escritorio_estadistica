@@ -126,10 +126,13 @@ class Export_Data:
             for i in range(0 , len(Frecuences_Table["Intervals"])):
                 Old_Text = str(Frecuences_Table["Intervals"][i]).replace("[" , "").replace("]" , "").split(",")
                 Old_Text = " -".join(Old_Text)
-                if(i < len(Frecuences_Table["Intervals"]) - 1):
+                Frecuences_Table["Intervals"][i] = "[ " + Old_Text + " >"
+                
+                # Lo de abajo servia cuando el limite superior del ultimo intervalo si se tomaba 
+                """ if(i < len(Frecuences_Table["Intervals"]) - 1):
                     Frecuences_Table["Intervals"][i] = "[ " + Old_Text + " >"
                 else:
-                    Frecuences_Table["Intervals"][i] = "[ " + Old_Text + " ]"
+                    Frecuences_Table["Intervals"][i] = "[ " + Old_Text + " ]" """
 
                 Frecuences_Table["Intervals"][i] = Frecuences_Table["Intervals"][i].replace("np.float64(","").replace("np.int64(","").replace(")","")
                 Frecuences_Table["xi"] = [round(xi , 13) for xi in Frecuences_Table["xi"]]

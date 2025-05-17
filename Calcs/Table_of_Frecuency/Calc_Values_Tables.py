@@ -140,7 +140,7 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
 
     n = len(Data)
     R = Cuant_Grouped.Calc_Range(V_Min,V_Max)
-
+    print("C antes del redondeo: ", C)
     if(not There_Are_Floats):
         """ 
             **********************************************************************************
@@ -165,13 +165,11 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         Max_N_Decimals_In_Data = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
         C_N_Decimals = Max_N_Decimals_In_Data
         C = Fix_Float_Number(R/m)
-        C = Cuant_Grouped.Rounding_Up(C , C_N_Decimals)
+        C , C_N_Decimals = Cuant_Grouped.Rounding_Up(C , C_N_Decimals)
 
-        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals + 1)
-        C_N_Decimals += 1
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
 
-    print(C)
-    print(Arr_Intervals)
+    print("C despues del redondeo: " , C)
     Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
     Arr_fi = Cuant_Grouped.Calc_fi(Data , Arr_Intervals , m)
@@ -350,8 +348,9 @@ def Calculate_Results_Cualitative_Data(Data):
     """
     n = len(Data)
 
-    Arr_Char_Mod , Arr_fi = Cuali.Calc_fi_And_ai(Data)
-    Number_Char_Mod = len(Arr_Char_Mod)
+    Arr_ai , Arr_fi = Cuali.Calc_fi_And_ai(Data)
+    
+    Number_Char_Mod = len(Arr_ai)
 
     Arr_Fi = Cuali.Calc_Fi(Arr_fi)
 
@@ -367,7 +366,7 @@ def Calculate_Results_Cualitative_Data(Data):
     ])
 
     Frecuences_Values = dict(
-        ai = Arr_Char_Mod,
+        ai = Arr_ai,
         fi = Arr_fi,
         Fi = Arr_Fi,
         hi = Arr_hi,

@@ -72,10 +72,13 @@ class Graphs_For_Frecuences:
     def Modify_Intervals_Key(self):
         if("Frecuences_Cuant_Grouped" in self.Results):
             for a in range(0 , len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"])):
-                if(a != len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"]) - 1):
+                self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" >"
+
+                # Lo de abajo servia cuando el limite superior del ultimo intervalo si se tomaba 
+                """ if(a != len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"]) - 1):
                     self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" >"
                 else:
-                    self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" ]"
+                    self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" ]" """
 
     def Generate_Graphs(self , Graphs):
         self.Modify_Intervals_Key()

@@ -269,10 +269,13 @@ class Export_Data:
                         Old_Text = " -".join(Old_Text)
                         Old_Text = Old_Text.replace("np.float64(","").replace("np.int64(","").replace(")","")
 
-                        if(row != Worksheet.max_row):
+                        New_Text = "[ " + Old_Text + " >"
+                        
+                        # Lo de abajo servia cuando el limite superior del ultimo intervalo si se tomaba 
+                        """ if(row != Worksheet.max_row):
                             New_Text = "[ " + Old_Text + " >"
                         else:
-                            New_Text = "[ " + Old_Text + " ]"
+                            New_Text = "[ " + Old_Text + " ]" """
                         cell.value = New_Text
                     
                     cell.font = self.Font_Courier_New_Bold

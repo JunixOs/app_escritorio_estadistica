@@ -16,11 +16,7 @@ def Rounding_Up(Number , N_Decimals):
             Output: 0.021
         ==============================================================================================
     """
-    """ 
-        antes de redondear revisar si el ultimo decimal es >=5 o <5
-    """
     if(Number - round(Number) != 0):
-        print(f"{Number=}")
         Integer_Part = str(Number).split(".")[0]
         Decimal_Part = str(Number).split(".")[1]
 
@@ -37,8 +33,6 @@ def Rounding_Up(Number , N_Decimals):
             N_Decimals += 1
 
         Number = float(Integer_Part + "." + Decimal_Part)
-        
-        print("Numero cortado: " , Number)
 
         Decimals_To_Round = "1." + "0"*(N_Decimals) if N_Decimals > 0 else "1"
 
@@ -46,14 +40,9 @@ def Rounding_Up(Number , N_Decimals):
 
         Number = float(Decimal(str(Number)).quantize(Decimal(Decimals_To_Round)))
         
-        """ 
-        Number = Decimal(str(Number))
-        Decimals_To_Round = "1." + "0"*N_Decimals if N_Decimals > 0 else "1"
-        return float(Number.quantize(Decimal(Decimals_To_Round) , rounding=ROUND_UP)) """
         Number += float(Value_To_Add)
-        print(f"{Number=}")
 
-        return round(Number , N_Decimals)
+        return round(Number , N_Decimals) , N_Decimals
     else:
         return Number + 0.1
 
