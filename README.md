@@ -1,4 +1,4 @@
-# **StatPhi (Beta V1.9)**
+# **StatPhi v1.0.0**
 [![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20Desarrollo-blue)]()
 [![Licencia](https://img.shields.io/github/license/JunixOs/app_escritorio_estadistica)]()
 [![Última actualización](https://img.shields.io/github/commit-activity/w/JunixOs/app_escritorio_estadistica/develop)]()
@@ -182,6 +182,8 @@ Algunas caracteristicas importantes de StatPhi son:
 
 ✅ Creacion de Diagramas de Venn.
 
+⬜ Exportar tablas en PDF.
+
 ⬜ Creacion y exportacion de multiples graficos en una sola imagen.
 
 ⬜ Importacion de datos de archivos .csv .txt .sql
@@ -203,7 +205,8 @@ Statphi/
 │   ├── Table_of_Frecuency/
 │   │   ├── Exports/
 │   │   │   ├── Export_Excel.py
-│   │   │   └── Export_Graph.py
+│   │   │   ├── Export_Graph.py
+│   │   │   └── Export_PDF.py
 │   │   ├── Frecuences/
 │   │   │   ├── Calc_Frecuences_Cualitative.py
 │   │   │   ├── Calc_Frecuences_Cuantitative_Grouped.py
@@ -264,7 +267,8 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 4. `openpyxl 3.1.5`
 5. `scipy 1.15.1`
 6. `seaborn 0.13.2`
-7. `matplotlib-venn 1.1.2`
+7. `venn 0.1.3`
+8. `reportlab 3.6.13`
 
 > [!WARNING]
 > Si ya tienes librerias instaladas, es recomendable crear un entorno virtual para evitar conflictos con las diferentes librerias de tu sistema.
@@ -292,12 +296,11 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 5. Instalar las librerias necesarias.
     - Usando `pip`:
         ```bash
-        pip install tkinter pandas==2.2.3 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 matplotlib-venn==1.1.2
+        pip install tkinter pandas==2.2.3 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 venn==0.1.3 reportlab==3.6.13 
         ```
     - Usando `conda`:
         ```bash
-        conda install pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2
-        pip install matplotlib-venn==1.1.2
+        conda install tkinter pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2 venn=0.1.3 reportlab=3.6.13
         ```
 6. Verificar si los paquetes se instalaron correctamente:
     - Usando `pip`:
@@ -353,7 +356,10 @@ Aqui te encontraras con los siguientes elementos:
 
 - **Calcular Tabla**: Una vez que hayas introducido los datos manualmente o que los hayas importado de un excel, podras calcular la tabla de frecuencias junto con las demas medidas de resumen. 
 
-- **Exportar Tabla a Excel**: Esta opcion es util cuando quieres tener algo mas estetico y personalizable que el cuadro que se muestra en el programa. Si tuvieras varias tablas de frecuencias, puedes seleccionar cuales exportar marcando su casilla correspondiente.
+- **Exportar Resultados**: Permite exportar la tabla de frecuencias junto con las medidas obtenidas.
+
+  - **Exportar Tabla a Excel**: Esta opcion es util cuando quieres tener algo mas estetico y personalizable que el cuadro que se muestra en el programa. Si tuvieras varias tablas de frecuencias, puedes seleccionar cuales exportar marcando su casilla correspondiente.
+  - **Exportar Tabla a PDF**: Esta opcion es util cuando necesitas presentar los resultados obtenidos de manera formal, sin tener que editarlos antes. Si tuvieras varias tablas de frecuencias, puedes seleccionar cuales exportar marcando su casilla correspondiente.
 
 - **Mostrar Grafico**:
     Ofrece la posibilidad de ver los graficos para la tabla de frecuencias actual. Los graficos que podras ver son:
@@ -410,7 +416,7 @@ Aqui te encontraras con los siguientes elementos:
 - **Generar diagrama**: Una vez que hayas introducido los datos manualmente o que los hayas importado de un excel, podras generar el diagrama de Venn.
 
 - **Exportar grafico**: Permite exportar los graficos a su computadora, para que puedan ser usados en documentos de Word, PDF, entre otros. Dentro de esta ventana encontraras los siguientes elementos:
-    - ***Nombre de la imagen***:
+    - ***Nombre de la imagen***
 
     - ***Ruta de exportacion***
 
@@ -422,17 +428,21 @@ Aqui te encontraras con los siguientes elementos:
 
 #### ***Calculo de Tamaño de Muestra por M.A.S.***
 Aqui te encontraras con los siguientes elementos:
+- **Seleccion del tipo de variable**: Permite especificar con que tipo de variable se realizara el estudio, si es Cuantitativa o Cualitativa.
+
 - **Seleccion de tipo de poblacion**: Permite especificar el tamaño de la poblacion a investigar, si es finita (Cantidad Conocida) o infinita (Cantidad no conocida).
 
 - **Poblacion (N)**: Si la poblacion a añalizar es finita, podras ingresar el tamaño de la poblacion del cual se calculara el tamaño de muestra.
 
 - **Nivel de Confianza (1 - α)**: Corresponde al valor crítico de la distribución normal estándar que se utiliza para calcular el intervalo de confianza.
 
-- **Probabilidad de Exito (p)**: Proporción estimada de la población con una característica específica (si no se conoce, se puede asumir 0.5 para maximizar la muestra).
+- **Varianza (S^2)**: Este parametro solo estara disponible al seleccionar la opcion de variable cuantitativa.
+
+- **Probabilidad de Exito (p)**: Este parametro solo estara disponible al seleccionar la opcion de Variable Cualitativa. Es la proporción estimada de la población con una característica específica (si no se conoce, se puede tomar una valor de 50% para maximizar la muestra).
 
 - **Error (e)**: Margen de error permitido.
 
-- **Muestreo Inicial (n_o)**: Resulta de aplicar la formula de Muestreo Aleatorio Simple (para poblaciones finitas o conocidas), para poblaciones grandes este valor puede ser proporcionalmente grande, brindando un tamaño de muestra aproximado. 
+- **Muestreo Inicial (n_o)**: Resulta de aplicar la formula de Muestreo Aleatorio Simple (para poblaciones finitas o conocidas), para poblaciones grandes este valor puede ser proporcionalmente grande, brindando un tamaño de muestra aproximado.
 
 - **Muestreo Final Corregido (n_f)**: Es el resultado de dividir el Muestreo Inicial entre 1 mas el Factor de Correccion el cual es igual al Muestreo Inicial sobre el tamaño de la poblacion. Este valor proporciona un tamaño de poblacion mas razonable comparado con el tamaño del Muestreo Inicial. Este valor solo es calculable con un tamaño de muestra finita o conocida.
 

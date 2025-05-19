@@ -1,8 +1,9 @@
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
 from math import *
+from decimal import Decimal , getcontext
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Grouped as Cuant_Grouped
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cualitative as Cuali
 import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Not_Grouped as Cuant_Not_Grouped
@@ -11,6 +12,64 @@ import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Grouped_Data as SM_For
 
 def Check_Contains_Only_Numbers(Data):
     return not any(caracter.isalpha() for caracter in Data)
+
+def Fix_Float_Error_For_Lists(Data):
+    """
+        ==============================================================================================
+        Esta es una version de la funcion para arreglar el error los tipos de datos float en python,
+        sirve para una lista de datos importada de un archivo externo.
+        ==============================================================================================
+    """
+    New_Data = []
+    for data in Data:
+        Fixed_Number = Fix_Float_Number(data)
+        New_Data.append(Fixed_Number)
+    return New_Data
+
+def Fix_Float_Number(data):
+    """ 
+        ==============================================================================================
+        Esta funcion tiene el proposito de solucionar el error de los tipos de datos float en python,
+        este error puede ocurrir al importar datos de un excel o al realizar demasiados calculos con
+        decimales.
+        El error se presenta asi, si realizamos la operacion 137/100 podemos esperar 0.0137, pero hay
+        ocasiones donde el resultado es 0.01370000000000001, esto es un problema ya que al realizar
+        operaciones con el, ese valor adicional tambien afectara los resultados.
+
+        La funcion Fix_Float_Number toma el numero 0.01370000000000001 y
+        extrae la parte decimal 01370000000000001 para luego comprobar si existen muchos 0's o 9's (
+        tambien hay versiones del error con 0.99999...) y si encuentra muchos de esos valores entonces
+        recorre el numero de izquierda a derecha para comprobar si el error esta presente (llevando 
+        una cuenta de la cantidad de decimales que se estan revisando).
+        Si se cuentan 4 o mas 0's o 9's entonces se para de revisar y se hace el redondeo con Decimal
+        teniendo en cuenta la cantidad de decimales a redondear extraida del bucle for.
+        ==============================================================================================
+    """
+    getcontext().prec = 35
+    Fixed_Number = None
+
+    try:
+        decimal_list = list(str(data).split(".")[1])
+        if(decimal_list.count("0") > 5 or decimal_list.count("9") > 5):
+            zero_nine_counter = 0
+            decimals_to_round = 0
+            for letter in decimal_list:
+                if(letter == "0" or letter == "9"):
+                    zero_nine_counter += 1
+                else:
+                    zero_nine_counter = 0
+                
+                decimals_to_round += 1
+                if(zero_nine_counter >= 4):
+                    break
+            str_to_round = "0." + "0"*(decimals_to_round - 1) + "1"
+            data = Decimal(data)
+            Fixed_Number = float(data.quantize(Decimal(str_to_round)))
+        else:
+            Fixed_Number = data
+    except Exception:
+        Fixed_Number = data
+    return Fixed_Number
 
 def Convert_Input_Str_To_List(a):
     """
@@ -23,11 +82,12 @@ def Convert_Input_Str_To_List(a):
     """
     Value = ""
     Data = []
+    Spacers = [" " , "\n" , "," , ";" , "\t"]
     for n in range(0,len(a)):
         char = a[n]
-        if(char == " " or n==len(a)-1 or char=="\n"):
+        if(char in Spacers or n==len(a)-1):
             """ Primero se comprueba que no haya un salto en blanco o un salto de linea o si la cadena esta a punto de terminar"""
-            if(n==len(a)-1 and char!=" "):
+            if(n==len(a)-1 and not char in Spacers):
                 """ Si la cadena esta por terminar, se añade el ultimo caracter para no quedar incompleta"""
                 Value+=char
 
@@ -80,33 +140,36 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
 
     n = len(Data)
     R = Cuant_Grouped.Calc_Range(V_Min,V_Max)
-
+    print("C antes del redondeo: ", C)
     if(not There_Are_Floats):
         """ 
             **********************************************************************************
             Si no existe ningun valor decimal entre todos los datos, entonces la amplitud se
-            redondea con un maximo de 1 decimal.
+            redondea por exceso con un maximo de 1 decimal.
             **********************************************************************************
         """
-        C = round(R/m , 1)
+        C = Fix_Float_Number(R/m)
+        C = Cuant_Grouped.Rounding_Up(C , 1)
         C_N_Decimals = 1
-        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals + 1)
+        C_N_Decimals += 1
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
     else:
         """ 
             **********************************************************************************
             Si por el contrario, existe algun valor decimal entre todos los datos, entonces 
-            la amplitud se redondea a la cantidad de decimales mas comun entre todos los 
-            datos.
+            la amplitud se redondea por exceso a la cantidad maxima de decimales entre 
+            todos los datos.
             **********************************************************************************
         """
-        N_Decimals_Most_Common = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
-        C_N_Decimals = int(N_Decimals_Most_Common[0][0]) + 1
-        C = round(R/m , C_N_Decimals) #Averiguar si es bueno no redondear este valor
+        Max_N_Decimals_In_Data = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
+        C_N_Decimals = Max_N_Decimals_In_Data
+        C = Fix_Float_Number(R/m)
+        C , C_N_Decimals = Cuant_Grouped.Rounding_Up(C , C_N_Decimals)
 
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
-        # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Decimal_Numbers(Arr_Intervals , m , C_N_Decimals)
 
+    print("C despues del redondeo: " , C)
     Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
     Arr_fi = Cuant_Grouped.Calc_fi(Data , Arr_Intervals , m)
@@ -285,8 +348,9 @@ def Calculate_Results_Cualitative_Data(Data):
     """
     n = len(Data)
 
-    Arr_Char_Mod , Arr_fi = Cuali.Calc_fi_And_ai(Data)
-    Number_Char_Mod = len(Arr_Char_Mod)
+    Arr_ai , Arr_fi = Cuali.Calc_fi_And_ai(Data)
+    
+    Number_Char_Mod = len(Arr_ai)
 
     Arr_Fi = Cuali.Calc_Fi(Arr_fi)
 
@@ -302,7 +366,7 @@ def Calculate_Results_Cualitative_Data(Data):
     ])
 
     Frecuences_Values = dict(
-        ai = Arr_Char_Mod,
+        ai = Arr_ai,
         fi = Arr_fi,
         Fi = Arr_Fi,
         hi = Arr_hi,
@@ -358,8 +422,9 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                         if(int(a) != a):
                             Is_Float = True
                             break
+                
                 Data.sort()
-                m = round(1 + (3.322*log10(len(Data))))
+                m = round(1 + (3.322*log10(len(Data)))) # Python redondea usando el "round half to even".
                 
                 if(not Repeated_Calc):
                     """ 
@@ -369,7 +434,7 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
 
                         Luego se determina si la cantidad de estas variables es mayor o menor al 20% de
                         la cantidad total de datos ingresados.
-                        Si llega a ser mayor al 20% del total, entonces los datos se agrupan en 
+                        Si llega a ser mayor al 30% del total, entonces los datos se agrupan en 
                         intervalos y se consideran los datos como variables Cuantitativas Continuas.
                         Este criterio es util para evitar el calculo sin agrupar de variables
                         cuantitativas continuas cuyos valores ingresados son enteros 
@@ -389,7 +454,7 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                     """
                     Arr_xi , Arr_fi = Cuant_Not_Grouped.Calc_fi_And_xi(Data)
 
-                    if(len(Arr_xi) > (1/5)*(len(Data))):
+                    if(len(Arr_xi) > (3/10)*(len(Data))):
                         Is_Continue[0].set(True)
                         Is_Continue[1].config(state="disabled")
                     elif(Is_Float and m > 5):
@@ -397,6 +462,9 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                         Is_Continue[1].config(state="disabled")
                     else:
                         Is_Continue[0].set(Is_Float)
+
+                    if(Is_Continue[0].get()):
+                        Data = Fix_Float_Error_For_Lists(Data)
 
                 match(Is_Continue[0].get()):
                     case True:
@@ -426,14 +494,13 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
 if (__name__ == "__main__"):
     Data = "Casa Casa Trabajo Trabajo Trabajo Casa Casa Cibercafe Otros Cibercafe Trabajo Trabajo Otros Cibercafe Cibercafe Cibercafe Casa Cibercafe Otros Cibercafe Casa Casa Cibercafe Trabajo Otros Otros Cibercafe Cibercafe Cibercafe Cibercafe "
     Data_2 = "118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582 118 484 664 1004 1231 1372 1582  "
-    Results = Main_Function(Data_2)
-    for key, value in Results.items():
-        print(f"{key} : {value}")
-        if(value != None):
-            for k , v in value.items():
-                print(f"{k} : {v}")
-        else:
-            print(f"{key} : None")
+    Data_3 = "5, 2, 4, 9, 7, 4, 5, 6, 5, 7, 7, 5, 5, 2, 10, 5, 6, 5, 4, 5, 8, 8, 4, 0, 8, 4, 8, 6, 6, 3, 6, 7, 6, 6, 7, 6, 7, 3, 5, 6,9, 6, 1, 4, 6, 3, 5, 5, 6, 7"
+
+    Data_2 = Convert_Input_Str_To_List(Data_2)
+    Data_2 , There_Are_Floats = Conv_Data_To_Numbers(Data_2)
+    Results = Calculate_Results_Cuantitative_For_Grouped_Data(Data_2 , There_Are_Floats , round(1+(3.322*log10(len(Data_2)))))
+    
+    print(Results)
     """ 
         Error en la funcion  Cuant_Not_Grouped.Find_Stadistic_Variable_xi, las listas de modificaban y quedaban vacias al terminar su ejecucion, perjudicando el resto de calculos
         Solucion, usar el metodo copy() para crear una copia del objeto. No usar otras variables, colo copy()

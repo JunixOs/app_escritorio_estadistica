@@ -10,7 +10,7 @@ from tkinter import ttk
 from Path_Manager import Get_Resource_Path
 from Calcs.Table_of_Frecuency.Graphs.Calc_Bar_Pie_Graphs import Draw_Graph_for_Each_Variable
 from Calcs.Table_of_Frecuency.Graphs.Calc_Boxplot import Draw_Boxplot_For_Single_Column_Data
-from Views.Table_of_Frecuency.Window_Export_Graph import Create_Windows_Export_Graphs
+from Views.Table_of_Frecuency.Exports.Window_Export_Graph import Create_Windows_Export_Graphs
 from Window_Create_Multiple_Graphs import Create_Window_Multiple_Graphs
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -72,10 +72,13 @@ class Graphs_For_Frecuences:
     def Modify_Intervals_Key(self):
         if("Frecuences_Cuant_Grouped" in self.Results):
             for a in range(0 , len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"])):
-                if(a != len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"]) - 1):
+                self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" >"
+
+                # Lo de abajo servia cuando el limite superior del ultimo intervalo si se tomaba 
+                """ if(a != len(self.Results["Frecuences_Cuant_Grouped"]["Intervals"]) - 1):
                     self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" >"
                 else:
-                    self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" ]"
+                    self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" ]" """
 
     def Generate_Graphs(self , Graphs):
         self.Modify_Intervals_Key()
@@ -196,12 +199,8 @@ class Checkboxes_Selection_Graphs:
 
         if(self.Checkbox_Boxplot_Graph):
             self.Checkbox_Boxplot_Graph.place_forget()
-    
-def Change_Key(dictionary, old_key, new_key):
-    """ No modifica el diccionarrio, sino que genera uno nuevo , pero con las claves moficiadas """
-    return {clave if clave != old_key else new_key: valor for clave, valor in dictionary.items()}
 
-def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Results_From_Multiple_Columns , Precision , Graphs):
+def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Column , Results_From_Multiple_Columns , Precision , Graphs):
     def Back(W_Show_Graph):
         if(Results_From_Single_Column):
             if(len(Results_From_Single_Column) == 1):
@@ -236,7 +235,7 @@ def Create_Window_Show_Graph(Father_Window , Results_From_Single_Column , Result
             Checkboxes_Collection[f"{Selection}"].Display_Checkboxes()
             Checkboxes_Collection[f"{Selection}"].Diplay_Widgets_Graphs()
 
-    W_Show_Graph = Toplevel(Father_Window)
+    W_Show_Graph = Toplevel(W_Calc_Frecuences_Table)
     W_Show_Graph.title("Ver graficos")
     W_Show_Graph.geometry("1300x700+105+105")
     W_Show_Graph.grab_set()

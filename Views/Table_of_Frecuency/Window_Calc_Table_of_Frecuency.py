@@ -4,10 +4,10 @@ import numpy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Path_Manager import Get_Resource_Path
+from Path_Manager import Get_Resource_Path , Get_Version
 from Exceptions.Exception_Warning import Raise_Warning
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
-from Views.Table_of_Frecuency.Window_Export_Excel import Generate_Window_Export_Excel
+from Views.Table_of_Frecuency.Window_Export_As_File import Create_Window_Export_As_File
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -664,7 +664,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Window_Frecuences_Table.destroy()
         Main_Window.state(newstate="normal")
         Main_Window.geometry("1240x700+135+100")
-        Main_Window.title("StatPhi beta v1.9")
+        Main_Window.title(f"StatPhi {Get_Version()}")
         Main_Window.lift()
 
     def Display_Results_By_Column_Name(Event = None):
@@ -784,7 +784,7 @@ def Create_Window_Frecuences_Table(Main_Window):
             Input_Data.config(state="disabled")
 
             Btn_Generate_Table.config(text="Calcular con otros valores")
-            Btn_Generate_Excel.config(state="normal")
+            Btn_Export_As_File.config(state="normal")
             Btn_Show_Graph.config(state="normal")
             Btn_Import_Data_From_File.config(state="disabled")
 
@@ -819,7 +819,7 @@ def Create_Window_Frecuences_Table(Main_Window):
         Global_Views.clear()
 
         Btn_Generate_Table.config(state="normal")
-        Btn_Generate_Excel.config(state="disabled")
+        Btn_Export_As_File.config(state="disabled")
         Btn_Show_Graph.config(state="disabled")
 
     def Interact_Precision():
@@ -878,9 +878,9 @@ def Create_Window_Frecuences_Table(Main_Window):
     Column_Selection = ttk.Combobox(Window_Frecuences_Table , font=("Courier New" , 13) , values=Columns_Name , state="readonly" , width=40)
     Column_Selection.bind('<<ComboboxSelected>>', Display_Results_By_Column_Name)
 
-    Btn_Generate_Excel = Button(Window_Frecuences_Table , text="Exportar tabla a Excel" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Generate_Window_Export_Excel(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column))
-    Btn_Generate_Excel.place(x=960 , y=210)
-    Btn_Generate_Excel.config(state="disabled")
+    Btn_Export_As_File = Button(Window_Frecuences_Table , text="Exportar Resultados" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: Create_Window_Export_As_File(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column))
+    Btn_Export_As_File.place(x=960 , y=210)
+    Btn_Export_As_File.config(state="disabled")
 
     Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Graphs))
     Btn_Show_Graph.place(x=1211 , y=210)

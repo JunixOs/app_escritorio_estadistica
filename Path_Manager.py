@@ -13,5 +13,11 @@ def Get_Resource_Path(Resource_Name):
 
     return Resource_Path
 
+def Get_Version():
+    Version = "v1.0.0"
+
+    return Version
+
 if(__name__ == "__main__"):
     print(Get_Project_Root())
+    print(Get_Version())
