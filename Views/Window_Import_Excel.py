@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Path_Manager import Get_Resource_Path
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
-from Window_Progress_Bar import W_Progress_Bar
+from Views.Window_Progress_Bar import W_Progress_Bar
 from Exceptions.Exception_Warning import Raise_Warning
 
 from tkinter import *
