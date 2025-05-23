@@ -137,10 +137,8 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
     """
     V_Min = Cuant_Grouped.Calc_Min(Data)
     V_Max = Cuant_Grouped.Calc_Max(Data)
-
     n = len(Data)
     R = Cuant_Grouped.Calc_Range(V_Min,V_Max)
-    print("C antes del redondeo: ", C)
     if(not There_Are_Floats):
         """ 
             **********************************************************************************
@@ -169,7 +167,6 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
 
         Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
 
-    print("C despues del redondeo: " , C)
     Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
     Arr_fi = Cuant_Grouped.Calc_fi(Data , Arr_Intervals , m)

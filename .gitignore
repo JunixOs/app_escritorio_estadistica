@@ -3,3 +3,5 @@ venv_app_estadistica/
 Calcs/__pycache__/Calc_Frecuences_Cualitative_Normal_Extended.cpython-312.pyc
 Calcs/__pycache__/Calc_Frecuences_Cuantitative_Many_Values.cpython-312.pyc
 .vscode/
+*.spec
+*.bat
