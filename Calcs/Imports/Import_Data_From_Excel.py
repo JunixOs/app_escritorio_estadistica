@@ -10,6 +10,8 @@ import pandas as pd # type: ignore
 import openpyxl
 import re
 
+import time
+
 def index_to_string(i):
     Letter = ''
     Temp = i
@@ -247,8 +249,13 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
             messagebox.showerror("Error" , f"{e}")
 
     def Import_Data(self):
-        Previous_Loaded_Excel = openpyxl.load_workbook(self.File_Path , read_only=True)
+        #start_time = time.time()
 
+        Previous_Loaded_Excel = openpyxl.load_workbook(self.File_Path , read_only=True , data_only=True , keep_links=False)
+
+        #end_time = time.time()
+        #print(f"Tiempo de carga del excel con load_workbook: {end_time - start_time:.9f}")
+        #start_time = end_time
         Sheet_Name = Previous_Loaded_Excel.sheetnames[self.Sheet_Number]
         Sheet = Previous_Loaded_Excel[Sheet_Name]
 
@@ -258,13 +265,19 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
         Validator.Validate_Row_Limit_Excel(self, self.Start_Row , self.End_Row , Total_Rows_In_Excel)
         Validator.Validate_Column_Limit_Excel(self , self.Start_Column , self.End_Column , Total_Columns_In_Excel)
 
-        Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=100)
+        Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=70)
         Datatypes_Collection = Excel_For_Detect_Datatype.dtypes.to_dict()
 
+        #end_time = time.time()
+        #print(f"Tiempo de carga del excel para dtypes: {end_time - start_time:.9f}")
+        #start_time = end_time
         Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=self.End_Row-1 , dtype=Datatypes_Collection)
         if("Unnamed" in Load_Excel.columns):
             raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
 
+        #end_time = time.time()
+        #print(f"Tiempo de carga del excel final: {end_time - start_time:.9f}")
+        #start_time = end_time
         self.Imported_Column_Names = Load_Excel.columns        
         if(self.Start_Row == 1):
             self.Imported_Data = Load_Excel.iloc[self.Start_Row-1:self.End_Row-1]
@@ -344,8 +357,13 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
             messagebox.showerror("Error" , f"{e}")
 
     def Import_Data(self):
-        Previous_Loaded_Excel = openpyxl.load_workbook(self.File_Path , read_only=True)
+        #start_time = time.time()
+
+        Previous_Loaded_Excel = openpyxl.load_workbook(self.File_Path , read_only=True , data_only=True , keep_links=False)
         
+        #end_time = time.time()
+        #print(f"Tiempo de carga de load_workbook: {end_time - start_time:.9f}")
+        #start_time = end_time
         Sheet_Name = Previous_Loaded_Excel.sheetnames[self.Sheet_Number]
         Sheet = Previous_Loaded_Excel[Sheet_Name]
 
@@ -371,12 +389,19 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
         Columns_List_To_String = ",".join(Only_Unique_Columns)
 
         try:
-            Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=100)
+            Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=70)
             Datatypes_Collection = Excel_For_Detect_Datatype.dtypes.to_dict()
+            #end_time = time.time()
+            #print(f"Tiempo de carga de dtypes: {end_time - start_time:.9f}")
+            #start_time = end_time
 
             Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=max(Arr_Rows)-1 , dtype=Datatypes_Collection)
         except Exception:
             Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=max(Arr_Rows)-1)
+
+        #end_time = time.time()
+        #print(f"Tiempo de carga del excel final: {end_time - start_time:.9f}")
+        #start_time = end_time
 
         if("unnamed" in Load_Excel.columns):
             raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")

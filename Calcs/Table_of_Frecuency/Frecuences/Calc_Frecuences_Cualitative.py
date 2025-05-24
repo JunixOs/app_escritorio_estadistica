@@ -11,7 +11,13 @@ def Order_Variable_Cualitative_Ordinal(Arr_ai):
     Dictionary_Possible_Orders = {
         "Likert_Scale" : ["muy malo" , "malo" , "regular" , "bueno" , "excelente"],
         "Likert_Scale_Initials" : ["m" , "r" , "b" , "e"],
-        "Grade" : ["inicial" , "primaria" , "secundaria" , "superior" , "maestria" , "doctorado"],
+
+        "Grade_1_1" : ["inicial" , "primaria" , "secundaria" , "tecnico" , "superior" , "universitario" , "maestria" , "postgrado" , "doctorado"],
+        "Grade_1_2" : ["inicial" , "primaria" , "secundaria" , "técnico" , "superior" , "universitario" , "maestría" , "postgrado" , "doctorado"],
+
+        "Grade_1_3" : ["inicial" , "primaria" , "secundaria" , "técnico" , "superior" , "universitario" , "maestria" , "postgrado" , "doctorado"],
+        "Grade_1_4" : ["inicial" , "primaria" , "secundaria" , "tecnico" , "superior" , "universitario" , "maestría" , "postgrado" , "doctorado"],
+
         "Socioeconomic_Level": ["bajo" , "medio-bajo" , "medio" , "medio-alto" , "alto"],
         "Military_Rank": ["soldado" , "cabo" , "sargento"],
         "Place_In_Competition": ["5° lugar" , "4° lugar" , "3° lugar" , "2° lugar" , "1° lugar"],
@@ -28,8 +34,19 @@ def Order_Variable_Cualitative_Ordinal(Arr_ai):
 
         if(len(Ordered_Data) == len(Arr_ai)):
             break
+        else:
+            Ordered_Data.clear()
 
-    return Ordered_Data
+    """
+        **********************************************************************
+        Si los datos no poseen ninguna jerarquia u orden entonces se devuelve
+        la lista original
+        **********************************************************************
+    """
+    if(not Ordered_Data):
+        return Arr_ai
+    else:
+        return Ordered_Data
 
 def Calc_fi_And_ai(Data):
     Arr_ai = list(set(Data))

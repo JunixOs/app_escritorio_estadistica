@@ -147,10 +147,10 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
             **********************************************************************************
         """
         C = Fix_Float_Number(R/m)
-        C = Cuant_Grouped.Rounding_Up(C , 1)
         C_N_Decimals = 1
-        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals + 1)
-        C_N_Decimals += 1
+        C , C_N_Decimals = Cuant_Grouped.Rounding_Up(C , 1)
+
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
     else:
         """ 
