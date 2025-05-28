@@ -5,3 +5,5 @@ Calcs/__pycache__/Calc_Frecuences_Cuantitative_Many_Values.cpython-312.pyc
 .vscode/
 *.spec
 *.bat
+
+*.pyw
