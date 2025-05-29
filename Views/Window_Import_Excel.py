@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Path_Manager import Get_Resource_Path
+from Tools import Get_Resource_Path , Delete_Actual_Window
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
@@ -16,6 +16,10 @@ from tkinter import messagebox
 from tkinter import ttk
 import pandas as pd # type: ignore
 import threading
+import openpyxl
+from python_calamine import CalamineWorkbook
+
+import time
 
 def index_to_string(i):
     Letter = ''
@@ -25,7 +29,7 @@ def index_to_string(i):
         Temp = Temp // 26 - 1
     return Letter
 
-class TreeviewFrame(ttk.Frame):
+class TreeviewFrame_Preview(ttk.Frame):
     def __init__(self , *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hscrollbar = ttk.Scrollbar(self, orient=HORIZONTAL)
@@ -43,6 +47,10 @@ class TreeviewFrame(ttk.Frame):
 
         self.Progress_Bar = None
         self.Root_Window = None
+
+        self.Excel_Dataframe = None
+        self.Total_Columns_In_Excel = None
+        self.Total_Rows_In_Excel = None
 
     def Has_Rows(self):
         return len(self.treeview.get_children()) > 0
@@ -62,16 +70,32 @@ class TreeviewFrame(ttk.Frame):
     def Load_Excel_File(self , File_Path , Sheet_Number):
         try:
             if(File_Path):
-                self.data = pd.ExcelFile(File_Path , engine="openpyxl")
-                self.sheets = self.data.sheet_names
+                start_time = time.time()
+
+                prev_load_excel = openpyxl.load_workbook(File_Path , read_only=True , data_only=True , keep_links=False)
+                self.sheets = prev_load_excel.sheetnames
+
 
                 if(Sheet_Number.get() > len(self.sheets)):
-                    Sheet_Number.set(Sheet_Number.get() - len(self.sheets))
-                    raise Raise_Warning(f"El numero de hoja {Sheet_Number.get() + len(self.sheets)} no existe.")
+                    Sheet_Number.set(Sheet_Number.get() - 1)
+                    raise Raise_Warning(f"El numero de hoja {Sheet_Number.get()} no existe.")
                 
-                Sheet_N = Sheet_Number.get() - 1
+                Idx_Sheet = Sheet_Number.get() - 1
 
-                self.Load_Sheet_Data(Sheet_N)
+                Sheet_Name = self.sheets[Idx_Sheet]
+                One_Sheet = prev_load_excel[Sheet_Name]
+
+                self.Total_Rows_In_Excel = One_Sheet.max_row
+                self.Total_Columns_In_Excel = One_Sheet.max_column
+
+                end_time = time.time()
+                print(f"Tiempo de carga con load_workbook (preview): {end_time - start_time:.9f}")
+                start_time = end_time
+
+                self.Load_Sheet_Data(File_Path , Idx_Sheet)
+
+                end_time = time.time()
+                print(f"Tiempo de carga del preview: {end_time - start_time:.9f}")
         except Raise_Warning as e:
             self.Progress_Bar.Close_Progress_Bar()
             messagebox.showwarning("Advertencia" , f"{e}")
@@ -79,31 +103,78 @@ class TreeviewFrame(ttk.Frame):
             self.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
-    def Load_Sheet_Data(self , Sheet_Number):
+    def Load_Sheet_Data(self , File_Path , Idx_Sheet):
         self.treeview.delete(*self.treeview.get_children())
 
-        data = self.data.parse(sheet_name=Sheet_Number)
+        Data_Excel = CalamineWorkbook.from_path(File_Path).get_sheet_by_index(Idx_Sheet).to_python(skip_empty_area=False)
+        self.Excel_Dataframe = pd.DataFrame(data=Data_Excel[1:] , columns=Data_Excel[0])
 
-        data = data.head(100)
+        First_One_Hundred_Data = self.Excel_Dataframe.head(100)
+        List_Number_Data_In_Row = []
+        Values_Recognized_as_Null = ["" , "NaN" , "None"]
+        for col_pos in range(self.Excel_Dataframe.shape[1]):
+            val = self.Excel_Dataframe.iloc[: , col_pos].to_list()
+            counter_data_in_row = 0
+            counter_void_places = 0
+            for i , data in enumerate(val):
+                if(not str(data).replace(" ","") in Values_Recognized_as_Null):
+                    if(counter_void_places != 0):
+                        counter_data_in_row += counter_void_places
+                        counter_void_places = 0
+                    
+                    counter_data_in_row += 1
+                else:
+                    counter_void_places += 1
+                
+                if(counter_void_places > 2):
+                    break
+
+            List_Number_Data_In_Row.append(counter_data_in_row + 1)
 
         self.treeview["columns"] = []
-        self.treeview["columns"] = ["N° fila/columna"] + [f"{i}" for i in range(len(data.columns))]
+        self.treeview["columns"] = ["N° fila/columna"] + [f"{i}" for i in range(len(First_One_Hundred_Data.columns))]
 
         self.treeview.heading("N° fila/columna", text="N° fila/columna")
         self.treeview.column("N° fila/columna" , anchor="center" , width=120 , stretch=False)
-        for i , col in enumerate(data.columns):
+        List_With_All_Columns_Letters = []
+        for i , col in enumerate(First_One_Hundred_Data.columns):
             Col_Letter = index_to_string(i)
+            List_With_All_Columns_Letters.append(Col_Letter)
+
             self.treeview.heading(f"{i}" , text=Col_Letter)
             self.treeview.column(f"{i}" , anchor="center" , width=120 , stretch=False)
 
-        # Insertar los datos en el Treeview
-        val = tuple([1] + data.columns.tolist())
+        val = tuple([1] + First_One_Hundred_Data.columns.tolist())
         self.treeview.insert("" , "end" , values=val)
-        for (index, row) in data.iterrows():
+        for (index, row) in First_One_Hundred_Data.iterrows():
             values = tuple([index + 2] + row.tolist())
             self.treeview.insert("", "end", values=values)
 
+        Values_For_Bottom_Preview = [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , List_Number_Data_In_Row)]
+        self.treeview.insert("", "end", values=tuple(["Ultimo dato en:"] + Values_For_Bottom_Preview))
+
         self.Progress_Bar.Close_Progress_Bar()
+    
+
+class Spinbox_With_Validation:
+    def __init__(self , Root_Window , Max_Value , Min_Value , Increment_Value , Spinbox_Width , Value_Associed , **Place):
+        self.Register_For_Spinbox = (Root_Window.register(self.Avoid_Unwanted_Values_In_Spinbox), '%P')
+        self.Min_Value = Min_Value
+        self.Max_Value = Max_Value
+        
+        self.Spinbox_In_App = Spinbox(Root_Window , textvariable=Value_Associed , from_=Min_Value , to=Max_Value , increment=Increment_Value , width=Spinbox_Width , font=("Courier New" , 13) , validate="all" , validatecommand=self.Register_For_Spinbox)
+        self.Spinbox_In_App.place(x=Place["x"] , y=Place["y"])
+
+    def Avoid_Unwanted_Values_In_Spinbox(self , Actual_Spinbox_Value):
+        if(Actual_Spinbox_Value == ""):
+            return True
+        try:
+            Number = int(Actual_Spinbox_Value)
+            if("." in Actual_Spinbox_Value):
+                return False
+            return self.Min_Value <= Number <= self.Max_Value
+        except ValueError:
+            return False
     
 def Select_File(Path , Preview , Sheet_Number):
     Path_File = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
@@ -128,8 +199,8 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
             if(isinstance(Sheet_Number.get() , float)):
                 Sheet_Number.set(1)
                 raise Raise_Warning("Numero de hoja no valido, solo valores enteros")
-
-            threading.Thread(target= lambda: Preview.Load_Excel_File(Path.get() , Sheet_Number)).start()
+            Path_Value = Path.get()
+            threading.Thread(target= lambda: Preview.Load_Excel_File(Path_Value , Sheet_Number)).start()
         except Raise_Warning as e:
             Preview.Progress_Bar.Close_Progress_Bar()
             messagebox.showwarning("Advertencia" , f"{e}")
@@ -138,7 +209,6 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
             messagebox.showerror("Error" , f"{e}")
 
 def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
-    """ Separar en diferentes ventanas, uno para importar de un .xlsx y otro para importar de un .txt """
     try:
         Preview.Progress_Bar.Start_Progress_Bar()
 
@@ -179,19 +249,42 @@ def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , D
         Preview.Progress_Bar.Close_Progress_Bar()
         messagebox.showerror("Error" , f"{e}")
 
-def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
-    def Back():
-        for widget in W_Import_Excel.winfo_children():
-            widget.destroy()
-        W_Import_Excel.grab_release()
-        W_Import_Excel.quit()
-        W_Import_Excel.destroy()
+def Create_Window_Import_Configuration(W_Import_Excel=None):
+    W_Import_Configuration = Toplevel(W_Import_Excel)
 
-        Father_Window.lift()
-    if __name__ == "__main__":
-        W_Import_Excel = Tk()
-    else:
-        W_Import_Excel = Toplevel(Father_Window)
+    W_Import_Configuration.grab_set()
+    W_Import_Configuration.geometry("500x250+500+330")
+    W_Import_Configuration.title("Configurar Importacion")
+    W_Import_Configuration.config(bg="#d1e7d2")
+    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    W_Import_Configuration.iconphoto(False , Icon)
+    W_Import_Configuration.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Import_Excel , W_Import_Configuration))
+    W_Import_Configuration.lift()
+
+    Void_Tolerance_Number = IntVar(W_Import_Configuration)
+    Number_Rows_To_Display = IntVar(W_Import_Configuration)
+    Import_Data_Matrix = BooleanVar(W_Import_Configuration)
+
+    Label_Input_Void_Tolerance = Label(W_Import_Configuration , text="Tolerancia de celdas vacias (0 - 25):" , font=("Times New Roman" , 12) , bg="#d1e7d2")
+    Label_Input_Void_Tolerance.place(x=20 , y=20)
+    Input_Void_Tolerance = Spinbox_With_Validation(W_Import_Configuration , 25 , 0 , 1 , 3 , Void_Tolerance_Number , x=400 , y=20)
+    Void_Tolerance_Number.set(2)
+
+    Label_Input_Number_Rows_To_Display = Label(W_Import_Configuration , text="Filas en la previsualizacion (0 - 2000)" , font=("Times New Roman" , 13) , bg="#d1e7d2")
+    Label_Input_Number_Rows_To_Display.place(x=20 , y=60)
+    Input_Number_Rows_To_Display = Spinbox_With_Validation(W_Import_Configuration , 2000 , 0 , 50 , 5 , Number_Rows_To_Display , x=400 , y=60)
+    Number_Rows_To_Display.set(100)
+
+    Checkbox_Import_Data_Matrix = Checkbutton(W_Import_Configuration , text="Importar matriz de datos" , font=("Times New Roman" , 13) , bg="#d1e7d2" , variable=Import_Data_Matrix)
+    Checkbox_Import_Data_Matrix.place(x=20 , y=100)
+
+    W_Import_Configuration.resizable(False , False)
+    W_Import_Excel.wait_window(W_Import_Configuration)
+
+    W_Import_Configuration.mainloop()
+
+def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
+    W_Import_Excel = Toplevel(Father_Window)
 
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
 
@@ -200,7 +293,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     W_Import_Excel.title("Seleccionar Archivo")
     W_Import_Excel.config(bg="#d1e7d2")
     W_Import_Excel.iconphoto(False , Icon)
-    W_Import_Excel.protocol("WM_DELETE_WINDOW" , Back)
+    W_Import_Excel.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(Father_Window , W_Import_Excel))
     
     Path = StringVar(W_Import_Excel)
     Cell_Range = StringVar(W_Import_Excel)
@@ -208,9 +301,12 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
 
     Progress_Bar = W_Progress_Bar(W_Import_Excel)
 
-    Text_Input_Path_File = Label(W_Import_Excel , text="Ingrese la ruta del archivo: " , bg="#d1e7d2" , font=("Times New Roman" , 12))
+    Btn_Configuracion = Button(W_Import_Excel , text="\u2699" , font=("Segoe UI Emoji", 12) , bg="#d1e7d2" , command= lambda: Create_Window_Import_Configuration(W_Import_Excel))
+    Btn_Configuracion.place(x=20 , y=305)
+
+    Text_Input_Path_File = Label(W_Import_Excel , text="Ingrese la ruta del archivo: " , bg="#d1e7d2" , font=("Times New Roman" , 13))
     Text_Input_Path_File.place(x=20 , y=340)
-    Path_File = Entry(W_Import_Excel , font=("Courier New" , 11) , textvariable=Path , width=55 , state="readonly")
+    Path_File = Entry(W_Import_Excel , font=("Courier New" , 13) , textvariable=Path , width=55 , state="readonly")
     Path_File.place(x=210 , y=340)
     Btn_Select_File = Button(W_Import_Excel , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_File(Path , Table_Preview_Data , Sheet_Number) , width=10 , bg="#ffe3d4")
     Btn_Select_File.place(x=50 , y=370)
@@ -221,12 +317,12 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     Input_Sheet_Number.place(x=210 , y=410)
 
     Text_Input_Cells_Range = Label(W_Import_Excel , text="Ingrese el rango de celdas:" , bg="#d1e7d2" , font=("Times New Roman" , 13))
-    Text_Input_Cells_Range.place(x=20 , y=440)
+    Text_Input_Cells_Range.place(x=20 , y=450)
     Cells_Range = Entry(W_Import_Excel , font=("Courier New" , 13) , textvariable=Cell_Range , width=55)
-    Cells_Range.place(x=210 , y=440)
+    Cells_Range.place(x=210 , y=460)
     Cells_Range.focus()
 
-    Table_Preview_Data = TreeviewFrame(W_Import_Excel)
+    Table_Preview_Data = TreeviewFrame_Preview(W_Import_Excel)
     Table_Preview_Data.Progress_Bar = Progress_Bar
     Table_Preview_Data.Root_Window = W_Import_Excel
     Table_Preview_Data.pack(fill=BOTH)
@@ -245,7 +341,9 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     Btn_Process_Data.pack(side=BOTTOM)
 
     W_Import_Excel.resizable(False,False)
+    Father_Window.wait_window(W_Import_Excel)
+
     W_Import_Excel.mainloop()
 
 if __name__ == "__main__":
-    Create_Window_Import_Excel(None , "" , "" , "" , {})
+    Create_Window_Import_Configuration()

@@ -7,7 +7,6 @@ from Exceptions.Exception_Warning import Raise_Warning
 from tkinter import *
 from tkinter import messagebox
 import pandas as pd # type: ignore
-import openpyxl
 import re
 
 import time
@@ -26,14 +25,14 @@ def string_to_index(s):
         result = result * 26 + (ord(char.upper()) - 65 + 1)
     return result - 1
 class Validator:
-    def Validate_For_Each_Range_Cells(self , One_Range_Cells):
+    def Validate_Format_For_Each_Range_Cells(self , One_Range_Cells):
         One_Range_Cells = One_Range_Cells.upper()
         One_Range_Cells = re.match(r"([A-Z]{1,3})(\d+):([A-Z]{1,3})(\d+)" , One_Range_Cells.strip())
         if(not One_Range_Cells):
             raise Raise_Warning("El rango de celdas ingresado es incorrecto.")
         return One_Range_Cells.groups()
 
-    def Validate_Order_Range_Cells(self , Start_Row , End_Row , Start_Column , End_Column):
+    def Validate_Order_For_Each_Range_Cells(self , Start_Row , End_Row , Start_Column , End_Column):
         if(Start_Column == End_Column and Start_Row == End_Row):
             raise Raise_Warning("No se puede seleccionar una sola celda.")
         elif(Start_Row > End_Row):
@@ -42,6 +41,24 @@ class Validator:
             Start_Column , End_Column = End_Column , Start_Column
         return Start_Row , End_Row , Start_Column , End_Column
     
+    def Validate_Order_For_All_Range_Cells(self , Ranges_Of_Cells):
+        Dict_Range_Cells = {}
+        Order_For_Range_Cells = []
+        for range_cells in Ranges_Of_Cells:
+            if(range_cells[0].isdigit()):
+                raise Raise_Warning("El rango de celdas ingresado es incorrecto.")
+            
+            Dict_Range_Cells[f"{string_to_index(range_cells[0])}"] = range_cells
+            Order_For_Range_Cells.append(string_to_index(range_cells[0]))
+        
+        Order_For_Range_Cells.sort()
+        return [Dict_Range_Cells[f"{idx}"] for idx in Order_For_Range_Cells]
+
+    def Validate_For_Avoid_Repeated_Range_Cells(self , Ranges_Of_Cells):
+        for range_cell in Ranges_Of_Cells:
+            if(Ranges_Of_Cells.count(range_cell) > 1):
+                raise Raise_Warning("No se puede importar el mismo rango de celdas dos veces.")
+
     def Validate_Row_Limit_Excel(self , Input_Start_Row , Input_End_Row , Limit_Excel_End_Rows):
         if(Input_Start_Row > Limit_Excel_End_Rows or Input_End_Row > Limit_Excel_End_Rows):
             raise Raise_Warning("Se intento acceder a una fila no valida, fuera de alcance o sin nungun dato. Intente nuevamente.")
@@ -148,10 +165,10 @@ class Load_Data_In_Preview:
                 Load_Preview.Insert_Imported_Data_To_Preview(Start_Row , End_Row)
 
             case False:
-                Imported_Data_From_Excel_For_Calcs[f"{Imported_Column_Names[0]}"] = [value[0] for value in Imported_Data.values]
+                Imported_Data_From_Excel_For_Calcs[f"{Imported_Column_Names}"] = [value[0] for value in Imported_Data.values]
 
                 Widget_Input_Data.config(state="disabled")
-                Data_From_Entry_Widget.set(f"Columna Importada: {Imported_Column_Names[0]}")
+                Data_From_Entry_Widget.set(f"Columna Importada: {Imported_Column_Names}")
 
                 Load_Preview.Insert_Imported_Data_To_Preview(Start_Row , End_Row)
 
@@ -194,7 +211,7 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
 
         self.File_Path = File_Path
         self.Sheet_Number = Sheet_Number - 1
-        self.Range_Cells = Range_Cells
+        self.Str_Range_Of_Cells = Range_Cells
         self.Import_Multiple_Columns = False
 
     def Process_Input_Data(self):
@@ -205,11 +222,11 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
         Validator.Validate_Path(self , self.File_Path)
         Validator.Validate_Sheets(self, self.Sheet_Number , self.File_Path)
 
-        self.Start_Column , self.Start_Row , self.End_Column , self.End_Row = Validator.Validate_For_Each_Range_Cells(self , self.Range_Cells)
+        self.Start_Column , self.Start_Row , self.End_Column , self.End_Row = Validator.Validate_Format_For_Each_Range_Cells(self , self.Str_Range_Of_Cells)
 
         self.Start_Row , self.End_Row = int(self.Start_Row) , int(self.End_Row)
 
-        self.Start_Row , self.End_Row , self.Start_Column , self.End_Column = Validator.Validate_Order_Range_Cells(self, self.Start_Row , self.End_Row , self.Start_Column , self.End_Column)
+        self.Start_Row , self.End_Row , self.Start_Column , self.End_Column = Validator.Validate_Order_For_Each_Range_Cells(self, self.Start_Row , self.End_Row , self.Start_Column , self.End_Column)
 
         if(self.End_Column != self.Start_Column):
             self.Import_Multiple_Columns = True
@@ -217,7 +234,7 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
     def Manage_Import_For_Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs):
         try:
     
-            self.Import_Data()
+            self.Extract_Data_From_Excel_Dataframe(Table_Preview_Data.Excel_Dataframe , Table_Preview_Data.Total_Rows_In_Excel , Table_Preview_Data.Total_Columns_In_Excel)
 
             Load_Data_In_Preview.Module_Table_Of_Frecuency(
                 self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs , 
@@ -232,7 +249,7 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
 
     def Manage_Import_For_Module_Venn_Diagram(self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs):
         try:
-            self.Import_Data()
+            self.Extract_Data_From_Excel_Dataframe(Table_Preview_Data.Excel_Dataframe , Table_Preview_Data.Total_Rows_In_Excel , Table_Preview_Data.Total_Columns_In_Excel)
 
             if(len(self.Imported_Column_Names) < 2):
                 raise Raise_Warning("No se puede importar menos de 2 columnas.")
@@ -248,43 +265,29 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Load_Data_In_Preview)
             Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
-    def Import_Data(self):
-        #start_time = time.time()
-
-        Previous_Loaded_Excel = openpyxl.load_workbook(self.File_Path , read_only=True , data_only=True , keep_links=False)
-
-        #end_time = time.time()
-        #print(f"Tiempo de carga del excel con load_workbook: {end_time - start_time:.9f}")
-        #start_time = end_time
-        Sheet_Name = Previous_Loaded_Excel.sheetnames[self.Sheet_Number]
-        Sheet = Previous_Loaded_Excel[Sheet_Name]
-
-        Total_Rows_In_Excel = Sheet.max_row
-        Total_Columns_In_Excel = Sheet.max_column
+    def Extract_Data_From_Excel_Dataframe(self , Excel_Dataframe , Total_Rows_In_Excel , Total_Columns_In_Excel):
 
         Validator.Validate_Row_Limit_Excel(self, self.Start_Row , self.End_Row , Total_Rows_In_Excel)
         Validator.Validate_Column_Limit_Excel(self , self.Start_Column , self.End_Column , Total_Columns_In_Excel)
 
-        Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=70)
-        Datatypes_Collection = Excel_For_Detect_Datatype.dtypes.to_dict()
+        if(self.Start_Column != self.End_Column):
+            Idx_Columns = [idx for idx in range(string_to_index(self.Start_Column) , string_to_index(self.End_Column) + 1)]
+            self.Imported_Column_Names = [col_name for i , col_name in enumerate(Excel_Dataframe.columns) if i in Idx_Columns]
+            if("" in self.Imported_Column_Names):
+                raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
 
-        #end_time = time.time()
-        #print(f"Tiempo de carga del excel para dtypes: {end_time - start_time:.9f}")
-        #start_time = end_time
-        Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=f"{self.Start_Column}:{self.End_Column}" , nrows=self.End_Row-1 , dtype=Datatypes_Collection)
-        if("Unnamed" in Load_Excel.columns):
-            raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
-
-        #end_time = time.time()
-        #print(f"Tiempo de carga del excel final: {end_time - start_time:.9f}")
-        #start_time = end_time
-        self.Imported_Column_Names = Load_Excel.columns        
-        if(self.Start_Row == 1):
-            self.Imported_Data = Load_Excel.iloc[self.Start_Row-1:self.End_Row-1]
         else:
-            self.Imported_Data = Load_Excel.iloc[self.Start_Row-2:self.End_Row-1]
+            Idx_Columns = [string_to_index(self.Start_Column)]
+            self.Imported_Column_Names = Excel_Dataframe.columns[string_to_index(self.Start_Column)]
+            if(self.Imported_Column_Names == ""):
+                raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
 
-        self.Imported_Data.dropna()
+        if(self.Start_Row == 1):
+            self.Imported_Data = Excel_Dataframe.iloc[self.Start_Row-1:self.End_Row-1 , Idx_Columns]
+        else:
+            self.Imported_Data = Excel_Dataframe.iloc[self.Start_Row-2:self.End_Row-1 , Idx_Columns]
+
+        self.Imported_Data = self.Imported_Data.dropna()
 
         Validator.Validate_Data_Imported_Is_Null(self , self.Imported_Data)
 
@@ -297,7 +300,7 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
 
         self.File_Path = File_Path
         self.Sheet_Number = Sheet_Number - 1
-        self.Range_Cells = Range_Cells
+        self.Str_Range_Of_Cells = Range_Cells
 
         self.Collection_Of_Cells = {
             "Columns" : [],
@@ -307,22 +310,27 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
         self.Import_Mutiple_Columns = True
 
     def Process_Input_Data(self):
+        Fixed_Ranges_Of_Cells = []
+
         Validator.Validate_Path(self , self.File_Path)
         Validator.Validate_Sheets(self, self.Sheet_Number , self.File_Path)
 
-        Ranges = self.Range_Cells.split(";")
-        for ran in Ranges:
-            self.Start_Column , self.Start_Row , self.End_Column , self.End_Row = Validator.Validate_For_Each_Range_Cells(self , ran)
+        Ranges_Of_Cells = self.Str_Range_Of_Cells.split(";")
+        Ranges_Of_Cells = Validator.Validate_Order_For_All_Range_Cells(self, Ranges_Of_Cells)
+        for ran in Ranges_Of_Cells:
+            self.Start_Column , self.Start_Row , self.End_Column , self.End_Row = Validator.Validate_Format_For_Each_Range_Cells(self , ran)
             self.Start_Row , self.End_Row = int(self.Start_Row) , int(self.End_Row)
 
-            self.Start_Row , self.End_Row , self.Start_Column , self.End_Column = Validator.Validate_Order_Range_Cells(self , self.Start_Row , self.End_Row , self.Start_Column , self.End_Column)
+            self.Start_Row , self.End_Row , self.Start_Column , self.End_Column = Validator.Validate_Order_For_Each_Range_Cells(self , self.Start_Row , self.End_Row , self.Start_Column , self.End_Column)
 
+            Fixed_Ranges_Of_Cells.append(f"{self.Start_Column}{self.Start_Row}:{self.End_Column}{self.End_Row}")
             self.Collection_Of_Cells["Columns"].append([self.Start_Column , self.End_Column])
             self.Collection_Of_Cells["Rows"].append([self.Start_Row , self.End_Row])
+        Validator.Validate_For_Avoid_Repeated_Range_Cells(self , Fixed_Ranges_Of_Cells)
         
     def Manage_Import_For_Module_Table_Of_Frecuency(self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs):
         try:
-            self.Import_Data()
+            self.Extract_Data_From_Excel_Dataframe(Table_Preview_Data.Excel_Dataframe , Table_Preview_Data.Total_Rows_In_Excel , Table_Preview_Data.Total_Columns_In_Excel)
 
             Load_Data_In_Preview.Module_Table_Of_Frecuency(
                 self , Table_Preview_Data , Data_From_Entry_Widget , Widget_Input_Data , Imported_Data_From_Excel_For_Calcs , self.Import_Mutiple_Columns ,
@@ -338,7 +346,7 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
 
     def Manage_Import_For_Module_Venn_Diagram(self , Table_Preview_Data , Data_From_Entry_Widgets , Widgets_Input_Data , Imported_Data_From_Excel_For_Calcs):
         try:
-            self.Import_Data()
+            self.Extract_Data_From_Excel_Dataframe(Table_Preview_Data.Excel_Dataframe , Table_Preview_Data.Total_Rows_In_Excel , Table_Preview_Data.Total_Columns_In_Excel)
 
             if(len(self.Imported_Column_Names) < 2):
                 raise Raise_Warning("No se puede importar menos de 2 columnas.")
@@ -356,19 +364,8 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
             Table_Preview_Data.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
-    def Import_Data(self):
-        #start_time = time.time()
-
-        Previous_Loaded_Excel = openpyxl.load_workbook(self.File_Path , read_only=True , data_only=True , keep_links=False)
-        
-        #end_time = time.time()
-        #print(f"Tiempo de carga de load_workbook: {end_time - start_time:.9f}")
-        #start_time = end_time
-        Sheet_Name = Previous_Loaded_Excel.sheetnames[self.Sheet_Number]
-        Sheet = Previous_Loaded_Excel[Sheet_Name]
-
-        Total_Rows_In_Excel = Sheet.max_row
-        Total_Columns_In_Excel = Sheet.max_column
+    def Extract_Data_From_Excel_Dataframe(self , Excel_Dataframe , Total_Rows_In_Excel , Total_Columns_In_Excel):
+        start_time = time.time()
 
         Arr_Columns = []
         Arr_Rows = []
@@ -385,30 +382,19 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
                     Arr_Columns.append(index_to_string(c))
             Arr_Columns.append(col[1])
 
-        Only_Unique_Columns = list(set(Arr_Columns))
-        Columns_List_To_String = ",".join(Only_Unique_Columns)
+        Arr_Idx_Columns = [string_to_index(idx) for idx in Arr_Columns]
+        Only_Unique_Idx_Columns = list(set(Arr_Idx_Columns))
+        Only_Unique_Idx_Columns.sort()
 
-        try:
-            Excel_For_Detect_Datatype = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=70)
-            Datatypes_Collection = Excel_For_Detect_Datatype.dtypes.to_dict()
-            #end_time = time.time()
-            #print(f"Tiempo de carga de dtypes: {end_time - start_time:.9f}")
-            #start_time = end_time
+        if(Only_Unique_Idx_Columns == 1):
+            raise Raise_Warning("El rango de celdas importado es incorrecto")
 
-            Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=max(Arr_Rows)-1 , dtype=Datatypes_Collection)
-        except Exception:
-            Load_Excel = pd.read_excel(self.File_Path , sheet_name=self.Sheet_Number , engine="openpyxl" , usecols=Columns_List_To_String , nrows=max(Arr_Rows)-1)
-
-        #end_time = time.time()
-        #print(f"Tiempo de carga del excel final: {end_time - start_time:.9f}")
-        #start_time = end_time
-
-        if("unnamed" in Load_Excel.columns):
+        self.Imported_Column_Names = [col for i , col in enumerate(Excel_Dataframe.columns) if i in Only_Unique_Idx_Columns]
+        print(self.Imported_Column_Names)
+        if("" in self.Imported_Column_Names):
             raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
-        
-        self.Imported_Column_Names = Load_Excel.columns
-        Concat_Columns = []
 
+        Concat_Columns = []
         try:
             n = 0
             for i in range(0 , len(self.Collection_Of_Cells["Rows"])):
@@ -426,14 +412,10 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
                     0 , 1 y 2 respectivamente.
                     ********************************************************************
                 """
-                prev_n = n
                 if(string_to_index(self.Collection_Of_Cells["Columns"][i][1]) - string_to_index(self.Collection_Of_Cells["Columns"][i][0]) >= 1):
-                    n += string_to_index(self.Collection_Of_Cells["Columns"][i][1]) - string_to_index(self.Collection_Of_Cells["Columns"][i][0])
-                    col = [n_col for n_col in range(prev_n , n + 1)]
-                    n += 1
+                    col = [n_col for n_col in range(string_to_index(self.Collection_Of_Cells["Columns"][i][0]) , string_to_index(self.Collection_Of_Cells["Columns"][i][1]) + 1)]
                 else:
-                    col = n
-                    n += 1
+                    col = string_to_index(self.Collection_Of_Cells["Columns"][i][0])
                 
                 if(self.Collection_Of_Cells["Rows"][i][0] == 1):
                     Adjustment_Value = 1
@@ -442,23 +424,24 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
                 
                 if(isinstance(col , list)):
                     for c in col:
-                        column_i = Load_Excel.iloc[self.Collection_Of_Cells["Rows"][i][0]-Adjustment_Value:self.Collection_Of_Cells["Rows"][i][1]-1 , c]
+                        column_i = Excel_Dataframe.iloc[self.Collection_Of_Cells["Rows"][i][0]-Adjustment_Value:self.Collection_Of_Cells["Rows"][i][1]-1 , c]
                         column_i.dropna()
                         Validator.Validate_Data_Imported_Is_Null(self , column_i , False)
                         Concat_Columns.append(column_i)
                 else:
-                    column_i = Load_Excel.iloc[self.Collection_Of_Cells["Rows"][i][0]-Adjustment_Value:self.Collection_Of_Cells["Rows"][i][1]-1 , col]
+                    column_i = Excel_Dataframe.iloc[self.Collection_Of_Cells["Rows"][i][0]-Adjustment_Value:self.Collection_Of_Cells["Rows"][i][1]-1 , col]
                     column_i.dropna()
                     Validator.Validate_Data_Imported_Is_Null(self , column_i , False)
                     Concat_Columns.append(column_i)
-
             self.Imported_Data = pd.concat(Concat_Columns , axis=1 , ignore_index=True , join="outer")
             self.Imported_Data.columns = self.Imported_Column_Names
         except Exception as e:
             raise Raise_Warning("Algo salio mal, asegurese de que el rango de celdas ingresado no tenga intersecciones.\nCorrecto: A1:D1001;F1:H1001 \nIncorrecto: A1:D1001;C1:E1001")
         self.Imported_Data.dropna()
-        
-        Previous_Loaded_Excel.close()
 
         self.Start_Row = min(Arr_Rows)
         self.End_Row = max(Arr_Rows)
+
+        end_time = time.time()
+        print(f"Tiempo de carga del excel final: {end_time - start_time:.9f}")
+        start_time = end_time
