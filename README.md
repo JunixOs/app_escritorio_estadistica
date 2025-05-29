@@ -36,7 +36,7 @@
 
 ## Descripcion
 
-**StatPhi** es un programa desarrollado en el lenguaje de programacion `Python`, usando la libreria `tkinter` como base para desarrollar la UI, asi como las librerias `numpy` , `scipy`, `matplotlib`, `seaborn`, `venn`, `pandas` y `openpyxl` para los calculos, creacion de graficos e importacion y exportacion de archivos y datos.
+**StatPhi** es un programa desarrollado en el lenguaje de programacion `Python`, usando la libreria `tkinter` como base para desarrollar la UI, asi como las librerias `numpy` , `scipy`, `matplotlib`, `seaborn`, `venn`, `pandas` , `python-calamine`, `openpyxl` y `reportlab` para los calculos, creacion de graficos e importacion y exportacion de archivos y datos.
 
 Este proyecto es el producto final del curso de ***Estadistica General*** correspondiente al ciclo ***2025-0***, el objetivo principal del mismo es el de brindar una forma facil y amigable de calcular y analizar datos a personas que no estan familiarizadas con la programacion en lenguajes especializados para ese campo como `RStudio`.
 
@@ -248,42 +248,46 @@ Statphi/
 ├── .gitignore
 └── README.md
 ```
+---
 
 ## **Instalacion**
 
 Por el momento, no esta disponible un ejecutable que facilite su instalacion y uso, esto debido a que el proyecto todavia esta en fase de construccion y pruebas.
 
 ### ***Requisitos previos***
- Si deseas probar StatPhi en tu ordenador, deberas tener intalado los siguientes programas:
-- Un editor de codigo como `VSCode`.
+Si deseas probar StatPhi en tu ordenador, deberas tener intalado los siguientes programas:
+- Un editor de codigo como `VSCode` (si quieres editar el codigo).
 - `Python 3.11.X`
 - El sistema de control de versiones de `git`.
+- Una cuenta en GitHub.
 
 ### ***Librerias Necesarias***
 Ademas, deberas contar con las siguientes librerias de **python**:
 1. `tkinter`
 2. `pandas 2.2.3`
-3. `matplotlib 3.10.0`
-4. `openpyxl 3.1.5`
-5. `scipy 1.15.1`
-6. `seaborn 0.13.2`
-7. `venn 0.1.3`
-8. `reportlab 3.6.13`
+3. `numpy 2.2.6`
+4. `matplotlib 3.10.0`
+5. `openpyxl 3.1.5`
+6. `scipy 1.15.1`
+7. `seaborn 0.13.2`
+8. `venn 0.1.3`
+9. `reportlab 3.6.13`
+10. `python-calamine 0.3.2`
 
 > [!WARNING]
 > Si ya tienes librerias instaladas, es recomendable crear un entorno virtual para evitar conflictos con las diferentes librerias de tu sistema.
 
 ### ***Pasos para la Instalacion***
-1. Clonar el repositorio.
+1. Clonar el repositorio en un tu equipo. Click derecho, abrir Git Bash y colocar el comando.
     ```bash
-    https://github.com/JunixOs/app_escritorio_estadistica.git
+    git clone https://github.com/JunixOs/app_escritorio_estadistica.git
     ```
 2. Navegar hasta el directorio app_escritorio_estadistica:
     ```bash
     cd app_escritorio_estadistica
     ```
 
-3. Crear el entorno virtual. Si no sabes como, ingresa los siguientes comandos dentro de la terminal:
+3. Crear el entorno virtual. Si no sabes como, ingresa el siguiente comando dentro de la terminal:
     ```bash
     python -m venv nombre_del_entorno
     ```
@@ -296,11 +300,11 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 5. Instalar las librerias necesarias.
     - Usando `pip`:
         ```bash
-        pip install tkinter pandas==2.2.3 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 venn==0.1.3 reportlab==3.6.13 
+        pip install pandas==2.2.3 numpy==2.2.6 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 venn==0.1.3 reportlab==3.6.13 python-calamine==0.3.2
         ```
     - Usando `conda`:
         ```bash
-        conda install tkinter pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2 venn=0.1.3 reportlab=3.6.13
+        conda install pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2 venn=0.1.3 reportlab=3.6.13 python-calamine=0.3.2
         ```
 6. Verificar si los paquetes se instalaron correctamente:
     - Usando `pip`:
