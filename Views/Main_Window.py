@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Path_Manager import Get_Resource_Path , Get_Version
+from Tools import Get_Resource_Path , Get_Version
 from Calcs.Center_Window import Center
 import Views.Table_of_Frecuency.Window_Calc_Table_of_Frecuency as W_Calc_Table
 import Views.Venn_Diagram.Window_Create_Venn_Diagram as W_Venn_Diagram

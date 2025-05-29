@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
-from Path_Manager import Get_Resource_Path
+from Tools import Get_Resource_Path
 from Calcs.Table_of_Frecuency.Exports.Export_PDF import Export_Table_In_PDF
 from Calcs.Center_Window import Center
 

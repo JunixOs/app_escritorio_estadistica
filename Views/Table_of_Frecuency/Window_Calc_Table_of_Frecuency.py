@@ -4,7 +4,7 @@ import numpy
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Path_Manager import Get_Resource_Path , Get_Version
+from Tools import Get_Resource_Path , Get_Version
 from Exceptions.Exception_Warning import Raise_Warning
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
 from Views.Table_of_Frecuency.Window_Export_As_File import Create_Window_Export_As_File

@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Path_Manager import Get_Resource_Path
+from Tools import Get_Resource_Path
 from tkinter import ttk
 from tkinter import *
 import time

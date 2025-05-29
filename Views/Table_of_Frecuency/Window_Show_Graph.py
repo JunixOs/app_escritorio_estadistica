@@ -7,7 +7,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 
-from Path_Manager import Get_Resource_Path
+from Tools import Get_Resource_Path
 from Calcs.Table_of_Frecuency.Graphs.Calc_Bar_Pie_Graphs import Draw_Graph_for_Each_Variable
 from Calcs.Table_of_Frecuency.Graphs.Calc_Boxplot import Draw_Boxplot_For_Single_Column_Data
 from Views.Table_of_Frecuency.Exports.Window_Export_Graph import Create_Windows_Export_Graphs

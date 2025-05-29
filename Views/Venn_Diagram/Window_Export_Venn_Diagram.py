@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
 from Calcs.Venn.Export_Venn_Diagram import Export_Venn_Diagram_As_Image
-from Path_Manager import Get_Resource_Path
+from Tools import Get_Resource_Path
 from Calcs.Center_Window import Center
 from tkinter import *
 from tkinter import ttk
