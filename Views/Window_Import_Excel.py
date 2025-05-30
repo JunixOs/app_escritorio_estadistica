@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window
+from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
@@ -106,10 +106,12 @@ class TreeviewFrame_Preview(ttk.Frame):
     def Load_Sheet_Data(self , File_Path , Idx_Sheet):
         self.treeview.delete(*self.treeview.get_children())
 
+        JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
+
         Data_Excel = CalamineWorkbook.from_path(File_Path).get_sheet_by_index(Idx_Sheet).to_python(skip_empty_area=False)
         self.Excel_Dataframe = pd.DataFrame(data=Data_Excel[1:] , columns=Data_Excel[0])
 
-        First_One_Hundred_Data = self.Excel_Dataframe.head(100)
+        First_One_Hundred_Data = self.Excel_Dataframe.head(JSON_Settings_Data["maximun_rows_to_display_in_preview"] - 1)
         List_Number_Data_In_Row = []
         Values_Recognized_as_Null = ["" , "NaN" , "None"]
         for col_pos in range(self.Excel_Dataframe.shape[1]):
@@ -126,13 +128,14 @@ class TreeviewFrame_Preview(ttk.Frame):
                 else:
                     counter_void_places += 1
                 
-                if(counter_void_places > 2):
+                if(counter_void_places > JSON_Settings_Data["void_tolerance"]):
                     break
 
             List_Number_Data_In_Row.append(counter_data_in_row + 1)
 
         self.treeview["columns"] = []
         self.treeview["columns"] = ["N° fila/columna"] + [f"{i}" for i in range(len(First_One_Hundred_Data.columns))]
+        Void_Space_In_Bottom_Preview = [""] + ["" for _ in range(len(First_One_Hundred_Data.columns))]
 
         self.treeview.heading("N° fila/columna", text="N° fila/columna")
         self.treeview.column("N° fila/columna" , anchor="center" , width=120 , stretch=False)
@@ -150,6 +153,8 @@ class TreeviewFrame_Preview(ttk.Frame):
             values = tuple([index + 2] + row.tolist())
             self.treeview.insert("", "end", values=values)
 
+        self.treeview.insert("", "end", values=tuple(Void_Space_In_Bottom_Preview))
+        
         Values_For_Bottom_Preview = [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , List_Number_Data_In_Row)]
         self.treeview.insert("", "end", values=tuple(["Ultimo dato en:"] + Values_For_Bottom_Preview))
 
@@ -175,6 +180,7 @@ class Spinbox_With_Validation:
             return self.Min_Value <= Number <= self.Max_Value
         except ValueError:
             return False
+
     
 def Select_File(Path , Preview , Sheet_Number):
     Path_File = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
@@ -250,15 +256,25 @@ def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , D
         messagebox.showerror("Error" , f"{e}")
 
 def Create_Window_Import_Configuration(W_Import_Excel=None):
+    def Close_Settings_Window():
+        try:
+            Save_New_Configurations_In_JSON_File("import_excel_settings" , void_tolerance=Void_Tolerance_Number.get() , maximun_rows_to_display_in_preview=Number_Rows_To_Display.get() , import_matrix_data=Import_Data_Matrix.get())
+        except Exception:
+            messagebox.showerror("Error" , "Algo salio mal al guardar la configuracion.\nAsegurese que todos los datos esten bien escritos.")
+        else:
+            Delete_Actual_Window(W_Import_Excel , W_Import_Configuration)
+    
+    JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
+    
     W_Import_Configuration = Toplevel(W_Import_Excel)
 
     W_Import_Configuration.grab_set()
-    W_Import_Configuration.geometry("500x250+500+330")
+    W_Import_Configuration.geometry("500x200+500+350")
     W_Import_Configuration.title("Configurar Importacion")
     W_Import_Configuration.config(bg="#d1e7d2")
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Import_Configuration.iconphoto(False , Icon)
-    W_Import_Configuration.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Import_Excel , W_Import_Configuration))
+    W_Import_Configuration.protocol("WM_DELETE_WINDOW" , Close_Settings_Window)
     W_Import_Configuration.lift()
 
     Void_Tolerance_Number = IntVar(W_Import_Configuration)
@@ -268,15 +284,16 @@ def Create_Window_Import_Configuration(W_Import_Excel=None):
     Label_Input_Void_Tolerance = Label(W_Import_Configuration , text="Tolerancia de celdas vacias (0 - 25):" , font=("Times New Roman" , 12) , bg="#d1e7d2")
     Label_Input_Void_Tolerance.place(x=20 , y=20)
     Input_Void_Tolerance = Spinbox_With_Validation(W_Import_Configuration , 25 , 0 , 1 , 3 , Void_Tolerance_Number , x=400 , y=20)
-    Void_Tolerance_Number.set(2)
+    Void_Tolerance_Number.set(JSON_Settings_Data["void_tolerance"])
 
     Label_Input_Number_Rows_To_Display = Label(W_Import_Configuration , text="Filas en la previsualizacion (0 - 2000)" , font=("Times New Roman" , 13) , bg="#d1e7d2")
     Label_Input_Number_Rows_To_Display.place(x=20 , y=60)
-    Input_Number_Rows_To_Display = Spinbox_With_Validation(W_Import_Configuration , 2000 , 0 , 50 , 5 , Number_Rows_To_Display , x=400 , y=60)
-    Number_Rows_To_Display.set(100)
+    Input_Number_Rows_To_Display = Spinbox_With_Validation(W_Import_Configuration , 1000 , 10 , 10 , 5 , Number_Rows_To_Display , x=400 , y=60)
+    Number_Rows_To_Display.set(JSON_Settings_Data["maximun_rows_to_display_in_preview"])
 
     Checkbox_Import_Data_Matrix = Checkbutton(W_Import_Configuration , text="Importar matriz de datos" , font=("Times New Roman" , 13) , bg="#d1e7d2" , variable=Import_Data_Matrix)
     Checkbox_Import_Data_Matrix.place(x=20 , y=100)
+    Import_Data_Matrix.set(JSON_Settings_Data["import_matrix_data"])
 
     W_Import_Configuration.resizable(False , False)
     W_Import_Excel.wait_window(W_Import_Configuration)
@@ -301,8 +318,8 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
 
     Progress_Bar = W_Progress_Bar(W_Import_Excel)
 
-    Btn_Configuracion = Button(W_Import_Excel , text="\u2699" , font=("Segoe UI Emoji", 12) , bg="#d1e7d2" , command= lambda: Create_Window_Import_Configuration(W_Import_Excel))
-    Btn_Configuracion.place(x=20 , y=305)
+    Btn_Configuracion = Button(W_Import_Excel , text="\u2699" , font=("Segoe UI Emoji", 9) , bg="#d1e7d2" , command= lambda: Create_Window_Import_Configuration(W_Import_Excel))
+    Btn_Configuracion.place(x=20 , y=312)
 
     Text_Input_Path_File = Label(W_Import_Excel , text="Ingrese la ruta del archivo: " , bg="#d1e7d2" , font=("Times New Roman" , 13))
     Text_Input_Path_File.place(x=20 , y=340)

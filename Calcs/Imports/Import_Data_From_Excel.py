@@ -396,7 +396,6 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
 
         Concat_Columns = []
         try:
-            n = 0
             for i in range(0 , len(self.Collection_Of_Cells["Rows"])):
                 """ 
                     ********************************************************************

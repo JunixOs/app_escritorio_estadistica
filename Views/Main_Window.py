@@ -3,12 +3,13 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Get_Version
+from Tools import Get_Resource_Path , Get_Version , Verify_Configurations_Folder
 from Calcs.Center_Window import Center
 import Views.Table_of_Frecuency.Window_Calc_Table_of_Frecuency as W_Calc_Table
 import Views.Venn_Diagram.Window_Create_Venn_Diagram as W_Venn_Diagram
 import Views.MAS.Window_MAS as W_MAS
 from tkinter import *
+from tkinter import messagebox
 
 def On_Closing():
     for widget in Main_Window.winfo_children():
@@ -42,4 +43,10 @@ BtnMAS.place(x=190 , y=380)
 
 Main_Window.protocol("WM_DELETE_WINDOW", On_Closing)
 Main_Window.resizable(False,False)
+
+try:
+    Verify_Configurations_Folder()
+except Exception:
+    messagebox.showerror("Error" , "Hubo un error al verificar los archivos de configuracion.")
+
 Main_Window.mainloop()
