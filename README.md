@@ -1,4 +1,4 @@
-# **StatPhi v1.0.1**
+# **StatPhi v2.0.0**
 [![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20Desarrollo-blue)]()
 [![Licencia](https://img.shields.io/github/license/JunixOs/app_escritorio_estadistica)]()
 [![Última actualización](https://img.shields.io/github/commit-activity/w/JunixOs/app_escritorio_estadistica/develop)]()
@@ -357,6 +357,11 @@ Aqui te encontraras con los siguientes elementos:
 
 > [!TIP]
 > Para evitar errores de importacion, por favor asegurese de que el formato de los datos sea el adecuado, que no existan celdas vacias dentro del rango de celdas a exportar y que todo tu dataset se encuentre en la primera fila del excel.
+
+  - **Configuracion de Importacion**: Permite modificar ciertas caracteristicas de la importacion y la previsualizacion de datos en un Excel. Aqui te encontraras con los siguientes campos:
+    - ***Toleracion de Celdas Vacias***: Permite modificar el numero de celdas vacias maxima que se ignoraran hasta encontrar de nuevo un dato valido al momento de ubicar el ultimo dato en cada columna.
+
+    - ***Filas en la Previsualizacion***: Modifica el numero de filas que se mostraran en la previsualizacion. Por defecto este valor es de 100. 
 
 - **Calcular Tabla**: Una vez que hayas introducido los datos manualmente o que los hayas importado de un excel, podras calcular la tabla de frecuencias junto con las demas medidas de resumen. 
 

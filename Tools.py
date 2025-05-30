@@ -17,7 +17,7 @@ def Get_Resource_Path(Resource_Name):
     return Resource_Path
 
 def Get_Version():
-    Version = "v1.0.1"
+    Version = "v2.0.0"
 
     return Version
 
