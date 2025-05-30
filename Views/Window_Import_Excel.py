@@ -70,8 +70,6 @@ class TreeviewFrame_Preview(ttk.Frame):
     def Load_Excel_File(self , File_Path , Sheet_Number):
         try:
             if(File_Path):
-                start_time = time.time()
-
                 prev_load_excel = openpyxl.load_workbook(File_Path , read_only=True , data_only=True , keep_links=False)
                 self.sheets = prev_load_excel.sheetnames
 
@@ -88,14 +86,8 @@ class TreeviewFrame_Preview(ttk.Frame):
                 self.Total_Rows_In_Excel = One_Sheet.max_row
                 self.Total_Columns_In_Excel = One_Sheet.max_column
 
-                end_time = time.time()
-                print(f"Tiempo de carga con load_workbook (preview): {end_time - start_time:.9f}")
-                start_time = end_time
-
                 self.Load_Sheet_Data(File_Path , Idx_Sheet)
 
-                end_time = time.time()
-                print(f"Tiempo de carga del preview: {end_time - start_time:.9f}")
         except Raise_Warning as e:
             self.Progress_Bar.Close_Progress_Bar()
             messagebox.showwarning("Advertencia" , f"{e}")
@@ -291,9 +283,9 @@ def Create_Window_Import_Configuration(W_Import_Excel=None):
     Input_Number_Rows_To_Display = Spinbox_With_Validation(W_Import_Configuration , 1000 , 10 , 10 , 5 , Number_Rows_To_Display , x=400 , y=60)
     Number_Rows_To_Display.set(JSON_Settings_Data["maximun_rows_to_display_in_preview"])
 
-    Checkbox_Import_Data_Matrix = Checkbutton(W_Import_Configuration , text="Importar matriz de datos" , font=("Times New Roman" , 13) , bg="#d1e7d2" , variable=Import_Data_Matrix)
-    Checkbox_Import_Data_Matrix.place(x=20 , y=100)
-    Import_Data_Matrix.set(JSON_Settings_Data["import_matrix_data"])
+    #Checkbox_Import_Data_Matrix = Checkbutton(W_Import_Configuration , text="Importar matriz de datos" , font=("Times New Roman" , 13) , bg="#d1e7d2" , variable=Import_Data_Matrix)
+    #Checkbox_Import_Data_Matrix.place(x=20 , y=100)
+    #Import_Data_Matrix.set(JSON_Settings_Data["import_matrix_data"])
 
     W_Import_Configuration.resizable(False , False)
     W_Import_Excel.wait_window(W_Import_Configuration)

@@ -365,8 +365,6 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
             messagebox.showerror("Error" , f"{e}")
 
     def Extract_Data_From_Excel_Dataframe(self , Excel_Dataframe , Total_Rows_In_Excel , Total_Columns_In_Excel):
-        start_time = time.time()
-
         Arr_Columns = []
         Arr_Rows = []
         for row in self.Collection_Of_Cells["Rows"]:
@@ -390,7 +388,6 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
             raise Raise_Warning("El rango de celdas importado es incorrecto")
 
         self.Imported_Column_Names = [col for i , col in enumerate(Excel_Dataframe.columns) if i in Only_Unique_Idx_Columns]
-        print(self.Imported_Column_Names)
         if("" in self.Imported_Column_Names):
             raise Raise_Warning("Se intento importar datos sin un encabezado adecuado. Por favor, coloque un nombre adecuado a los datos y coloquelos en la primera fila.")
 
@@ -440,7 +437,3 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Load_Data_In_Previe
 
         self.Start_Row = min(Arr_Rows)
         self.End_Row = max(Arr_Rows)
-
-        end_time = time.time()
-        print(f"Tiempo de carga del excel final: {end_time - start_time:.9f}")
-        start_time = end_time
