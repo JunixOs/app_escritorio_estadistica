@@ -1,4 +1,4 @@
-# **StatPhi v2.0.0**
+# **StatPhi v2.1.0**
 [![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20Desarrollo-blue)]()
 [![Licencia](https://img.shields.io/github/license/JunixOs/app_escritorio_estadistica)]()
 [![Última actualización](https://img.shields.io/github/commit-activity/w/JunixOs/app_escritorio_estadistica/develop)]()
