@@ -1,12 +1,17 @@
 import numpy as np
+from collections import Counter
 
 def Calc_fi_And_xi(Data):
-    Arr_xi = list(set(Data))
-    Arr_xi.sort()
+    Counts = Counter(Data)
+    Arr_xi = sorted(Counts.keys())
 
-    Arr_fi = []
-    for xi in Arr_xi:
-        Arr_fi.append(Data.count(xi))
+    Arr_fi = [Counts[xi] for xi in Arr_xi]
+    
+    # Evitar usar metodo count() aqui debido a que la complejidad aumenta O(n * m)
+    # n = numero de elementos unicos
+    # m = numero de elementos totales
+    # Mantener el uso de Counter()
+
     return Arr_xi , Arr_fi
 
 def calc_Fi(Arr_fi):

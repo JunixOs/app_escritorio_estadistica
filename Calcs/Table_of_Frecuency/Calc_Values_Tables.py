@@ -10,6 +10,8 @@ import Calcs.Table_of_Frecuency.Frecuences.Calc_Frecuences_Cuantitative_Not_Grou
 import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Not_Grouped_Data as SM_For_Not_Grouped_Data
 import Calcs.Table_of_Frecuency.Summary_Measures.Calc_For_Grouped_Data as SM_For_Grouped_Data
 
+import time
+
 def Check_Contains_Only_Numbers(Data):
     return not any(caracter.isalpha() for caracter in Data)
 
@@ -135,6 +137,8 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         y algunas variables mas.
         ==============================================================================================
     """
+    #start_time = time.time()
+
     V_Min = Cuant_Grouped.Calc_Min(Data)
     V_Max = Cuant_Grouped.Calc_Max(Data)
     n = len(Data)
@@ -148,9 +152,9 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
         """
         C = Fix_Float_Number(R/m)
         C_N_Decimals = 1
-        C , C_N_Decimals = Cuant_Grouped.Rounding_Up(C , 1)
+        C , C_N_Decimals = Cuant_Grouped.Round_Amplitude(C , 1 , "Redondeo por maximo")
 
-        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals , "Metodo de Ulises")
         # Arr_Groups = Cuant_Grouped.Calc_Groups_For_Integer_Numbers(Arr_Intervals , m , C_N_Decimals)
     else:
         """ 
@@ -161,11 +165,16 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
             **********************************************************************************
         """
         Max_N_Decimals_In_Data = Cuant_Grouped.Calc_Max_Decimal_Number(Data)
+
+        #end_time = time.time()
+        #print(f"Tiempo de determinacion de mayor numero de decimales en los datos: {end_time - start_time:.9f}\n")
+        #start_time = end_time
+
         C_N_Decimals = Max_N_Decimals_In_Data
         C = Fix_Float_Number(R/m)
-        C , C_N_Decimals = Cuant_Grouped.Rounding_Up(C , C_N_Decimals)
+        C , C_N_Decimals = Cuant_Grouped.Round_Amplitude(C , C_N_Decimals , "Redondeo por maximo")
 
-        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals)
+        Arr_Intervals = Cuant_Grouped.Calc_Intervals(V_Min , C , V_Max , m , C_N_Decimals , "Metodo de Ulises")
 
     Arr_xi = Cuant_Grouped.Calc_xi(Arr_Intervals , m)
 
@@ -178,26 +187,47 @@ def Calculate_Results_Cuantitative_For_Grouped_Data(Data , There_Are_Floats , m)
     Arr_hi_percent = Cuant_Grouped.Calc_hi_percent(Arr_hi)
     Arr_Hi_percent = Cuant_Grouped.Calc_Hi_percent(Arr_Hi)
     
+    #end_time = time.time()
+    #print(f"Tiempo de calculo de frecuencias: {end_time - start_time:.9f}\n")
+    #start_time = end_time
+
+
     X_ = SM_For_Grouped_Data.Calc_Arithmetic_Average(len(Data) , Arr_xi , Arr_fi)
     Me = SM_For_Grouped_Data.Calc_Median_Me(len(Data) , Arr_fi , Arr_Fi , Arr_Intervals , C)
     Mo = SM_For_Grouped_Data.Calc_Mode_Mo(Arr_fi , Arr_Intervals , C)
     X_h = SM_For_Grouped_Data.Calc_Armonic_Average(len(Data) , Arr_xi , Arr_fi)
     X_g = SM_For_Grouped_Data.Calc_Geometric_Average(len(Data) , Arr_xi , Arr_fi)
 
+    #end_time = time.time()
+    #print(f"Tiempo de calculo de medidas de tendencia central: {end_time - start_time:.9f}\n")
+    #start_time = end_time
+
     Arr_Quartile = SM_For_Grouped_Data.Calc_Quantile(4 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
     Arr_Decile = SM_For_Grouped_Data.Calc_Quantile(10 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
     Arr_Percentile = SM_For_Grouped_Data.Calc_Quantile(100 , Data , Arr_Intervals , Arr_fi , Arr_Fi , C)
+
+    #end_time = time.time()
+    #print(f"Tiempo de calculo de medidas de posicion: {end_time - start_time:.9f}\n")
+    #start_time = end_time
 
     S_2 = SM_For_Grouped_Data.Calc_Variance(len(Data) , Arr_xi , Arr_fi , X_)
     S = SM_For_Grouped_Data.Calc_Standard_Deviation(S_2)
     CV_Percent = SM_For_Grouped_Data.Calc_Percentage_Coefficient_Variation(S , X_)
     Intercuartile_Range = SM_For_Grouped_Data.Calc_Interquartile_Range(Arr_Quartile)
 
+    #end_time = time.time()
+    #print(f"Tiempo de calculo de medidas de dispercion: {end_time - start_time:.9f}\n")
+    #start_time = end_time
+
     Coef_Pearson = SM_For_Grouped_Data.Calc_Pearson_Coefficient(X_ , Me , S)
     Coef_Fisher = SM_For_Grouped_Data.Calc_Fisher_Coefficient(Arr_xi , X_ , Arr_fi , n , S)
     Coef_Kurtosis = SM_For_Grouped_Data.Calc_Kurtosis_Coefficient(Arr_Percentile , Arr_xi , X_ , Arr_fi , n , S)
     Coef_Bowley = SM_For_Grouped_Data.Calc_Bowley_Coefficient(Arr_Quartile)
     Coef_Kelly = SM_For_Grouped_Data.Calc_Kelly_Coefficient(Arr_Decile)
+
+    #end_time = time.time()
+    #print(f"Tiempo de calculo de coeficientes de asimetria: {end_time - start_time:.9f}\n")
+    #start_time = end_time
 
     Summary_Measures = {
         "Measures_Of_Central_Tendency_And_Dispersion" : dict([
@@ -394,6 +424,8 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
     if(not In):
         raise ValueError("No se ingresaron datos")
     else:
+        #start_time = time.time()
+
         if(not isinstance(In , list)):
             In = In.replace("\n" , " ").replace(" nan "," ").replace("nan "," ").replace(" nan"," ").replace(" NAN "," ").replace(" NAN"," ").replace("NAN "," ")
             Data = Convert_Input_Str_To_List(In)
@@ -405,7 +437,10 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                 if(isinstance(value , str)):
                     Is_Cuantitative = False
                     break
-        
+        #end_time = time.time()
+        #print(f"Tiempo de determinacion de Tipo de Variable: {end_time - start_time:.9f}\n")
+        #start_time = end_time
+
         if(len(Data) < 2):
             raise Exception("Se ingresaron muy pocos datos.")
 
@@ -419,10 +454,18 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                         if(int(a) != a):
                             Is_Float = True
                             break
-                
+    
+                #end_time = time.time()
+                #print(f"Tiempo de determinacion de Naturaleza de Variable Cuantitativa: {end_time - start_time:.9f}\n")
+                #start_time = end_time
+
                 Data.sort()
                 m = round(1 + (3.322*log10(len(Data)))) # Python redondea usando el "round half to even".
                 
+                #end_time = time.time()
+                #print(f"Tiempo de ordenamiento de datos: {end_time - start_time:.9f}\n")
+                #start_time = end_time
+
                 if(not Repeated_Calc):
                     """ 
                         *********************************************************************************
@@ -451,6 +494,10 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                     """
                     Arr_xi , Arr_fi = Cuant_Not_Grouped.Calc_fi_And_xi(Data)
 
+                    #end_time = time.time()
+                    #print(f"Tiempo de calculo de xi y fi para decidir agrupar datos o no: {end_time - start_time:.9f}\n")
+                    #start_time = end_time
+
                     if(len(Arr_xi) > (3/10)*(len(Data))):
                         Is_Continue[0].set(True)
                         Is_Continue[1].config(state="disabled")
@@ -460,8 +507,16 @@ def Main_Function(In , Is_Continue , Repeated_Calc):
                     else:
                         Is_Continue[0].set(Is_Float)
 
+                    #end_time = time.time()
+                    #print(f"Tiempo de determinacion para agrupar datos: {end_time - start_time:.9f}\n")
+                    #start_time = end_time
+
                     if(Is_Continue[0].get()):
                         Data = Fix_Float_Error_For_Lists(Data)
+
+                    #end_time = time.time()
+                    #print(f"Tiempo de reparacion de error de punto flotante para los datos: {end_time - start_time:.9f}\n")
+                    #start_time = end_time
 
                 match(Is_Continue[0].get()):
                     case True:

@@ -14,6 +14,8 @@ from tkinter import messagebox
 import Views.Window_Import_Excel as W_Import_Excel
 import Views.Table_of_Frecuency.Window_Show_Graph as W_Show_Graph
 
+import time
+
 # Variables Globales
 Labels_Window_Frecuences_Table = []
 Global_Results_From_Single_Column = {}
@@ -170,7 +172,6 @@ class Table_Of_Frecuences:
             self.Table_Frecuences.treeview.insert(
                 "" , END , values=(
                     "Total",
-                    "",
                     "",
                     "",
                     "",
@@ -677,6 +678,8 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     def Display_Results_For_Single_Column_Data(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel):
         global Global_Views
+
+        #start_time = time.time()
         if(not Global_Views):
             if(Imported_Data_From_Excel):
                 Results_From_Single_Column = {}
@@ -697,6 +700,9 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Global_Views["S_Column"] = Results_On_Window_For_Single_Variable
             
+            #end_time = time.time()
+            #print(f"======> Tiempo total de calculo de frecuencias: {end_time - start_time:.9f}")
+
             return Results_From_Single_Column , Global_Views["S_Column"].Type_Of_Variable
         else:
             Global_Views["S_Column"].Precision = Precision
@@ -706,6 +712,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
     def Display_Results_For_Multiple_Column_Data(Precision , Imported_Data_From_Excel):
         global Global_Views
+        #start_time = time.time()
         Results_From_Multiple_Columns = {}
         Type_Of_Variable_For_Multiple_Columns = {}
         if(not Global_Views):
@@ -730,6 +737,9 @@ def Create_Window_Frecuences_Table(Main_Window):
             Column_Selection["values"] = Columns_Name
 
             Display_Results_By_Column_Name()
+
+            #end_time = time.time()
+            #print(f"======> Tiempo de calculo total de frecuencias: {end_time - start_time:.9f}")
 
             return Results_From_Multiple_Columns , Type_Of_Variable_For_Multiple_Columns
         else:

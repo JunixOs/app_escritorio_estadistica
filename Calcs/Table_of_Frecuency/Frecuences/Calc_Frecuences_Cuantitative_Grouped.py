@@ -68,7 +68,56 @@ def Calc_Min(Data):
 def Calc_Range(Min , Max):
     return Max-Min
 
-def Calc_Intervals(Min , C , Max , m , Precision):
+def Round_Amplitude(C , N_Decimals , Round_Type):
+    match(Round_Type):
+        case "Redondeo por maximo":
+            Rounded_C , N_Decimals = Rounding_Up(C , N_Decimals)
+            return Rounded_C , N_Decimals
+        case "Redondeo normal":
+            N_Decimals += 1
+            return round(C , N_Decimals) , N_Decimals
+        case _:
+            raise Exception("Error al determinar el tipo de redondeo de la amplitud.")
+
+def Calc_Intervals(Min , C , Max , m , Precision , Method_Name):
+    match(Method_Name):
+        case "Metodo de Ulises":
+            return Calc_Intervals_Ulises_Method(Min , C , m , Precision)
+        case "Metodo de Wilmer":
+            return Calc_Intervals_Wilmer_Method(Min , C , Max , m , Precision)
+        case _:
+            raise Exception("Error al determinar el metodo que se usara para\ncalcular los intervalos.")
+
+def Calc_Intervals_Ulises_Method(Min , C , m , Precision):
+    """
+        ==============================================================================================
+        Sirve para calcular los intervalos considerando que el limite superior del ultimo intervalo
+        es abierto, se debe usar en conjunto con un redondeo de la Amplitud (C) del tipo 'Redondeo 
+        por maximo'.
+        ==============================================================================================
+    """
+    Arr_Intervals = [[0 for _ in range(2)] for _ in range(m)]
+    
+    Acumulate = Min
+    for a in range(0 , m):
+        for b in range(0 , 2):
+            if(b==0):
+                Arr_Intervals[a][b] = Acumulate
+            else:
+                Acumulate = Acumulate + C
+            
+            Arr_Intervals[a][b] = round(Acumulate , Precision)
+
+    return Arr_Intervals
+
+def Calc_Intervals_Wilmer_Method(Min , C , Max , m , Precision):
+    """ 
+        ==============================================================================================
+        Sirve para calcular los intervalos considerando que el limite superior del ultimo intervalo
+        es cerrado, se debe usar en conjunto con un redondeo de la Amplitud (C) del tipo 'Redondeo 
+        normal'.
+        ==============================================================================================
+    """
     Arr_Intervals = [[0 for _ in range(2)] for _ in range(m)]
     
     Acumulate = Min
@@ -79,15 +128,17 @@ def Calc_Intervals(Min , C , Max , m , Precision):
             else:
                 Acumulate = Acumulate + C
 
-            """ if((Acumulate != Max) and (a == m-1 and b == 1)):
+            if((Acumulate != Max) and (a == m-1 and b == 1)):
                 Arr_Intervals[a][b] = Max
             else:
-                Arr_Intervals[a][b] = round(Acumulate , Precision) """
+                Arr_Intervals[a][b] = round(Acumulate , Precision)
             
             Arr_Intervals[a][b] = round(Acumulate , Precision)
-
     return Arr_Intervals
 
+# ===============================================================================================================
+# Las dos funciones siguientes sirven para calcular los grupos, los cuales son utiles para calcular cada uno de los fi en Excel.
+# No se usan ni se muestran, pero podria añadirse la posibilidad de exportar estos grupos a un Excel
 def Calc_Groups_For_Integer_Numbers(Intervals , m , Precision):
     Arr_Groups = []
     for a in range (0 , m):
@@ -124,6 +175,8 @@ def Calc_Groups_For_Decimal_Numbers(Intervals , m , Precision):
                 except decimal.InvalidOperation:
                     Arr_Groups.append(f"{Group:.0f}")
     return Arr_Groups
+
+# ===============================================================================================================
 
 def Calc_xi(Intervals , m):
     Arr_xi = []
