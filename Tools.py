@@ -50,6 +50,13 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
 
 
 # ==================================================================== JSON Settings Tools ====================================================================
+def Get_Number_Of_Util_Threads_In_Device(Percentaje_Of_Use = 0.5):
+    Max_Trheads = os.cpu_count()
+    if(Percentaje_Of_Use > 1):
+        Percentaje_Of_Use /= 100
+    Max_Trheads = round(Max_Trheads * Percentaje_Of_Use)
+    return Max_Trheads
+
 def Get_Default_Settings_Param_In_JSON():
     Import_Excel_Settings = {
         "void_tolerance": 2,
@@ -159,3 +166,4 @@ def Read_Data_From_JSON(JSON_Settings_Name):
 if(__name__ == "__main__"):
     print(Get_Project_Root())
     print(Get_Version())
+    print(Get_Number_Of_Util_Threads_In_Device())
