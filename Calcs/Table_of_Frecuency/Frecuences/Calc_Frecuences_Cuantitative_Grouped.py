@@ -16,7 +16,7 @@ def Rounding_Up(Number , N_Decimals):
             Output: 0.021
         ==============================================================================================
     """
-    #print(Number) # <-- Muestra el valor de la Amplitud antes de redondear.
+    print(Number) # <-- Muestra el valor de la Amplitud antes de redondear.
     if(Number - round(Number) != 0):
         Integer_Part = str(Number).split(".")[0]
         Decimal_Part = str(Number).split(".")[1]
@@ -45,7 +45,7 @@ def Rounding_Up(Number , N_Decimals):
 
         return round(Number , N_Decimals) , N_Decimals
     else:
-        return Number + 0.1
+        return Number + 0.1 , N_Decimals + 1
 
 def Calc_Max_Decimal_Number(Numbers):
     N_Decimals = []

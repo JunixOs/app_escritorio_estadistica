@@ -101,7 +101,10 @@ class TreeviewFrame_Preview(ttk.Frame):
         JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
 
         Data_Excel = CalamineWorkbook.from_path(File_Path).get_sheet_by_index(Idx_Sheet).to_python(skip_empty_area=False)
-        self.Excel_Dataframe = pd.DataFrame(data=Data_Excel[1:] , columns=Data_Excel[0])
+        if(Data_Excel):
+            self.Excel_Dataframe = pd.DataFrame(data=Data_Excel[1:] , columns=Data_Excel[0])
+        else:
+            self.Excel_Dataframe = pd.DataFrame(data=[""] , columns=["No hay datos"])
 
         First_One_Hundred_Data = self.Excel_Dataframe.head(JSON_Settings_Data["maximun_rows_to_display_in_preview"] - 1)
         List_Number_Data_In_Row = []
