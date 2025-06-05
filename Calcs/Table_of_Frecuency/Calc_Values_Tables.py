@@ -28,7 +28,7 @@ def Fix_Float_Error_For_Lists(Data):
         New_Data.append(Fixed_Number)
     return New_Data
 
-def Fix_Float_Number(data):
+def Fix_Float_Number(Number_To_Fix):
     """ 
         ==============================================================================================
         Esta funcion tiene el proposito de solucionar el error de los tipos de datos float en python,
@@ -50,8 +50,8 @@ def Fix_Float_Number(data):
     getcontext().prec = 35
     Fixed_Number = None
 
-    try:
-        decimal_list = list(str(data).split(".")[1])
+    if(len(str(Number_To_Fix).split(".")) > 1):
+        decimal_list = list(str(Number_To_Fix).split(".")[1])
         if(decimal_list.count("0") > 5 or decimal_list.count("9") > 5):
             zero_nine_counter = 0
             decimals_to_round = 0
@@ -65,12 +65,12 @@ def Fix_Float_Number(data):
                 if(zero_nine_counter >= 4):
                     break
             str_to_round = "0." + "0"*(decimals_to_round - 1) + "1"
-            data = Decimal(data)
-            Fixed_Number = float(data.quantize(Decimal(str_to_round)))
+            Number_To_Fix = Decimal(Number_To_Fix)
+            Fixed_Number = float(Number_To_Fix.quantize(Decimal(str_to_round)))
         else:
-            Fixed_Number = data
-    except Exception:
-        Fixed_Number = data
+            Fixed_Number = Number_To_Fix
+    else:
+        Fixed_Number = Number_To_Fix
     return Fixed_Number
 
 def Convert_Input_Str_To_List(a):

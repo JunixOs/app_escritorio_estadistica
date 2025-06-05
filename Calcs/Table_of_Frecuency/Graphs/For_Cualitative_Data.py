@@ -7,14 +7,13 @@ def pixels_to_inches(pixels, dpi=72):
     return pixels / dpi
 
 class Graphs_For_Cualitative_Variable:
-    def __init__(self , Copy_Results_From_Calcs , Axis_x_Title , Axis_y_Title):
+    def __init__(self , Copy_Results_From_Calcs , Axis_x_Title):
         self.Copy_Results_From_Calcs = Copy_Results_From_Calcs
 
         self.Bar_Title = ""
 
         self.Pie_Title = ""
         self.Axis_x_Title = Axis_x_Title
-        self.Axis_y_Title = Axis_y_Title
 
         if(not self.Axis_x_Title):
             self.Axis_x_Title = "Variables Observadas (ai)"
@@ -22,7 +21,7 @@ class Graphs_For_Cualitative_Variable:
         self.Fig_Height = pixels_to_inches(700)
         self.Fig_Width = pixels_to_inches(980)
 
-    def Draw_Simple_Bars(self , Variable_Of_Frecuency , Precision):
+    def Draw_Simple_Bars(self , Variable_Of_Frecuency , Precision , Axis_y_Title):
         figure_bars = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
 
         ax_Bars = figure_bars.add_subplot(111)
@@ -37,7 +36,7 @@ class Graphs_For_Cualitative_Variable:
         ax_Bars.set_title(self.Bar_Title)
 
         ax_Bars.set_xlabel(f"{self.Axis_x_Title}")
-        ax_Bars.set_ylabel(f"{self.Axis_y_Title}")
+        ax_Bars.set_ylabel(f"{Axis_y_Title}")
 
         ax_Bars.grid(axis="y", linestyle="--", alpha=0.5)
 
@@ -142,27 +141,3 @@ class Graphs_For_Cualitative_Variable:
 
         return figure_pie
     
-def Manage_Generation_Of_Graphs_For_Cualitative_Data(Results_From_Calcs , Class_Generator_Of_Graphs , Generated_Graphs , Checkbox_Graphs , **Extra_Params):
-    Name_Graph , Checkbox_Value = next(iter(Checkbox_Graphs.items()))
-
-    if(not Class_Generator_Of_Graphs):
-        Copy_Results_From_Calcs = copy.deepcopy(Results_From_Calcs["Frecuences_Cuant_Not_Grouped"])
-        Copy_Results_From_Calcs = pd.DataFrame(Copy_Results_From_Calcs)
-
-        Class_Graph = Graphs_For_Cualitative_Variable(Copy_Results_From_Calcs , Extra_Params["Axis_x_Title"] , Extra_Params["Axis_y_Title"])
-        Class_Generator_Of_Graphs.append(Class_Graph)
-
-    match(Name_Graph):
-        case "Simple_Bars_Graph":
-
-            if(not "Simple_Bars_Graph" in Generated_Graphs and Checkbox_Value.get()):
-                Figure_Simple_Bars_Graph = Class_Generator_Of_Graphs[0].Draw_Simple_Bars(Extra_Params["Variable_Of_Frecuency"] , 3)
-                Generated_Graphs["Figure_Simple_Bars_Graph"] = Figure_Simple_Bars_Graph
-                return Figure_Simple_Bars_Graph
-            
-        case "Pie_Graph":
-
-            if(not "Pie_Graph" in Generated_Graphs and Checkbox_Value.get()):
-                Figure_Pie_Graph = Class_Generator_Of_Graphs[0].Draw_Pie_Graph()
-                Generated_Graphs["Figure_Pie_Graph"] = Figure_Pie_Graph
-                return Figure_Pie_Graph

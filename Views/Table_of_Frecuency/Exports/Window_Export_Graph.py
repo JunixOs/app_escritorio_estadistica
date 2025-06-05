@@ -250,7 +250,6 @@ class Widget_Combobox_For_DPI_And_Format():
         self.Input_Format.place_forget()
 
 class Widgets_For_W_Export_Graphs(Widgets_Checkboxes_For_Export_Graphs , Widget_Combobox_For_DPI_And_Format):
-    """ Nombres de Clases con CamelCase y de metodos con snake_case """
     def __init__(self , Root_Window , There_Are_Boxplot):
         Widgets_Checkboxes_For_Export_Graphs.__init__(self , Root_Window , There_Are_Boxplot)
         Widget_Combobox_For_DPI_And_Format.__init__(self , Root_Window)

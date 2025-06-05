@@ -40,21 +40,22 @@ class W_Progress_Bar:
             self.Root_Window.grab_set()
             self.Root_Window.lift()
 
-def tarea_larga(Progress):
+def tarea_larga(Progress , root):
     # Simula una tarea larga
     time.sleep(5)  # Aquí va la operación que tarde mucho
     print("Tarea finalizada!")
 
-    Progress.Close_Progress_Bar()
+    root.after(0 , Progress.Close_Progress_Bar)
+
 def iniciar_tarea():
     try:
         Progress = W_Progress_Bar(root)
         Progress.Start_Progress_Bar()
 
         # Iniciar la tarea en un hilo separado
-        threading.Thread(target=tarea_larga , args=(Progress ,)).start()
+        threading.Thread(target=tarea_larga , args=(Progress , root)).start()
     except Exception as e:
-        Progress.Close_Progress_Bar()
+        root.after(0, Progress.Close_Progress_Bar)
         print(f"{e}")
 
 if __name__ == "__main__":

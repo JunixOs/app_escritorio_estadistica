@@ -7,14 +7,13 @@ def pixels_to_inches(pixels, dpi=72):
     return pixels / dpi
 
 class Graphs_For_No_Grouped_Data:
-    def __init__(self , Copy_Results_From_Calcs , Axis_x_Title , Axis_y_Title):
+    def __init__(self , Copy_Results_From_Calcs , Axis_x_Title):
         self.Copy_Results_From_Calcs = Copy_Results_From_Calcs
 
         self.Bar_Title = ""
 
         self.Pie_Title = ""
         self.Axis_x_Title = Axis_x_Title
-        self.Axis_y_Title = Axis_y_Title
 
         if(not self.Axis_x_Title):
             self.Axis_x_Title = "Variables Observadas (xi)"
@@ -22,11 +21,11 @@ class Graphs_For_No_Grouped_Data:
         self.Fig_Height = pixels_to_inches(700)
         self.Fig_Width = pixels_to_inches(980)
 
-    def Draw_Bars(self , Variable_Of_Frecuency , Precision , Draw_Stick_Graph=False):
-        figure_bars = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
+    def Draw_Bars(self , Variable_Of_Frecuency , Axis_y_Title , Precision , Draw_Stick_Graph=False):
+        Figure_Bars = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
 
-        ax_Bars = figure_bars.add_subplot(111)
-        figure_bars.subplots_adjust(bottom=0.15)
+        ax_Bars = Figure_Bars.add_subplot(111)
+        Figure_Bars.subplots_adjust(bottom=0.15)
         
         if(Draw_Stick_Graph):
             Widht_Bars = 0.1
@@ -41,7 +40,7 @@ class Graphs_For_No_Grouped_Data:
         ax_Bars.set_title(self.Bar_Title)
 
         ax_Bars.set_xlabel(f"{self.Axis_x_Title}")
-        ax_Bars.set_ylabel(f"{self.Axis_y_Title}")
+        ax_Bars.set_ylabel(f"{Axis_y_Title}")
 
         ax_Bars.grid(axis="y", linestyle="--", alpha=0.5)
 
@@ -56,45 +55,49 @@ class Graphs_For_No_Grouped_Data:
             
             Bar.set_zorder(2)
             # Agregar una sombra (simulando un desplazamiento)
-            ax_Bars.bar(Bar.get_x() + 0.24, height - (height * 0.01), width=Bar.get_width(), bottom=0, color='gray', alpha=0.5, zorder=1)
+            if(Draw_Stick_Graph):
+                ax_Bars.bar(Bar.get_x() + 0.24, height - (height * 0.001), width=Bar.get_width(), bottom=0, color='gray', alpha=0.5, zorder=1)
+            else:
+                ax_Bars.bar(Bar.get_x() + 0.24, height - (height * 0.01), width=Bar.get_width(), bottom=0, color='gray', alpha=0.5, zorder=1)
 
         for Spine in ["top", "right"]:
-            figure_bars.gca().spines[Spine].set_visible(False)
-        figure_bars.tight_layout()
+            Figure_Bars.gca().spines[Spine].set_visible(False)
+        Figure_Bars.tight_layout()
 
-        return figure_bars
+        return Figure_Bars
 
-    def Draw_Step_Chart(self , Variable_Of_Frecuency):
-        pass
-        
-def Manage_Generation_Of_Graphs_For_Not_Grouped_Data(Results_From_Calcs , Class_Generator_Of_Graphs , Generated_Graphs , Checkbox_Graphs , **Extra_Params):
-    Name_Graph , Checkbox_Value = next(iter(Checkbox_Graphs.items()))
+    def Draw_Step_Chart(self , Variable_Of_Frecuency , Axis_y_label):
+        Figure_Step_Chart = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
+        Axis = Figure_Step_Chart.add_subplot(111)
 
-    if(not Class_Generator_Of_Graphs):
-        Copy_Results_From_Calcs = copy.deepcopy(Results_From_Calcs["Frecuences_Cuant_Not_Grouped"])
-        Copy_Results_From_Calcs = pd.DataFrame(Copy_Results_From_Calcs)
+        Data_For_Graph = None
+        Label_Format = None
+        match(Variable_Of_Frecuency):
+            case "Fi":
+                Data_For_Graph = self.Copy_Results_From_Calcs["Fi"]
+                Label_Format = "{:.0f}"
+            case "Hi":
+                Data_For_Graph = self.Copy_Results_From_Calcs["Hi"]
+                Label_Format = "{:.3f}"
+            case "Hi_percent":
+                Data_For_Graph = self.Copy_Results_From_Calcs["Hi_percent"]
+                Label_Format = "{:.3f}%"
 
-        Class_Graph = Graphs_For_No_Grouped_Data(Copy_Results_From_Calcs , Extra_Params["Axis_x_Title"] , Extra_Params["Axis_y_Title"])
-        Class_Generator_Of_Graphs.append(Class_Graph)
+        Axis.step(self.Copy_Results_From_Calcs["xi"] , Data_For_Graph , where="mid" , color="royalblue" , linewidth=2)
+        Axis.plot(self.Copy_Results_From_Calcs["xi"] , Data_For_Graph , "o" , color="royalblue")
 
-    match(Name_Graph):
-        case "Bars_Graph":
-            if(not "Bars_Graph" in Generated_Graphs and Checkbox_Value.get()):
+        for x , y in zip(self.Copy_Results_From_Calcs["xi"] , Data_For_Graph):
+            Axis.text(x , y + max(Data_For_Graph)*0.02 , Label_Format.format(y) , ha="center" , va="bottom" , fontsize=10)
 
-                Figure_Bars_Graph = Class_Generator_Of_Graphs[0].Draw_Bars(Extra_Params["Variable_Of_Frecuency"] , 3)
-                Generated_Graphs["Figure_Bars_Graph"][f"Figure_Bars_Graph_{Extra_Params['Variable_Of_Frecuency']}"] = Figure_Bars_Graph
-                return Figure_Bars_Graph
-            
-        case "Stick_Graph":
+        Axis.set_xlabel(self.Axis_x_Title)
+        Axis.set_ylabel(Axis_y_label)
+        Axis.set_xticks(self.Copy_Results_From_Calcs["xi"])
 
-            if(not "Stick_Graph" in Generated_Graphs and Checkbox_Value.get()):
-                Figure_Stick_Graph = Class_Generator_Of_Graphs[0].Draw_Bars(Extra_Params["Variable_Of_Frecuency"] , 3 , True)
-                Generated_Graphs["Figure_Stick_Graph"][f"Figure_Stick_Graph_{Extra_Params['Variable_Of_Frecuency']}"] = Figure_Stick_Graph
-                return Figure_Stick_Graph
-            
-        case "Step_Chart":
+        Axis.grid(axis='y', linestyle='--', alpha=0.5)
 
-            if(not "Step_Chart" in Generated_Graphs and Checkbox_Value.get()):
-                Figure_Step_Chart = Class_Generator_Of_Graphs[0].Draw_Step_Chart()
-                Generated_Graphs["Figure_Step_Chart"][f"Figure_Step_Chart_{Extra_Params['Variable_Of_Frecuency']}"] = Figure_Step_Chart
-                return Figure_Step_Chart
+        for Spine in ["top" , "right"]:
+            Figure_Step_Chart.gca().spines[Spine].set_visible(False)
+
+        Figure_Step_Chart.tight_layout()
+
+        return Figure_Step_Chart

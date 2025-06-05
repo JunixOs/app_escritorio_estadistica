@@ -23,6 +23,8 @@ Global_Results_From_Multiple_Columns = {}
 Global_Type_Of_Variable_Single_Column = "" # Obtiene el tipo de variable, solo para analisis que involucren una columna de datos
 Global_Type_Of_Variable_Multiple_Column = {} # Obtiene el tipo de variable, solo para analisis que involucren multiples columnas de datos
 Global_Views = {} # Se encarga de almacenar todas las tablas que resultan de cada columna analizada
+
+Dictionary_For_Generated_Figures = {}
 #
 class TreeviewFrame(ttk.Frame):
     def __init__(self, *args, **kwargs):
@@ -799,7 +801,7 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Import_Data_From_File.config(state="disabled")
 
     def Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel):
-        global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Views
+        global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Views , Dictionary_For_Generated_Figures
 
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
@@ -820,7 +822,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
         Text_Column_Selection.place_forget()
         Column_Selection.place_forget()
-        Graphs.clear()
+        Dictionary_For_Generated_Figures.clear()
 
         for t in Global_Views.values():
             t.Destroy_Widgets_For_Results()
@@ -858,7 +860,6 @@ def Create_Window_Frecuences_Table(Main_Window):
     Precision.set(3)
     Columns_Name = []
     Imported_Data_From_Excel = {}
-    Graphs = {}
 
     Main_Title = Label(Window_Frecuences_Table , text="Calculo de Tablas de Frecuencia" , font=("Times New Roman" , 22), foreground="#ffffff", justify=CENTER , bg="#9DAEC6" , highlightthickness=1 ,highlightbackground="#ffffff")
     Main_Title.place(x=9 , y=10 , width=1380)
@@ -892,7 +893,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Btn_Export_As_File.place(x=960 , y=210)
     Btn_Export_As_File.config(state="disabled")
 
-    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Graphs))
+    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Dictionary_For_Generated_Figures))
     Btn_Show_Graph.place(x=1211 , y=210)
     Btn_Show_Graph.config(state="disabled")
 

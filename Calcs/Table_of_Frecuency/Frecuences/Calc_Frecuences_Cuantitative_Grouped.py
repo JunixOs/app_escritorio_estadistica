@@ -45,7 +45,7 @@ def Rounding_Up(Number , N_Decimals):
 
         return round(Number , N_Decimals) , N_Decimals
     else:
-        return Number + 0.1
+        return Number + 0.1 , N_Decimals
 
 def Calc_Max_Decimal_Number(Numbers):
     N_Decimals = []
