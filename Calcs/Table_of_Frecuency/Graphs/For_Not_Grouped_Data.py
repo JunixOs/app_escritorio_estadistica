@@ -28,14 +28,14 @@ class Graphs_For_No_Grouped_Data:
         Figure_Bars.subplots_adjust(bottom=0.15)
         
         if(Draw_Stick_Graph):
-            Widht_Bars = 0.1
+            Widht_Bars = 0.2
         else:
             Widht_Bars = 0.6
 
         Bars = ax_Bars.bar(self.Copy_Results_From_Calcs["xi"].astype(str) , self.Copy_Results_From_Calcs[f"{Variable_Of_Frecuency}"] , color="#69b3a2", edgecolor="black", width=Widht_Bars)
 
         ax_Bars.set_xticks(range(len(self.Copy_Results_From_Calcs["xi"])))
-        ax_Bars.set_xticklabels(self.Copy_Results_From_Calcs["xi"] , fontsize=8 , rotation=30 , rotation_mode="anchor" , ha="right")
+        ax_Bars.set_xticklabels(self.Copy_Results_From_Calcs["xi"] , fontsize=8 , rotation=35 , rotation_mode="anchor" , ha="right")
 
         ax_Bars.set_title(self.Bar_Title)
 

@@ -16,15 +16,17 @@ from Window_Progress_Bar import W_Progress_Bar
 
 import threading
 
-def Check_Threads_Alive(Threads_List , W_Show_Graph, Class_Progress_Bar):
+def Check_Threads_Alive(Threads_List , W_Show_Graph, Class_Progress_Bar , On_Finish=None):
     # Verifica si todos los hilos terminaron
     alive_states = [t.is_alive() for t in Threads_List]
-    print(f"Hilos vivos: {alive_states}")
+    #print(f"Hilos vivos: {alive_states}")
     if all(not t.is_alive() for t in Threads_List):
-        print("Todos los hilos terminaron")
+        #print("Todos los hilos terminaron")
         Class_Progress_Bar.Close_Progress_Bar()
+        if(On_Finish):
+            W_Show_Graph.after(0 , On_Finish)
     else:
-        W_Show_Graph.after(500, Check_Threads_Alive, Threads_List, W_Show_Graph, Class_Progress_Bar)
+        W_Show_Graph.after(500, Check_Threads_Alive, Threads_List, W_Show_Graph, Class_Progress_Bar , On_Finish)
 
 def Generate_Graph_With_One_Or_Any_Thread(Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , Info_For_Graphs , W_Show_Graph , Class_Progress_Bar):
     for category_graph , variable_frecuency_list in Info_For_Graphs.items():
@@ -42,16 +44,6 @@ def Change_Key_From_Intervals_List(Results_From_Calcs):
             self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a] = "[ " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][0]) +" , " + str(self.Results["Frecuences_Cuant_Grouped"]["Intervals"][a][1]) +" ]" """
     return Intervals_Formatted
 
-class Counter_For_Threads:
-    def __init__(self , Lock):
-        self.Lock = Lock
-        self.Value = 0
-    def Increment(self):
-        with self.Lock:
-            self.Value += 1
-            print(f"Nuevo valor: {self.Value}")
-    def __repr__(self):
-            return f"<Counter_For_Threads Value={self.Value}>"
 class Checkboxes_For_Grouped_Data:
     def __init__(self , W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures):
 
@@ -75,6 +67,7 @@ class Checkboxes_For_Grouped_Data:
         self.Checked_Acumulate_Frecuences_Polygon_Hi = BooleanVar(self.W_Show_Graph)
         self.Checked_Acumulate_Frecuences_Polygon_Hi_percent = BooleanVar(self.W_Show_Graph)
 
+        self.Checked_Boxplot = BooleanVar(self.W_Show_Graph)
 
         if(Dictionary_Of_Generated_Figures):
             self.Dictionary_Of_Generated_Figures = Dictionary_Of_Generated_Figures
@@ -103,22 +96,25 @@ class Checkboxes_For_Grouped_Data:
 
             self.Dictionary_Of_Generated_Widgets[f"Widget_{Category_Graph}"][f"Widget_{Category_Graph}_{Variable_Of_Frecuency}"] = Widget_Figure
 
-    def Generate_Graphs(self):
+    def Generate_Graphs(self , On_Finish=None):
         if(all(list(self.Dictionary_Of_Generated_Figures.values()))):
-            return 0
+            if(On_Finish):
+                On_Finish()
+            return
 
         Info_For_Graphs = {
             "Histogram": ["fi" , "hi" , "hi_percent"] , 
             "Frecuences_Polygon": ["fi" , "hi" , "hi_percent"] , 
             "Acumulate_Frecuences_Polygon": ["Fi" , "Hi" , "Hi_percent"],
+            "Boxplot": [""],
         }
         
         Number_Of_Threads = Get_Number_Of_Util_Threads_In_Device()
-        Total_Works = 3
+        Total_Works = 4
         Lock = threading.Lock()
-        
+
         Class_Progress_Bar = W_Progress_Bar(self.W_Show_Graph)
-        Class_Progress_Bar.Start_Progress_Bar()
+        Class_Progress_Bar.Start_Progress_Bar(f"Generando Graficos para: {self.Axis_x_Title}")
 
         if(Number_Of_Threads > Total_Works):
             Threads_List = []
@@ -127,11 +123,16 @@ class Checkboxes_For_Grouped_Data:
                 Threads_List.append(Thread)
                 Thread.start()
             
-            self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar)
+            self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar , On_Finish)
         elif(Number_Of_Threads > 1):
             threading.Thread(target=Generate_Graph_With_One_Or_Any_Thread , args=(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs , self.W_Show_Graph , Class_Progress_Bar)).start()
         elif(Number_Of_Threads == 1):
-            Generate_Graph_With_One_Or_Any_Thread(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs)
+            def Work():
+                Generate_Graph_With_One_Or_Any_Thread(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs)
+                Class_Progress_Bar.Close_Progress_Bar()
+            if(On_Finish):
+                self.W_Show_Graph.after(0 , On_Finish)
+            threading.Thread(target=Work).start()
                         
     def Block_Or_Activate_Checkboxes(self , Category_Graph):
         for category_name , main_checked_values , dict_with_subcheckboxes_values , dict_with_subcheckboxes_widgets in zip(self.Dictionary_Main_Checkboxes_Values.keys() , self.Dictionary_Main_Checkboxes_Values.values() , self.Dictionary_SubCheckboxes_Values.values() , self.Dictionary_SubCheckboxes_Widgets.values()):
@@ -156,7 +157,6 @@ class Checkboxes_For_Grouped_Data:
                     if(name_graph != f"{Category_Graph}_{Variable_Of_Frecuency}"):
                         subcheckbox_value.set(False)
 
-        #self.Generate_Graphs()
         self.Generate_Widgets(Category_Graph , Variable_Of_Frecuency)
         self.Display_Widgets_Graphs(Category_Graph , Variable_Of_Frecuency)
 
@@ -184,6 +184,8 @@ class Checkboxes_For_Grouped_Data:
         self.Checkbox_Acumulate_Frecuences_Polygon_Hi.config(state="disabled")
         self.Checkbox_Acumulate_Frecuences_Polygon_Hi_percent = Checkbutton(self.W_Show_Graph , text="Para Hi%" , font=("Times New Roman" , 13) , bg="#F8D9AB" , variable=self.Checked_Acumulate_Frecuences_Polygon_Hi_percent ,  command= lambda: self.Only_Check_Single_Option_Subcheckboxes("Acumulate_Frecuences_Polygon" , "Hi_percent"))
         self.Checkbox_Acumulate_Frecuences_Polygon_Hi_percent.config(state="disabled")
+
+        self.Checkbox_Boxplot = Checkbutton(self.W_Show_Graph , text="Grafico de Cajas" , font=("Times New Roman" , 13) , bg="#F8D9AB" , variable=self.Checked_Acumulate_Frecuences_Polygon ,  command= lambda: self.Block_Or_Activate_Checkboxes("Acumulate_Frecuences_Polygon"))
 
         self.Dictionary_Main_Checkboxes_Widgets = {
             "Histogram": self.Checkbox_Histogram,
@@ -313,9 +315,11 @@ class Checkboxes_For_Not_Grouped_Data:
             Widget_Figure.draw()
             self.Dictionary_Of_Generated_Widgets[f"Widget_{Category_Graph}"][f"Widget_{Category_Graph}_{Variable_Of_Frecuency}"] = Widget_Figure
 
-    def Generate_Graphs(self):
+    def Generate_Graphs(self , On_Finish=None):
         if(all(list(self.Dictionary_Of_Generated_Figures.values()))):
-            return 0
+            if(On_Finish):
+                On_Finish()
+            return
 
         Info_For_Graphs = {
             "Bars_Graph": ["fi" , "hi" , "hi_percent"],
@@ -327,7 +331,7 @@ class Checkboxes_For_Not_Grouped_Data:
         Lock = threading.Lock()
 
         Class_Progress_Bar = W_Progress_Bar(self.W_Show_Graph)
-        Class_Progress_Bar.Start_Progress_Bar()
+        Class_Progress_Bar.Start_Progress_Bar(f"Generando Graficos para: {self.Axis_x_Title}")
 
         if(Number_Of_Threads > Total_Works):
             Threads_List = []
@@ -336,11 +340,16 @@ class Checkboxes_For_Not_Grouped_Data:
                 Threads_List.append(Thread)
                 Thread.start()
             
-            self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar)
+            self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar , On_Finish)
         elif(Number_Of_Threads > 1):
             threading.Thread(target=Generate_Graph_With_One_Or_Any_Thread , args=(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs , self.W_Show_Graph , Class_Progress_Bar))
         elif(Number_Of_Threads == 1):
-            Generate_Graph_With_One_Or_Any_Thread(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs)
+            def Work():
+                Generate_Graph_With_One_Or_Any_Thread(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs)
+                Class_Progress_Bar.Close_Progress_Bar()
+            if(On_Finish):
+                self.W_Show_Graph.after(0 , On_Finish)
+            threading.Thread(target=Work).start()
 
     def Only_Check_Single_Option_SubCheckboxes(self , Variable_Of_Frecuency , Category_Graph):
         for category_graph , dict_with_subcheckboxes in self.Dictionary_SubCheckboxes_Values.items():
@@ -349,7 +358,6 @@ class Checkboxes_For_Not_Grouped_Data:
                     if(name_graph != f"{Category_Graph}_{Variable_Of_Frecuency}"):
                         subcheckbox_value.set(False)
 
-        #self.Generate_Graphs()
         self.Generate_Widgets(Category_Graph , Variable_Of_Frecuency)
         self.Display_Widgets_Graphs(Category_Graph , Variable_Of_Frecuency)
 
@@ -509,9 +517,11 @@ class Checkboxes_For_Cualitative_Data:
 
             self.Dictionary_Of_Generated_Widgets[f"Widget_{Category_Graph}"][f"Widget_{Category_Graph}_{Variable_Of_Frecuency}"] = Widget_Figure
 
-    def Generate_Graphs(self):
+    def Generate_Graphs(self , On_Finish=None):
         if(all(list(self.Dictionary_Of_Generated_Figures.values()))):
-            return 0
+            if(On_Finish):
+                On_Finish()
+            return
 
         Info_For_Graphs = {
             "Simple_Bars": ["fi" , "hi" , "hi_percent"] , 
@@ -523,7 +533,7 @@ class Checkboxes_For_Cualitative_Data:
         Lock = threading.Lock()
         
         Class_Progress_Bar = W_Progress_Bar(self.W_Show_Graph)
-        Class_Progress_Bar.Start_Progress_Bar()
+        Class_Progress_Bar.Start_Progress_Bar(f"Generando Graficos para: {self.Axis_x_Title}")
 
         if(Number_Of_Threads > Total_Works):
             Threads_List = []
@@ -532,11 +542,16 @@ class Checkboxes_For_Cualitative_Data:
                 Threads_List.append(Thread)
                 Thread.start()
             
-            self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar)
+            self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar , On_Finish)
         elif(Number_Of_Threads > 1):
             threading.Thread(target=Generate_Graph_With_One_Or_Any_Thread , args=(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs , self.W_Show_Graph , Class_Progress_Bar)).start()
         elif(Number_Of_Threads == 1):
-            Generate_Graph_With_One_Or_Any_Thread(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs)
+            def Work():
+                Generate_Graph_With_One_Or_Any_Thread(self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , Info_For_Graphs)
+                Class_Progress_Bar.Close_Progress_Bar()
+            if(On_Finish):
+                self.W_Show_Graph.after(0 , On_Finish)
+            threading.Thread(target=Work).start()
                         
     def Block_Or_Activate_Checkboxes(self , Category_Graph , Is_Only_Main_Checkbox=False , Variable_Of_Frecuency=None):
         Category_With_One_Checkbox = ["Pie"]
@@ -570,7 +585,6 @@ class Checkboxes_For_Cualitative_Data:
                     if(name_graph != f"{Category_Graph}_{Variable_Of_Frecuency}"):
                         subcheckbox_value.set(False)
 
-            #self.Generate_Graphs()
         self.Generate_Widgets(Category_Graph , Variable_Of_Frecuency)
         self.Display_Widgets_Graphs(Category_Graph , Variable_Of_Frecuency)
 
@@ -674,6 +688,81 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
 
                 Checkboxes_Class_Collection[f"{Selection}"].Display_Widgets_Graphs(Category_Graph , Variable_Of_Frecuency)
 
+    def Process_Multiple_Column_Graphs(Index=0):
+        """
+            =========================================================================================
+            Procesamiento Asincrono para la generacion de graficos, como maximo se usan 3 hilos para
+            cada tanda de graficos (correspondientes a una variable en particular), todo comienza con
+            esta funcion.
+            1.  Ejecutar Process_Multiple_Column_Graphs(index) // index=0
+
+            2.  Se generan los graficos correspondientes a la variable del index. 
+                Se pasa el callback a la funcion Process_Multiple_Column_Graphs 
+                (el callback es la funcion Continue_Processing_Of_Columns_Graphs), 
+                este se ejecutara cuando los 3 primeros hilos terminen, 
+                asegurandose asi que se los hilos se ejecuten de 3 en 3.
+
+            3.  En la funcion Generate_Graphs(), la funcion Check_Threads_Alive() detectara que los
+                hilos terminaron su ejecucion y llamara al Callback
+                (la funcion Continue_Processing_Of_Columns_Graphs).
+
+            4.  En la funcion Continue_Processing_Of_Columns_Graphs se generan los checkboxes, se
+                guardan los graficos y se vuelve a ejecutar Process_Multiple_Column_Graphs pero
+                con index=1 (pasando asi a la siguiente variable), se repiten los pasos 1 a 4
+                hasta que index sea mayor al numero de variables a procesar.
+
+            5.  Al finalizar toda la ejecucion, se crea el Combobox con el nombre de todas las 
+                variables y se muestran los Checkboxes.
+            =========================================================================================
+        """
+        Variables_To_Process = list(Copy_Results.keys())
+        if(Index >= len(Variables_To_Process)):
+            Finish_Process()
+            return
+
+        variable_name = Variables_To_Process[Index]
+        results_from_calcs = Copy_Results[variable_name]
+        if("Frecuences_Cuant_Grouped" in results_from_calcs):
+            #Intervals_Formatted = None
+            #Intervals_Formatted = Change_Key_From_Intervals_List(results_from_calcs)
+            if(variable_name in Dictionary_Of_Generated_Figures):
+                Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
+            else:
+                Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
+
+        elif("Frecuences_Cuant_Not_Grouped" in results_from_calcs):
+            if(variable_name in Dictionary_Of_Generated_Figures):
+                Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
+            else:
+                Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
+
+        elif("Frecuences_Cuali" in results_from_calcs):
+            if(variable_name in Dictionary_Of_Generated_Figures):
+                Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
+            else:
+                Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , None)
+
+        Checkboxes_Class_Collection[f"{variable_name}"] = Class_For_Checkboxes
+        List_Of_Variable_Names.append(variable_name)
+
+        Class_For_Checkboxes.Generate_Graphs(On_Finish=lambda: Continue_Processing_Of_Columns_Graphs(Class_For_Checkboxes , variable_name , Index))
+
+    def Continue_Processing_Of_Columns_Graphs(class_checkbox , variable_name , index):
+        class_checkbox.Generate_Checkboxes()
+
+        Figures_Graphs = class_checkbox.Get_Dictionary_Of_Graphs()
+        Dictionary_Of_Generated_Figures[variable_name] = Figures_Graphs
+
+        Process_Multiple_Column_Graphs(index + 1)
+
+    def Finish_Process():
+        Combobox_For_Variable_Names["values"] = List_Of_Variable_Names
+        Combobox_For_Variable_Names.set(List_Of_Variable_Names[0])
+        Combobox_For_Variable_Names.place(x=20 , y=50)
+        Combobox_For_Variable_Names.bind('<<ComboboxSelected>>' , Change_To_Different_Variable_Graph)
+
+        Change_To_Different_Variable_Graph()
+
     W_Show_Graph = Toplevel(W_Calc_Frecuences_Table)
     W_Show_Graph.title("Ver graficos")
     W_Show_Graph.geometry("1300x700+105+105")
@@ -694,7 +783,7 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
 
     try:
         if(Results_From_Single_Column):
-            Intervals_Formatted = None
+            #Intervals_Formatted = None
             Copy_Results = copy.deepcopy(Results_From_Single_Column)
 
             if(len(Copy_Results) == 1):
@@ -704,7 +793,7 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
                 Variable_Name = None
 
             if("Frecuences_Cuant_Grouped" in Results_From_Calcs):
-                Intervals_Formatted = Change_Key_From_Intervals_List(Results_From_Calcs)
+                #Intervals_Formatted = Change_Key_From_Intervals_List(Results_From_Calcs)
                 Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , Results_From_Calcs , Variable_Name , Dictionary_Of_Generated_Figures)
 
             elif("Frecuences_Cuant_Not_Grouped" in Results_From_Calcs):
@@ -724,46 +813,7 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
 
         elif(Results_From_Multiple_Columns):
             Copy_Results = copy.deepcopy(Results_From_Multiple_Columns)
-
-            for variable_name , results_from_calcs in Copy_Results.items():
-                if("Frecuences_Cuant_Grouped" in results_from_calcs):
-                    Intervals_Formatted = None
-                    Intervals_Formatted = Change_Key_From_Intervals_List(results_from_calcs)
-                    if(variable_name in Dictionary_Of_Generated_Figures):
-                        Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
-                    else:
-                        Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
-
-                elif("Frecuences_Cuant_Not_Grouped" in results_from_calcs):
-                    if(variable_name in Dictionary_Of_Generated_Figures):
-                        Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
-                    else:
-                        Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
-
-                elif("Frecuences_Cuali" in results_from_calcs):
-                    if(variable_name in Dictionary_Of_Generated_Figures):
-                        Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
-                    else:
-                        Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , None)
-
-                Class_For_Checkboxes.Generate_Graphs()
-
-                Class_For_Checkboxes.Generate_Checkboxes()
-                Class_For_Checkboxes.Display_Checkboxes()
-
-                Figures_Graphs = Class_For_Checkboxes.Get_Dictionary_Of_Graphs()
-                Dictionary_Of_Generated_Figures[variable_name] = Figures_Graphs
-
-                Checkboxes_Class_Collection[f"{variable_name}"] = Class_For_Checkboxes
-
-                List_Of_Variable_Names.append(variable_name)
-
-            Combobox_For_Variable_Names["values"] = List_Of_Variable_Names
-            Combobox_For_Variable_Names.set(List_Of_Variable_Names[0])
-            Combobox_For_Variable_Names.place(x=20 , y=50)
-            Combobox_For_Variable_Names.bind('<<ComboboxSelected>>' , Change_To_Different_Variable_Graph)
-
-            Change_To_Different_Variable_Graph()
+            Process_Multiple_Column_Graphs()
         else:
             raise Exception("No se encontraron los datos necesarios para generar los graficos.")
 

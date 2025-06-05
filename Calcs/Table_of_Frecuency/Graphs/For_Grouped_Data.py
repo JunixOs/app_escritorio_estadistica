@@ -76,7 +76,7 @@ class Graphs_For_Grouped_Data:
 
         Axis.set_xticks(Inferior_Limits)
         Axis.set_xticklabels(
-            Inferior_Limits, rotation=30, rotation_mode="anchor", ha="right"
+            Inferior_Limits, rotation=35, rotation_mode="anchor", ha="right"
         )
 
         for Spine in ["top", "right"]:
@@ -167,7 +167,7 @@ class Graphs_For_Grouped_Data:
 
         Axis.set_xticks(Inferior_Limits)
         Axis.set_xticklabels(
-            Inferior_Limits, rotation=30, rotation_mode="anchor", ha="right"
+            Inferior_Limits, rotation=35, rotation_mode="anchor", ha="right"
         )
 
         for Spine in ["top", "right"]:

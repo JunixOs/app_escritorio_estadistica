@@ -57,7 +57,7 @@ def Create_Class_Generator_Of_Graphs(Class_Generator_Of_Graphs , Results_From_Ca
 
 
 def Manage_All_Graphs_Draw(Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , Category_Graph , Variable_Of_Frecuency=None , W_Show_Graph=None , Class_Progress_Bar=None):
-    print(f"Thread {threading.get_ident()} empezando trabajo {Category_Graph}")
+    #print(f"Thread {threading.get_ident()} empezando trabajo {Category_Graph}")
     Axis_y_Title = Define_Axis_y_Title(Variable_Of_Frecuency)
 
     Create_Class_Generator_Of_Graphs(Class_Generator_Of_Graphs , Results_From_Calcs , Axis_x_Title)
@@ -73,7 +73,7 @@ def Manage_All_Graphs_Draw(Results_From_Calcs , Axis_x_Title , Dictionary_Of_Gen
 
         else:
             raise Exception("No se pudo detectar el tipo de variable.")
-    print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
+    #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
     if(W_Show_Graph and Class_Progress_Bar):
         W_Show_Graph.after(0 , Class_Progress_Bar.Close_Progress_Bar)
         

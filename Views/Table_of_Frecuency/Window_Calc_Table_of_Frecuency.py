@@ -280,27 +280,27 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.destroy()
 
 
-class Checkbox_Is_Continue:
+class Checkbox_Group_Data_In_Intervals:
     def __init__(self , W_Calc_Table_Frec):
         self.W_Calc_Table_Frec = W_Calc_Table_Frec
-        self.Checkbox_Is_Continue = None
+        self.Checkbox_Group_Data_In_Intervals = None
         self.Checked_Is_Continue = BooleanVar(self.W_Calc_Table_Frec)
         self.Checked_Is_Continue.set(False)
     
     def Create_Checkbox(self):
-        self.Checkbox_Is_Continue = Checkbutton(self.W_Calc_Table_Frec , text="Variable Cuantitativa Continua" , variable=self.Checked_Is_Continue , font=("Times New Roman" , 13) , bg="#FEE1AB")
+        self.Checkbox_Group_Data_In_Intervals = Checkbutton(self.W_Calc_Table_Frec , text="Agrupar datos en intervalos" , variable=self.Checked_Is_Continue , font=("Times New Roman" , 13) , bg="#FEE1AB")
 
     def Display_Checkbox(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.place(x=40 , y=210)
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.place(x=40 , y=210)
     
     def Hidden_Checkbox(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.place_forget()
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.place_forget()
 
     def Destroy_Checkbox(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.destroy()
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.destroy()
 
 
 class Quantiles_Table:
@@ -521,7 +521,7 @@ class Labels_Summary_Measures:
         self.Frame_Summary_Measures.destroy()
 
 
-class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Quantiles_Table , Checkbox_Is_Continue):
+class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Quantiles_Table , Checkbox_Group_Data_In_Intervals):
     def __init__(self , W_Calc_Table_Frec , Data_To_Analized , Precision , Variable_Name , Multiple_Columns = False):
         self.W_Calc_Table_Frec = W_Calc_Table_Frec
 
@@ -539,11 +539,12 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
 
         Quantiles_Table.__init__(self , W_Calc_Table_Frec)
 
-        Checkbox_Is_Continue.__init__(self, W_Calc_Table_Frec)
-        Checkbox_Is_Continue.Create_Checkbox(self)
+        Checkbox_Group_Data_In_Intervals.__init__(self, W_Calc_Table_Frec)
+        Checkbox_Group_Data_In_Intervals.Create_Checkbox(self)
 
     def Calc_Results(self , Repeated_Calc):
-        Results = Main_Function(self.Data_To_Analized , [self.Checked_Is_Continue , self.Checkbox_Is_Continue] , Repeated_Calc)
+        global Dictionary_For_Generated_Figures
+        Results = Main_Function(self.Data_To_Analized , [self.Checked_Is_Continue , self.Checkbox_Group_Data_In_Intervals] , Repeated_Calc)
 
         if(Results["Frecuences_Cuant_Grouped"] != None):
             self.Type_Of_Variable = "Cuantitative_Grouped"
@@ -552,7 +553,7 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             self.Type_Of_Variable = "Cuantitative_Not_Grouped"
         elif(Results["Frecuences_Cuali"] != None):
             self.Type_Of_Variable = "Cualitative"
-            self.Checkbox_Is_Continue = None
+            self.Checkbox_Group_Data_In_Intervals = None
         
         Without_None = {}
         for key,value in Results.items():
@@ -568,6 +569,8 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             self.Put_Data_On_Widgets_For_Results()
             self.Display_Widgets_For_Results()
             self.Update_Global_Results_And_Type_Of_Variable()
+            if(self.Variable_Name in Dictionary_For_Generated_Figures):
+                Dictionary_For_Generated_Figures[self.Variable_Name].clear()
 
     def Update_Global_Results_And_Type_Of_Variable(self):
         global Global_Results_From_Multiple_Columns , Global_Results_From_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Type_Of_Variable_Single_Column
@@ -585,8 +588,8 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             Global_Type_Of_Variable_Single_Column = self.Type_Of_Variable
 
     def Activate_Checkbox_Funcionality(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.config(command= lambda: self.Calc_Results(True))
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.config(command= lambda: self.Calc_Results(True))
 
     def Create_Widgets_For_Results(self , Repeated_Calc = False):
         match(self.Type_Of_Variable):
@@ -634,16 +637,16 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
         if(self.Type_Of_Variable == "Cuantitative_Grouped" or self.Type_Of_Variable == "Cuantitative_Not_Grouped"):
             Labels_Summary_Measures.Display_Labels(self)
             Quantiles_Table.Display_Tables(self)
-            if(self.Checkbox_Is_Continue):
-                Checkbox_Is_Continue.Display_Checkbox(self)
+            if(self.Checkbox_Group_Data_In_Intervals):
+                Checkbox_Group_Data_In_Intervals.Display_Checkbox(self)
 
     def Hidden_Widgets_For_Results(self):
         Table_Of_Frecuences.Hidden_Table(self)
         if(self.Type_Of_Variable == "Cuantitative_Grouped" or self.Type_Of_Variable == "Cuantitative_Not_Grouped"):
             Labels_Summary_Measures.Hidden_Labels(self)
             Quantiles_Table.Hidden_Tables(self)
-            if(self.Checkbox_Is_Continue):
-                Checkbox_Is_Continue.Hidden_Checkbox(self)
+            if(self.Checkbox_Group_Data_In_Intervals):
+                Checkbox_Group_Data_In_Intervals.Hidden_Checkbox(self)
 
     def Destroy_Widgets_For_Results(self):
         Table_Of_Frecuences.Destroy_Table(self)
@@ -651,8 +654,8 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             Labels_Summary_Measures.Destroy_Labels(self)
             Labels_Summary_Measures.Destroy_Frame_Summary_Measures(self)
             Quantiles_Table.Destroy_Tables(self)
-            if(self.Checkbox_Is_Continue):
-                Checkbox_Is_Continue.Destroy_Checkbox(self)
+            if(self.Checkbox_Group_Data_In_Intervals):
+                Checkbox_Group_Data_In_Intervals.Destroy_Checkbox(self)
 
 def Create_Window_Frecuences_Table(Main_Window):
     Main_Window.state(newstate="withdraw")

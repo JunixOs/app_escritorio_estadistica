@@ -31,7 +31,7 @@ class Graphs_For_Cualitative_Variable:
         Bars = ax_Bars.bar(self.Copy_Results_From_Calcs["ai"].astype(str) , self.Copy_Results_From_Calcs[f"{Variable_Of_Frecuency}"] , color="#69b3a2", edgecolor="black", width=0.6)
 
         ax_Bars.set_xticks(range(len(self.Copy_Results_From_Calcs["ai"])))
-        ax_Bars.set_xticklabels(self.Copy_Results_From_Calcs["ai"] , fontsize=8 , rotation=30 , rotation_mode="anchor" , ha="right")
+        ax_Bars.set_xticklabels(self.Copy_Results_From_Calcs["ai"] , fontsize=8 , rotation=35 , rotation_mode="anchor" , ha="right")
 
         ax_Bars.set_title(self.Bar_Title)
 
