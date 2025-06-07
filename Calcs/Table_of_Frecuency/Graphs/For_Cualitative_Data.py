@@ -135,7 +135,7 @@ class Graphs_For_Cualitative_Variable:
         ax_pie.set_facecolor('lightgray')
         ax_pie.set_title(self.Pie_Title)
 
-        plt.tight_layout()
+        figure_pie.tight_layout()
 
         ax_pie.axis("equal")
 

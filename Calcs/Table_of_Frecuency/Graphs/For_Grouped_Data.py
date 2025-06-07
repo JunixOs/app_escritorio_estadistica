@@ -41,7 +41,7 @@ class Graphs_For_Grouped_Data:
 
         Figure_Histogram= plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
         Axis = Figure_Histogram.add_subplot(111)
-
+    
         Frecuences , Edges , _ = Axis.hist(
             self.All_Data_In_List,
             bins=Inferior_Limits, 
@@ -181,12 +181,28 @@ class Graphs_For_Grouped_Data:
     def Draw_Boxplot_Graph(self):
         sns.set_theme(style="whitegrid")
 
-        Figure_Boxplot , ax = plt.subplots(figsize=(980/96 , 700/96) , dpi=96)
-        ax.boxplot(data=self.All_Data_In_List , flierprops=dict(markerfacecolor='red', marker='o', markersize=8) , ax=ax)
+        Figure_Boxplot = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
+        Axis = Figure_Boxplot.add_subplot(111)
 
-        ax.set_title("Distribución de las cuentas totales por día", fontsize=12, fontweight='bold')
-        ax.set_xlabel(self.Axis_x_Title, fontsize=10)
-        ax.set_ylabel("Cuenta total ($)", fontsize=10)
+        Box = Axis.boxplot(self.All_Data_In_List , patch_artist=True , flierprops=dict(markerfacecolor='red', marker='o', markersize=8))
+
+        Colors = ['skyblue', 'lightgreen', 'lightcoral', 'khaki', 'plum']
+
+        for patch , color in zip(Box['boxes'], Colors):
+            patch.set_facecolor(color)
+
+        # Cambiar el color de la mediana, bigotes y caps (opcional)
+        for median in Box['medians']:
+            median.set_color('black')
+
+        for whisker in Box['whiskers']:
+            whisker.set_color('gray')
+
+        for cap in Box['caps']:
+            cap.set_color('gray')
+
+        Axis.set_xlabel(self.Axis_x_Title, fontsize=10)
+        Axis.set_ylabel("Valores de los datos", fontsize=10)
 
         Figure_Boxplot.tight_layout()
 

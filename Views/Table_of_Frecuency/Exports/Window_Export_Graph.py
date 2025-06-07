@@ -50,6 +50,28 @@ class Widget_Input_Name_For_Graphs:
         if(self.Input_Name_Boxplot_Graph):
             self.Input_Name_Boxplot_Graph.place_forget()
 
+class Checkboxes_For_Export_Graphs:
+    def __init__(self , W_Export_Graph):
+        self.W_Export_Graph = W_Export_Graph
+
+        self.Checked_Histogram = BooleanVar(self.W_Export_Graph)
+        self.Checked_Histogram_fi = BooleanVar(self.W_Export_Graph)
+        self.Checked_Histogram_hi = BooleanVar(self.W_Export_Graph)
+        self.Checked_Histogram_hi_percent = BooleanVar(self.W_Export_Graph)
+
+        self.Checked_Frecuences_Polygon = BooleanVar(self.W_Export_Graph)
+        self.Checked_Frecuences_Polygon_fi = BooleanVar(self.W_Export_Graph)
+        self.Checked_Frecuences_Polygon_hi = BooleanVar(self.W_Export_Graph)
+        self.Checked_Frecuences_Polygon_hi_percent = BooleanVar(self.W_Export_Graph)
+
+        self.Checked_Acumulate_Frecuences_Polygon = BooleanVar(self.W_Export_Graph)
+        self.Checked_Acumulate_Frecuences_Polygon_Fi = BooleanVar(self.W_Export_Graph)
+        self.Checked_Acumulate_Frecuences_Polygon_Hi = BooleanVar(self.W_Export_Graph)
+        self.Checked_Acumulate_Frecuences_Polygon_Hi_percent = BooleanVar(self.W_Export_Graph)
+
+    def Create_Checkboxes(self):
+        self.Checkbox_Histogram
+    
 
 class Widgets_Checkboxes_For_Export_Graphs(Widget_Input_Name_For_Graphs):
     def __init__(self , Root_Window , There_Are_Boxplot):

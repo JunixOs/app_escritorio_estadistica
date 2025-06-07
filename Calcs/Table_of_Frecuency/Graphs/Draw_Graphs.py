@@ -4,7 +4,7 @@ from Calcs.Table_of_Frecuency.Graphs.For_Not_Grouped_Data import Graphs_For_No_G
 import copy
 import pandas as pd
 
-import threading
+from tkinter import messagebox
 
 def Define_Axis_y_Title(Variable_Of_Frecuency):
     Axis_y_Title = []
@@ -58,24 +58,27 @@ def Create_Class_Generator_Of_Graphs(Class_Generator_Of_Graphs , Results_From_Ca
 
 def Manage_All_Graphs_Draw(Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , Category_Graph , Variable_Of_Frecuency=None , W_Show_Graph=None , Class_Progress_Bar=None):
     #print(f"Thread {threading.get_ident()} empezando trabajo {Category_Graph}")
-    Axis_y_Title = Define_Axis_y_Title(Variable_Of_Frecuency)
+    try:
+        Axis_y_Title = Define_Axis_y_Title(Variable_Of_Frecuency)
 
-    Create_Class_Generator_Of_Graphs(Class_Generator_Of_Graphs , Results_From_Calcs , Axis_x_Title)
-    for variable_frecuency , axis_y_title in zip(Variable_Of_Frecuency , Axis_y_Title):
-        if("Frecuences_Cuant_Grouped" in Results_From_Calcs):
-            Manage_Generation_Of_Graphs_For_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , variable_frecuency , axis_y_title , Category_Graph)
+        Create_Class_Generator_Of_Graphs(Class_Generator_Of_Graphs , Results_From_Calcs , Axis_x_Title)
+        for variable_frecuency , axis_y_title in zip(Variable_Of_Frecuency , Axis_y_Title):
+            if("Frecuences_Cuant_Grouped" in Results_From_Calcs):
+                Manage_Generation_Of_Graphs_For_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , variable_frecuency , axis_y_title , Category_Graph)
 
-        elif("Frecuences_Cuant_Not_Grouped" in Results_From_Calcs):
-            Manage_Generation_Of_Graphs_For_Not_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , variable_frecuency , axis_y_title , Category_Graph)
+            elif("Frecuences_Cuant_Not_Grouped" in Results_From_Calcs):
+                Manage_Generation_Of_Graphs_For_Not_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , variable_frecuency , axis_y_title , Category_Graph)
 
-        elif("Frecuences_Cuali" in Results_From_Calcs):
-            Manage_Generation_Of_Graphs_For_Cualitative_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , variable_frecuency , axis_y_title , Category_Graph)
+            elif("Frecuences_Cuali" in Results_From_Calcs):
+                Manage_Generation_Of_Graphs_For_Cualitative_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , variable_frecuency , axis_y_title , Category_Graph)
 
-        else:
-            raise Exception("No se pudo detectar el tipo de variable.")
-    #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
-    if(W_Show_Graph and Class_Progress_Bar):
-        W_Show_Graph.after(0 , Class_Progress_Bar.Close_Progress_Bar)
+            else:
+                raise Exception("No se pudo detectar el tipo de variable.")
+        #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
+        if(W_Show_Graph and Class_Progress_Bar):
+            W_Show_Graph.after(0 , Class_Progress_Bar.Close_Progress_Bar)
+    except Exception as e:
+        messagebox.showerror("Error" , f"{e}")
         
 def Manage_Generation_Of_Graphs_For_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , Variable_Of_Frecuency , Axis_y_Title , Category_Graph):
     Generator_Of_Graphs = Class_Generator_Of_Graphs[0]
@@ -95,6 +98,10 @@ def Manage_Generation_Of_Graphs_For_Grouped_Data(Class_Generator_Of_Graphs , Dic
             if(not F"Figure_Acumulate_Frecuences_Polygon_{Variable_Of_Frecuency}" in Dictionary_Of_Generated_Figures["Figure_Acumulate_Frecuences_Polygon"]):
                 Figure_Acumulate_Frecuences_Polygon = Generator_Of_Graphs.Draw_Frecuences_Polygon(Variable_Of_Frecuency , Axis_y_Title , True)
                 Dictionary_Of_Generated_Figures["Figure_Acumulate_Frecuences_Polygon"][f"Figure_Acumulate_Frecuences_Polygon_{Variable_Of_Frecuency}"] = Figure_Acumulate_Frecuences_Polygon
+        case "Boxplot":
+            if(not f"Figure_Boxplot_{Variable_Of_Frecuency}" in Dictionary_Of_Generated_Figures["Figure_Boxplot"]):
+                Figure_Boxplot = Generator_Of_Graphs.Draw_Boxplot_Graph()
+                Dictionary_Of_Generated_Figures["Figure_Boxplot"][f"Figure_Boxplot_{Variable_Of_Frecuency}"] = Figure_Boxplot
 
 def Manage_Generation_Of_Graphs_For_Not_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , Variable_Of_Frecuency , Axis_y_Title , Category_Graph):
     Generator_Of_Graphs = Class_Generator_Of_Graphs[0]
