@@ -38,6 +38,8 @@ class Graphs_For_Grouped_Data:
                 Is_Percent = True
 
         Inferior_Limits = [limit[0] for limit in self.Copy_Results_From_Calcs["Intervals"]]
+        N_Intervals = len(self.Copy_Results_From_Calcs["Intervals"])
+        Inferior_Limits.append(self.Copy_Results_From_Calcs["Intervals"][N_Intervals - 1][1])
 
         Figure_Histogram= plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
         Axis = Figure_Histogram.add_subplot(111)
@@ -91,6 +93,8 @@ class Graphs_For_Grouped_Data:
         plt.style.use('ggplot')
 
         Inferior_Limits = [limit[0] for limit in self.Copy_Results_From_Calcs["Intervals"]]
+        N_Intervals = len(self.Copy_Results_From_Calcs["Intervals"])
+        Inferior_Limits.append(self.Copy_Results_From_Calcs["Intervals"][N_Intervals - 1][1])
 
         Figure_Frecuences_Polygon = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
         Axis = Figure_Frecuences_Polygon.add_subplot(111)
