@@ -202,6 +202,9 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
     Section_2 = Label(W_Export_Graph , bg="#E7E4C1" , width=129 , height=32 , borderwidth=2 , relief="solid")
     Section_2.place(x=0 , y=214)
 
+    Label_Download_Graphs = Label(W_Export_Graph , bg="#E7E4C1" , font=("Times New Roman" , 13) , text="Seleccione los graficos a exportar" , justify=CENTER)
+    Label_Download_Graphs.place(x=200 , y=230 , width=500)
+
     Btn_Download_Graphs = Button(W_Export_Graph , text="Descargar graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5")
     Btn_Download_Graphs.place(x=300 , y=660)
 
@@ -226,15 +229,15 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
 
         Select_Column = ttk.Combobox(W_Export_Graph , values=Columns_Name , font=("Courier New" , 13) , width=25 , state="readonly")
         
-        for type_of_variable , axis_x_title in zip(Type_Of_Variable , Axis_x_Title):
+        for type_of_variable , axis_x_title in zip(Type_Of_Variable.values() , Axis_x_Title):
             Columns_Name.append(axis_x_title)
             match(type_of_variable):
                 case "Cuantitative_Grouped":
-                    Class_For_Create_Widgets = Manage_Widgets_Export_Graphs_For_Grouped_Data(W_Export_Graph , Axis_x_Title)
+                    Class_For_Create_Widgets = Manage_Widgets_Export_Graphs_For_Grouped_Data(W_Export_Graph , axis_x_title)
                 case "Cuantitative_Not_Grouped":
-                    Class_For_Create_Widgets = Manage_Widgets_Export_Graphs_For_Not_Grouped_Data(W_Export_Graph , Axis_x_Title)
+                    Class_For_Create_Widgets = Manage_Widgets_Export_Graphs_For_Not_Grouped_Data(W_Export_Graph , axis_x_title)
                 case "Cualitative":
-                    Class_For_Create_Widgets = Manage_Widgets_Export_Graphs_For_Cualitative_Data(W_Export_Graph , Axis_x_Title)
+                    Class_For_Create_Widgets = Manage_Widgets_Export_Graphs_For_Cualitative_Data(W_Export_Graph , axis_x_title)
 
             Class_For_Create_Widgets.Create_All_Widgets()
 
