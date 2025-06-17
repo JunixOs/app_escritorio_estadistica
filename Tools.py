@@ -1,13 +1,16 @@
 import os
+import sys
 import json
 from Exceptions.Exception_Warning import Raise_JSON_Settings_Error
 
 # ==================================================================== Miscelaneous Tools ====================================================================
 def Get_Project_Root():
-    Script_Dir = os.path.dirname(os.path.realpath(__file__))
-    Project_Root = os.path.abspath(os.path.join(Script_Dir))
-
-    return Project_Root
+    if(getattr(sys , 'frozen' , False)):
+        return sys._MEIPASS
+    else:
+        Script_Dir = os.path.dirname(os.path.realpath(__file__))
+        Project_Root = os.path.abspath(os.path.join(Script_Dir))
+        return Project_Root
 
 def Get_Resource_Path(Resource_Name):
     Project_Root = Get_Project_Root()
@@ -41,7 +44,7 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
         Children_Window.destroy()
         Level_Father_Window = Get_Window_Level(Father_Window)
         if(Display_Father_Window):
-            Father_Window.state(newstate="Normal")
+            Father_Window.state(newstate="normal")
         
         if(Level_Father_Window > 1):
             Father_Window.grab_set()
@@ -164,6 +167,12 @@ def Read_Data_From_JSON(JSON_Settings_Name):
     return JSON_Settings_Data
 
 if(__name__ == "__main__"):
-    print(Get_Project_Root())
-    print(Get_Version())
-    print(Get_Number_Of_Util_Threads_In_Device())
+    # strip() elimina caracteres de los lados (por defecto solo espacios pero puedes especificar)
+    # version = "!!!varsion!!!"
+    # print(versiion.strip("!"))  ---> version
+
+    # lstrip() solo elimina caracteres del lado izquierdo, por defecto espacios en blanco
+    # version = "v1.2.3"
+    # print(version.lstrip("v"))  ---> 1.2.3
+    
+    print(Get_Version().strip().lstrip("v"))

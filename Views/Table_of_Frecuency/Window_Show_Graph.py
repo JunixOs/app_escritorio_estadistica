@@ -9,7 +9,7 @@ from tkinter import ttk
 
 from Tools import Get_Resource_Path , Get_Number_Of_Util_Threads_In_Device , Delete_Actual_Window
 from Calcs.Table_of_Frecuency.Graphs.Draw_Graphs import Manage_All_Graphs_Draw
-from Views.Table_of_Frecuency.Exports.Window_Export_Graph import Create_Windows_Export_Graphs
+from Views.Table_of_Frecuency.Exports.Window_Export_Graph import Create_Window_Export_Graphs
 from Window_Create_Multiple_Graphs import Create_Window_Multiple_Graphs
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from Window_Progress_Bar import W_Progress_Bar
@@ -472,7 +472,7 @@ class Checkboxes_For_Cualitative_Data(Handler_Of_States_And_Actions):
             },
         }
 
-def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Column , Results_From_Multiple_Columns , Precision , Dictionary_Of_Generated_Figures):
+def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Column , Results_From_Multiple_Columns , Precision , Dictionary_Of_Generated_Figures , Type_Of_Variable):
     def Change_To_Different_Variable_Graph(Event = None):
         if(Checkboxes_Class_Collection):
             Selection = Combobox_For_Variable_Names.get()
@@ -532,25 +532,23 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
 
             variable_name = Variables_To_Process[Index]
             results_from_calcs = Copy_Results[variable_name]
-            if("Frecuences_Cuant_Grouped" in results_from_calcs):
-                #Intervals_Formatted = None
-                #Intervals_Formatted = Change_Key_From_Intervals_List(results_from_calcs)
-                if(variable_name in Dictionary_Of_Generated_Figures):
-                    Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
-                else:
-                    Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
-
-            elif("Frecuences_Cuant_Not_Grouped" in results_from_calcs):
-                if(variable_name in Dictionary_Of_Generated_Figures):
-                    Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
-                else:
-                    Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
-
-            elif("Frecuences_Cuali" in results_from_calcs):
-                if(variable_name in Dictionary_Of_Generated_Figures):
-                    Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
-                else:
-                    Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , None)
+            type_of_variable = Type_Of_Variable[variable_name]
+            match(type_of_variable):
+                case "Cuantitative_Grouped":
+                    if(variable_name in Dictionary_Of_Generated_Figures):
+                        Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
+                    else:
+                        Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
+                case "Cuantitative_Not_Grouped":
+                    if(variable_name in Dictionary_Of_Generated_Figures):
+                        Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
+                    else:
+                        Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , results_from_calcs , variable_name , None)
+                case "Cualitative":
+                    if(variable_name in Dictionary_Of_Generated_Figures):
+                        Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , Dictionary_Of_Generated_Figures[variable_name])
+                    else:
+                        Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , results_from_calcs , variable_name , None)
 
             Checkboxes_Class_Collection[f"{variable_name}"] = Class_For_Checkboxes
             List_Of_Variable_Names.append(variable_name)
@@ -584,6 +582,7 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
     W_Show_Graph.config(bg="#F8D9AB")
 
     Checkboxes_Class_Collection = {} # Solo se usa para gestionar graficos de multiples variables
+    Axis_x_Title = None
 
     W_Show_Graph.protocol("WM_DELETE_WINDOW", lambda: Delete_Actual_Window(W_Calc_Frecuences_Table , W_Show_Graph))
 
@@ -599,20 +598,17 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
             Copy_Results = copy.deepcopy(Results_From_Single_Column)
 
             if(len(Copy_Results) == 1):
-                Variable_Name , Results_From_Calcs = next(iter(Copy_Results.items()))
+                Axis_x_Title , Results_From_Calcs = next(iter(Copy_Results.items()))
             else:
                 Results_From_Calcs = Copy_Results
-                Variable_Name = None
 
-            if("Frecuences_Cuant_Grouped" in Results_From_Calcs):
-                #Intervals_Formatted = Change_Key_From_Intervals_List(Results_From_Calcs)
-                Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , Results_From_Calcs , Variable_Name , Dictionary_Of_Generated_Figures)
-
-            elif("Frecuences_Cuant_Not_Grouped" in Results_From_Calcs):
-                Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , Results_From_Calcs , Variable_Name , Dictionary_Of_Generated_Figures)
-
-            elif("Frecuences_Cuali" in Results_From_Calcs):
-                Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , Results_From_Calcs , Variable_Name , Dictionary_Of_Generated_Figures)
+            match(Type_Of_Variable):
+                case "Cuantitative_Grouped":
+                    Class_For_Checkboxes = Checkboxes_For_Grouped_Data(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures)
+                case "Cuantitative_Not_Grouped":
+                    Class_For_Checkboxes = Checkboxes_For_Not_Grouped_Data(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures)
+                case "Cualitative":
+                    Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures)
 
             Class_For_Checkboxes.Generate_Graphs()
 
@@ -625,6 +621,7 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
 
         elif(Results_From_Multiple_Columns):
             Copy_Results = copy.deepcopy(Results_From_Multiple_Columns)
+            Axis_x_Title = list(Copy_Results.keys())
             Process_Multiple_Column_Graphs()
         else:
             raise Exception("No se encontraron los datos necesarios para generar los graficos.")
@@ -632,7 +629,7 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
 
-    Btn_Export_Graph = Button(W_Show_Graph , text="Exportar graficos" , font=("Times New Roman" , 13) , width=15 , bg="#FDA8C0" , )
+    Btn_Export_Graph = Button(W_Show_Graph , text="Exportar graficos" , font=("Times New Roman" , 13) , width=15 , bg="#FDA8C0" , command= lambda: Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures , "Single_Column" if Results_From_Single_Column else "Multiple_Columns" , Axis_x_Title , Type_Of_Variable))
     Btn_Export_Graph.place(x=90 , y=520)
 
     """ Btn_Create_And_Export_Multiple_Graphs = Button(W_Show_Graph , text="Crear y Exportar\nMultiples Graficos" , font=("Times New Roman" , 13) , width=24  , bg="#FDA8C0" , justify="center" , command= lambda: Create_Window_Multiple_Graphs(W_Show_Graph))

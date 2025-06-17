@@ -1,7 +1,6 @@
 import sys
 import os
 import numpy
-# Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Tools import Get_Resource_Path , Get_Version
@@ -896,7 +895,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Btn_Export_As_File.place(x=960 , y=210)
     Btn_Export_As_File.config(state="disabled")
 
-    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Dictionary_For_Generated_Figures))
+    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Dictionary_For_Generated_Figures , Global_Type_Of_Variable_Single_Column if Global_Type_Of_Variable_Single_Column else Global_Type_Of_Variable_Multiple_Column))
     Btn_Show_Graph.place(x=1211 , y=210)
     Btn_Show_Graph.config(state="disabled")
 
