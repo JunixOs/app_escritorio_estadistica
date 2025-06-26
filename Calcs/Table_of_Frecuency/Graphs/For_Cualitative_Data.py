@@ -35,8 +35,8 @@ class Graphs_For_Cualitative_Variable:
 
         ax_Bars.set_title(self.Bar_Title)
 
-        ax_Bars.set_xlabel(f"{self.Axis_x_Title}")
-        ax_Bars.set_ylabel(f"{Axis_y_Title}")
+        ax_Bars.set_xlabel(f"{self.Axis_x_Title}" , labelpad=8)
+        ax_Bars.set_ylabel(f"{Axis_y_Title}" , labelpad=10)
 
         ax_Bars.grid(axis="y", linestyle="--", alpha=0.5)
 

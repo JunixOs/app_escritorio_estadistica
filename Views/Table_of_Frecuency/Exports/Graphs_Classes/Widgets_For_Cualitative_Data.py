@@ -93,7 +93,7 @@ class Checkboxes_Export_Graphs_For_Cualitative_Data(Handler_Actions , Entry_Widg
             "Simple_Bars": self.Checked_Simple_Bars,
             "Pie": self.Checked_Pie,
         }
-        self.Dictionary_Of_Subcheckboxes_Values = {
+        self.Dictionary_Subcheckboxes_Values = {
             "Simple_Bars": {
                 "Simple_Bars_fi": self.Checked_Simple_Bars_fi,
                 "Simple_Bars_hi": self.Checked_Simple_Bars_hi,

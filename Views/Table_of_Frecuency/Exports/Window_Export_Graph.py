@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
 
 from Tools import Get_Resource_Path , Delete_Actual_Window
-from Calcs.Table_of_Frecuency.Exports.Export_Graph import Export_Graph_As_Image
+from Calcs.Table_of_Frecuency.Exports.Export_Graph import Manage_Export_Of_Graphs
 from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Grouped_Data import Checkboxes_Export_Graphs_For_Grouped_Data
 from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Not_Grouped_Data import Checkboxes_Export_Graphs_For_Not_Grouped_Data
 from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Cualitative_Data import Checkboxes_Export_Graphs_For_Cualitative_Data
@@ -176,7 +176,13 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
     Path.set("")
     Columns_Name = []
     Collection_Classes_For_Create_Widgets = {}
-    
+    Collection_Subcheckboxes_With_Selected_Graphs = {}
+    Collection_Entry_Titles_For_Graphs = {}
+
+    Collection_Formats = {}
+    Collection_DPIs = {}
+    Collection_Axis_x_Titles_For_Graphs = {}
+
     Section_1 = Label(W_Export_Graph , bg="#E4DBD5" , width=128 , height=14 , borderwidth=2 , relief="solid")
     Section_1.place(x=0 , y=0)
 
@@ -205,9 +211,6 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
     Label_Download_Graphs = Label(W_Export_Graph , bg="#E7E4C1" , font=("Times New Roman" , 13) , text="Seleccione los graficos a exportar" , justify=CENTER)
     Label_Download_Graphs.place(x=200 , y=230 , width=500)
 
-    Btn_Download_Graphs = Button(W_Export_Graph , text="Descargar graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5")
-    Btn_Download_Graphs.place(x=300 , y=660)
-
     Class_For_Create_Widgets = None
     if(Type_Of_Calc == "Single_Column"):
         match(Type_Of_Variable):
@@ -220,6 +223,13 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
         
         Class_For_Create_Widgets.Create_All_Widgets()
         Class_For_Create_Widgets.Display_All_Widgets()
+
+        Collection_Subcheckboxes_With_Selected_Graphs = Class_For_Create_Widgets.Dictionary_Subcheckboxes_Values
+        Collection_Entry_Titles_For_Graphs = Class_For_Create_Widgets.Dictionary_Entry_Titles_Values
+
+        Collection_Formats = Class_For_Create_Widgets.Input_Format
+        Collection_DPIs = Class_For_Create_Widgets.Input_dpi
+        Collection_Axis_x_Titles_For_Graphs = Class_For_Create_Widgets.Title_For_Axis_x
 
         #Btn_Download_Graphs.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Widgets_W_Export_Graph , Widgets_W_Export_Graph.Dictionary_Checkboxes , Variable_Name))
 
@@ -243,6 +253,13 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
 
             Collection_Classes_For_Create_Widgets[f"{axis_x_title}"] = Class_For_Create_Widgets
 
+            Collection_Subcheckboxes_With_Selected_Graphs[f"{axis_x_title}"] = Class_For_Create_Widgets.Dictionary_Subcheckboxes_Values
+            Collection_Entry_Titles_For_Graphs[f"{axis_x_title}"] = Class_For_Create_Widgets.Dictionary_Entry_Titles_Values
+
+            Collection_Formats[f"{axis_x_title }"] = Class_For_Create_Widgets.Input_Format
+            Collection_DPIs[f"{axis_x_title}"] = Class_For_Create_Widgets.Input_dpi
+            Collection_Axis_x_Titles_For_Graphs[f"{axis_x_title}"] = Class_For_Create_Widgets.Title_For_Axis_x
+
         Select_Column["values"] = Columns_Name
         Select_Column.set(Columns_Name[0])
         Select_Column.bind('<<ComboboxSelected>>' , Display_Widgets_Acoording_Column_Name)
@@ -253,6 +270,9 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
         #Btn_Export_Graph.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Collection_Classes_For_Create_Widgets , Collection_Checkboxes))
     else:
         raise Exception("Hubo un error al identificar el tipo de calculo.")
+
+    Btn_Download_Graphs = Button(W_Export_Graph , text="Descargar graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5" , command= lambda: Manage_Export_Of_Graphs(W_Show_Graph , W_Export_Graph , File_Name.get() , Input_Path.get() , Collection_Formats , Collection_DPIs , Collection_Axis_x_Titles_For_Graphs , Dictionary_Of_Generated_Figures , Collection_Subcheckboxes_With_Selected_Graphs , Collection_Entry_Titles_For_Graphs , False if Type_Of_Calc == "Multiple_Columns" else True))
+    Btn_Download_Graphs.place(x=300 , y=660)
 
     W_Export_Graph.resizable(False , False)
     W_Export_Graph.mainloop()

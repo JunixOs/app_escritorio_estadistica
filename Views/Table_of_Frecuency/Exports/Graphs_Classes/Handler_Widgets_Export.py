@@ -31,10 +31,10 @@ class Handler_Actions:
         self.Checkbox_Export_All_Graphs.place(x=20 , y=260)
         x_pos_checkboxes = 20
 
-        for (category_name , main_checkbox_widget) , subcheckbox_dict in zip(self.Dictionary_Main_Checkboxes_Widgets.items() , self.Dictionary_Subcheckboxes_Widgets.values()):
+        for (category_graph_name , main_checkbox_widget) , subcheckbox_dict in zip(self.Dictionary_Main_Checkboxes_Widgets.items() , self.Dictionary_Subcheckboxes_Widgets.values()):
             y_pos_checkboxes = 310
             main_checkbox_widget.place(x=x_pos_checkboxes , y=y_pos_checkboxes)
-            if(category_name in self.Categories_With_Single_Main_Checkbox):
+            if(category_graph_name in self.Categories_With_Single_Main_Checkbox):
                 x_pos_checkboxes += 220
                 continue
 
@@ -101,13 +101,13 @@ class Handler_Actions:
                     entry_widgets[1].config(state="disabled")
 
     def Check_All_Checkboxes(self):
-        for (category_name , main_checkbox_value) , main_checkbox_widget , dict_with_subcheckboxes_values , dict_with_subcheckboxes_widgets , dict_with_entry_titles_values , dict_with_entry_widgets in zip(self.Dictionary_Main_Checkboxes_Values.items() , self.Dictionary_Main_Checkboxes_Widgets.values() , self.Dictionary_Subcheckboxes_Values.values() , self.Dictionary_Subcheckboxes_Widgets.values() , self.Dictionary_Entry_Titles_Values.values() , self.Dictionary_Entry_Titles_Widgets.values()):
+        for (category_graph_name , main_checkbox_value) , main_checkbox_widget , dict_with_subcheckboxes_values , dict_with_subcheckboxes_widgets , dict_with_entry_titles_values , dict_with_entry_widgets in zip(self.Dictionary_Main_Checkboxes_Values.items() , self.Dictionary_Main_Checkboxes_Widgets.values() , self.Dictionary_Subcheckboxes_Values.values() , self.Dictionary_Subcheckboxes_Widgets.values() , self.Dictionary_Entry_Titles_Values.values() , self.Dictionary_Entry_Titles_Widgets.values()):
             if(self.Checked_Export_All_Graphs.get()):
                 main_checkbox_value.set(True)
                 main_checkbox_widget.config(state="disabled")
 
                 for subcheckboxes_values , subcheckboxes_widgets , entry_title_value , entry_widgets in zip(dict_with_subcheckboxes_values.values() , dict_with_subcheckboxes_widgets.values() , dict_with_entry_titles_values.values() , dict_with_entry_widgets.values()): 
-                    if(not category_name in self.Categories_With_Single_Main_Checkbox):
+                    if(not category_graph_name in self.Categories_With_Single_Main_Checkbox):
                         subcheckboxes_values.set(True)
                         subcheckboxes_widgets.config(state="disabled")
                     entry_title_value.set("")
@@ -117,7 +117,7 @@ class Handler_Actions:
                 main_checkbox_widget.config(state="normal")
 
                 for subcheckboxes_values , subcheckboxes_widgets , entry_title_value , entry_widgets in zip(dict_with_subcheckboxes_values.values() , dict_with_subcheckboxes_widgets.values() , dict_with_entry_titles_values.values() , dict_with_entry_widgets.values()): 
-                    if(not category_name in self.Categories_With_Single_Main_Checkbox):
+                    if(not category_graph_name in self.Categories_With_Single_Main_Checkbox):
                         subcheckboxes_values.set(False)
                         subcheckboxes_widgets.config(state="normal")
                     entry_title_value.set("")
