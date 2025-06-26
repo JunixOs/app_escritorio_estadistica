@@ -9,6 +9,7 @@ import Views.Table_of_Frecuency.Window_Calc_Table_of_Frecuency as W_Calc_Table
 import Views.Venn_Diagram.Window_Create_Venn_Diagram as W_Venn_Diagram
 import Views.MAS.Window_MAS as W_MAS
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
 
 def On_Closing():
@@ -28,6 +29,9 @@ Center(Main_Window , 1240 , 700)
 Main_Window.title(f"StatPhi {Get_Version()}")
 Main_Window.config(bg="#9DAEC6")
 Main_Window.iconphoto(False , Icon)
+
+Global_ttk_Style = ttk.Style()
+Global_ttk_Style.theme_use("default")
 
 Right_Section = Label(Main_Window , width=531 , height=691 , bg="#F7EDCB" , image=Image_Right_Section , highlightthickness=2 , highlightbackground="#000000")
 Right_Section.place(x=700 , y=0)

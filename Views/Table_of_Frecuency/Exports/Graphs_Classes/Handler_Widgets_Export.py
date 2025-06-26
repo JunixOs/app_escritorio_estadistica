@@ -7,8 +7,6 @@ class Handler_Actions:
         self.Dictionary_Main_Checkboxes_Widgets = None
         self.Dictionary_Subcheckboxes_Widgets = None
 
-        self.Frame_Sets = None
-
         self.Dictionary_Entry_Titles_Widgets = None
         self.Dictionary_Entry_Titles_Values = None
 
@@ -24,8 +22,11 @@ class Handler_Actions:
             main_checkbox_widget.place_forget()
             for subcheckbox_widget in subcheckbox_dict.values():
                 subcheckbox_widget.place_forget()
+        
+        self.Text_Entry_For_Axis_x.place_forget()
+        self.Entry_For_Axis_x.place_forget()
 
-        self.Frame_Sets.place_forget()
+        self.Notebook_For_Entry_Titles_Section.place_forget()
 
     def Display_Widgets(self):
         self.Checkbox_Export_All_Graphs.place(x=20 , y=260)
@@ -41,10 +42,13 @@ class Handler_Actions:
             for subcheckbox_widget in subcheckbox_dict.values():
                 y_pos_checkboxes += 30
                 subcheckbox_widget.place(x=x_pos_checkboxes+30 , y=y_pos_checkboxes)
-                #x=250 , y=520 , width=630
+
             x_pos_checkboxes += 220
 
-        self.Frame_Sets.place(x=20 , y=440 , width=860 , height=210)
+        self.Notebook_For_Entry_Titles_Section.place(x=20 , y=430 , width=840 , height=180)
+
+        self.Text_Entry_For_Axis_x.place(x=30 , y=625)
+        self.Entry_For_Axis_x.place(x=120 , y=625)
 
     def Check_And_Block_Single_Checkbox(self , Category_Graph , Variable_Of_Frecuency):
         Is_All_Checked = []
@@ -129,31 +133,35 @@ class Container_For_Entry_Title_Widgets:
         self.Dictionary_Entry_Titles_Widgets = None
         self.Dictionary_Text_Sections = None
 
-        self.Frame_Sets = Frame(W_Export_Graph , bg="#F7F5DC" , highlightbackground="#000000" , highlightthickness=1)
-        self.Frame_Sets.grid_rowconfigure(0, weight=1)
-        self.Frame_Sets.grid_columnconfigure(0, weight=1)
-        
-        self.Canvas_Set = Canvas(self.Frame_Sets, bg="#F7F5DC" , width=840 , height=210)
-        self.Canvas_Set.grid(row=0, column=0, sticky="nsew")
-        self.Canvas_Set.bind("<Enter>", self._bind_mousewheel)
-        self.Canvas_Set.bind("<Leave>", self._unbind_mousewheel)
+        self.Style_For_Notebok = ttk.Style()
 
-        self.ScrollBar_Frame = ttk.Scrollbar(self.Frame_Sets, orient="vertical", command=self.Canvas_Set.yview)
-        self.ScrollBar_Frame.grid(row=0, column=1, sticky="ns")
+        # Cambiar el color del fondo del notebook
+        self.Style_For_Notebok.configure("Custom.TNotebook", background="#E7E4C1", borderwidth=0)
+        self.Style_For_Notebok.configure("Custom.TNotebook.Tab", background="#E7E4C1", padding=10 , borderwidth=0)
 
-        self.Canvas_Set.configure(yscrollcommand=self.ScrollBar_Frame.set)
+        # Color de la pestaña seleccionada
+        self.Style_For_Notebok.map("Custom.TNotebook.Tab",
+            background=[("selected", "#D6D3AE")],
+            foreground=[("selected", "black")],
+            expand=[("selected", [1, 1, 1, 0])]
+        )
 
-        self.Content_Frame_Sets = Frame(self.Canvas_Set, width=860 , bg="#F7F5DC")
+        self.Style_For_Notebok.layout("Custom.TNotebook.Tab", [
+            ('Notebook.tab', {'sticky': 'nswe', 'children': [
+                ('Notebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
+                    ('Notebook.label', {'side': 'top', 'sticky': ''})
+                ]})
+            ]})
+        ])
 
-        self.canvas_window_id = self.Canvas_Set.create_window((0, 0), window=self.Content_Frame_Sets, anchor="nw")
-        self.Canvas_Set.bind("<Configure>", lambda e: self.Canvas_Set.itemconfig(self.canvas_window_id, width=e.width))
+        self.Notebook_For_Entry_Titles_Section = ttk.Notebook(W_Export_Graph , style="Custom.TNotebook")
 
         self.Width_For_Entry_Titles = 65
 
         self.Title_For_Axis_x = StringVar(W_Export_Graph)
         self.Title_For_Axis_x.set(Axis_x_Title)
-        self.Text_Entry_For_Axis_x = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo eje x" , justify=LEFT)
-        self.Entry_For_Axis_x = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Axis_x , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Axis_x = Label(W_Export_Graph , font=("Times New Roman" , 13) , bg="#E7E4C1" , text="Titulo eje x" , justify=LEFT)
+        self.Entry_For_Axis_x = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Axis_x , border=1 , width=self.Width_For_Entry_Titles)
 
     def _bind_mousewheel(self, event):
         self.Canvas_Set.bind("<MouseWheel>", self._on_mousewheel)      # Windows/macOS
@@ -179,14 +187,7 @@ class Container_For_Entry_Title_Widgets:
     def Insert_Widgets_In_Container(self):
         idx = 0
 
-        self.Content_Frame_Sets.columnconfigure(0, weight=1)
-        self.Content_Frame_Sets.columnconfigure(1, weight=1)
-
-        for dict_with_entry_widgets , title_main_section in zip(self.Dictionary_Entry_Titles_Widgets.values() , self.Dictionary_Text_Sections.values()):
-            if(title_main_section):
-                title_main_section.grid(row=idx*2, column=0, columnspan=2 , padx=10, pady=10, sticky="ew")
-                idx += 1
-            
+        for dict_with_entry_widgets in self.Dictionary_Entry_Titles_Widgets.values():
             for i , entry_titles_widget in enumerate(dict_with_entry_widgets.values()):
                 if(i == len(dict_with_entry_widgets) - 1):
                     entry_titles_widget[0].grid(row=idx*2, column=0, padx=10, pady=(10 , 25), sticky="w")
@@ -195,9 +196,4 @@ class Container_For_Entry_Title_Widgets:
                     entry_titles_widget[0].grid(row=idx*2, column=0, padx=10, pady=10, sticky="w")
                     entry_titles_widget[1].grid(row=idx*2, column=1, padx=10, pady=10, sticky="w")
                 idx += 1
-        
-        self.Text_Entry_For_Axis_x.grid(row=idx*2, column=0, padx=10, pady=10, sticky="w")
-        self.Entry_For_Axis_x.grid(row=idx*2, column=1, padx=10, pady=10, sticky="w")
-
-        self.Content_Frame_Sets.update_idletasks()
-        self.Canvas_Set.config(scrollregion=self.Canvas_Set.bbox("all"))
+            idx = 0

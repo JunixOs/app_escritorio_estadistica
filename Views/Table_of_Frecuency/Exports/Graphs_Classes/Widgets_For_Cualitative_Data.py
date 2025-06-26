@@ -14,32 +14,31 @@ class Entry_Widget_For_Export_Graphs_For_Cualitative_Data(Container_For_Entry_Ti
 
         self.Title_For_Pie = StringVar(W_Export_Graph)
 
-        self.Title_For_Axis_x = StringVar(W_Export_Graph)
-
         Container_For_Entry_Title_Widgets.__init__(self , W_Export_Graph , Axis_x_Title)
 
+        self.Frame_Section_Simple_Bars = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+        self.Frame_Section_Pie = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Simple_Bars , text="Titulos para\nbarras simples")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Pie , text="Titulo para\ngrafico de pastel")
+
+
     def Create_Entry_Widgets(self):
-        self.Text_Section_Simple_Bars = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulos para barras simples" , justify=CENTER)
-        self.Text_Entry_For_Simple_Bars_fi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
-        self.Entry_For_Simple_Bars_fi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Simple_Bars_fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Simple_Bars_fi = Label(self.Frame_Section_Simple_Bars , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
+        self.Entry_For_Simple_Bars_fi = Entry(self.Frame_Section_Simple_Bars , font=("Courier New" , 13) , textvariable=self.Title_For_Simple_Bars_fi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Simple_Bars_fi.config(state="disabled")
 
-        self.Text_Entry_For_Simple_Bars_hi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
-        self.Entry_For_Simple_Bars_hi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Simple_Bars_hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Simple_Bars_hi = Label(self.Frame_Section_Simple_Bars , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
+        self.Entry_For_Simple_Bars_hi = Entry(self.Frame_Section_Simple_Bars , font=("Courier New" , 13) , textvariable=self.Title_For_Simple_Bars_hi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Simple_Bars_hi.config(state="disabled")
 
-        self.Text_Entry_For_Simple_Bars_hi_percent = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
-        self.Entry_For_Simple_Bars_hi_percent = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Simple_Bars_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Simple_Bars_hi_percent = Label(self.Frame_Section_Simple_Bars , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
+        self.Entry_For_Simple_Bars_hi_percent = Entry(self.Frame_Section_Simple_Bars , font=("Courier New" , 13) , textvariable=self.Title_For_Simple_Bars_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Simple_Bars_hi_percent.config(state="disabled")
 
-        self.Text_Entry_For_Pie = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo grafico de pastel" , justify=LEFT)
-        self.Entry_For_Pie = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Pie , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Pie = Label(self.Frame_Section_Pie , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo grafico de pastel" , justify=LEFT)
+        self.Entry_For_Pie = Entry(self.Frame_Section_Pie , font=("Courier New" , 13) , textvariable=self.Title_For_Pie , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Pie.config(state="disabled")
-
-        self.Dictionary_Text_Sections = {
-            "Simple_Bars": self.Text_Section_Simple_Bars,
-            "Pie": None,
-        }
 
         self.Dictionary_Entry_Titles_Widgets = {
             "Simple_Bars": {

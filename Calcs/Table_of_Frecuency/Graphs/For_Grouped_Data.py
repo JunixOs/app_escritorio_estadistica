@@ -73,8 +73,8 @@ class Graphs_For_Grouped_Data:
             )
         Axis.set_xticks(Inferior_Limits)
         # Opcional: Etiquetas y estilo
-        Axis.set_xlabel(self.Axis_x_Title , labelpad=8)
-        Axis.set_ylabel(Axis_y_Title , labelpad=10)
+        Axis.set_xlabel(self.Axis_x_Title , labelpad=8 , fontweight='bold')
+        Axis.set_ylabel(Axis_y_Title , labelpad=10 , fontweight='bold')
 
         Axis.set_xticks(Inferior_Limits)
         Axis.set_xticklabels(
@@ -166,8 +166,8 @@ class Graphs_For_Grouped_Data:
 
         Axis.set_xticks(Inferior_Limits)
         # Opcional: Etiquetas y estilo
-        Axis.set_xlabel(self.Axis_x_Title , labelpad=8)
-        Axis.set_ylabel(Axis_y_Title , labelpad=10)
+        Axis.set_xlabel(self.Axis_x_Title , labelpad=8 , fontweight='bold')
+        Axis.set_ylabel(Axis_y_Title , labelpad=10 , fontweight='bold')
 
         Axis.set_xticks(Inferior_Limits)
         Axis.set_xticklabels(
@@ -205,8 +205,8 @@ class Graphs_For_Grouped_Data:
         for cap in Box['caps']:
             cap.set_color('gray')
 
-        Axis.set_xlabel(self.Axis_x_Title, fontsize=10)
-        Axis.set_ylabel("Valores de los datos", fontsize=10)
+        Axis.set_xlabel(self.Axis_x_Title, fontsize=10 , labelpad=8 , fontweight='bold')
+        Axis.set_ylabel("Valores de los datos", fontsize=10 , labelpad=10 , fontweight='bold')
 
         Figure_Boxplot.tight_layout()
 

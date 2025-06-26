@@ -39,8 +39,8 @@ class Graphs_For_No_Grouped_Data:
 
         ax_Bars.set_title(self.Bar_Title)
 
-        ax_Bars.set_xlabel(f"{self.Axis_x_Title}" , labelpad=8)
-        ax_Bars.set_ylabel(f"{Axis_y_Title}" , labelpad=10)
+        ax_Bars.set_xlabel(f"{self.Axis_x_Title}" , labelpad=8 , fontweight='bold')
+        ax_Bars.set_ylabel(f"{Axis_y_Title}" , labelpad=10 , fontweight='bold')
 
         ax_Bars.grid(axis="y", linestyle="--", alpha=0.5)
 
@@ -89,8 +89,8 @@ class Graphs_For_No_Grouped_Data:
         for x , y in zip(self.Copy_Results_From_Calcs["xi"] , Data_For_Graph):
             Axis.text(x , y + max(Data_For_Graph)*0.02 , Label_Format.format(y) , ha="center" , va="bottom" , fontsize=10)
 
-        Axis.set_xlabel(self.Axis_x_Title , labelpad=8)
-        Axis.set_ylabel(Axis_y_label , labelpad=10)
+        Axis.set_xlabel(self.Axis_x_Title , labelpad=8 , fontweight='bold')
+        Axis.set_ylabel(Axis_y_label , labelpad=10 , fontweight='bold')
         Axis.set_xticks(self.Copy_Results_From_Calcs["xi"])
 
         Axis.grid(axis='y', linestyle='--', alpha=0.5)

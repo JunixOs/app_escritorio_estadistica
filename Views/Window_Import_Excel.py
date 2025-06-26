@@ -67,18 +67,22 @@ class TreeviewFrame_Preview(ttk.Frame):
     def Hidden(self):
         self.place_forget()
 
-    def Load_Excel_File(self , File_Path , Sheet_Number):
+    def Fix_Invalid_Sheet_Number(self , Sheet_Number_Intvar):
+        Sheet_Number_Intvar.set(Sheet_Number_Intvar.get() - 1)
+        raise Raise_Warning(f"El numero de hoja {Sheet_Number_Intvar.get()} no existe.")
+
+    def Load_Excel_File(self , W_Import_Excel , File_Path , Sheet_Number_Value , Sheet_Number_Intvar):
         try:
             if(File_Path):
                 prev_load_excel = openpyxl.load_workbook(File_Path , read_only=True , data_only=True , keep_links=False)
                 self.sheets = prev_load_excel.sheetnames
 
 
-                if(Sheet_Number.get() > len(self.sheets)):
-                    Sheet_Number.set(Sheet_Number.get() - 1)
-                    raise Raise_Warning(f"El numero de hoja {Sheet_Number.get()} no existe.")
+                if(Sheet_Number_Value > len(self.sheets)):
+                    W_Import_Excel.after(0 , lambda: self.Fix_Invalid_Sheet_Number(Sheet_Number_Intvar))
+                    return
                 
-                Idx_Sheet = Sheet_Number.get() - 1
+                Idx_Sheet = Sheet_Number_Value - 1
 
                 Sheet_Name = self.sheets[Idx_Sheet]
                 One_Sheet = prev_load_excel[Sheet_Name]
@@ -86,7 +90,7 @@ class TreeviewFrame_Preview(ttk.Frame):
                 self.Total_Rows_In_Excel = One_Sheet.max_row
                 self.Total_Columns_In_Excel = One_Sheet.max_column
 
-                self.Load_Sheet_Data(File_Path , Idx_Sheet)
+                self.Load_Sheet_Data(W_Import_Excel , File_Path , Idx_Sheet)
 
         except Raise_Warning as e:
             self.Progress_Bar.Close_Progress_Bar()
@@ -95,8 +99,8 @@ class TreeviewFrame_Preview(ttk.Frame):
             self.Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
-    def Load_Sheet_Data(self , File_Path , Idx_Sheet):
-        self.treeview.delete(*self.treeview.get_children())
+    def Load_Sheet_Data(self , W_Import_Excel, File_Path , Idx_Sheet):
+        W_Import_Excel.after(0 , self.treeview.delete(*self.treeview.get_children()))
 
         JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
 
@@ -174,7 +178,7 @@ class Spinbox_With_Validation:
             return False
 
     
-def Select_File(Path , Preview , Sheet_Number):
+def Select_File(W_Import_Excel , Path , Preview , Sheet_Number):
     Path_File = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
     if Path_File:
         if Path:
@@ -183,9 +187,9 @@ def Select_File(Path , Preview , Sheet_Number):
         else:
             Path.set(Path_File)
 
-        Load_Excel_To_Preview(Path , Sheet_Number , Preview)
+        Load_Excel_To_Preview(W_Import_Excel , Path , Sheet_Number , Preview)
 
-def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
+def Load_Excel_To_Preview(W_Import_Excel , Path, Sheet_Number , Preview):
     if(Path):
         try:
             Preview.Progress_Bar.Start_Progress_Bar("Cargando excel, esto podria tomar un momento...")
@@ -198,7 +202,9 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
                 Sheet_Number.set(1)
                 raise Raise_Warning("Numero de hoja no valido, solo valores enteros")
             Path_Value = Path.get()
-            threading.Thread(target= lambda: Preview.Load_Excel_File(Path_Value , Sheet_Number)).start()
+            Sheet_Number_Value = Sheet_Number.get()
+
+            threading.Thread(target= lambda: Preview.Load_Excel_File(W_Import_Excel , Path_Value , Sheet_Number_Value , Sheet_Number)).start()
         except Raise_Warning as e:
             Preview.Progress_Bar.Close_Progress_Bar()
             messagebox.showwarning("Advertencia" , f"{e}")
@@ -317,12 +323,12 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     Text_Input_Path_File.place(x=20 , y=340)
     Path_File = Entry(W_Import_Excel , font=("Courier New" , 13) , textvariable=Path , width=55 , state="readonly")
     Path_File.place(x=210 , y=340)
-    Btn_Select_File = Button(W_Import_Excel , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_File(Path , Table_Preview_Data , Sheet_Number) , width=10 , bg="#ffe3d4")
+    Btn_Select_File = Button(W_Import_Excel , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_File(W_Import_Excel , Path , Table_Preview_Data , Sheet_Number) , width=10 , bg="#ffe3d4")
     Btn_Select_File.place(x=50 , y=370)
 
     Text_Input_Sheet_Number = Label(W_Import_Excel , text="Numero de Hoja: " , bg="#d1e7d2" , font=("Times New Roman" , 13))
     Text_Input_Sheet_Number.place(x=20 , y=410)
-    Input_Sheet_Number = Spinbox(W_Import_Excel , font=("Courier New" , 13) , textvariable=Sheet_Number , from_=1 , to=100 , width=4 , state="readonly" , command= lambda: Load_Excel_To_Preview(Path , Sheet_Number , Table_Preview_Data))
+    Input_Sheet_Number = Spinbox(W_Import_Excel , font=("Courier New" , 13) , textvariable=Sheet_Number , from_=1 , to=100 , width=4 , state="readonly" , command= lambda: Load_Excel_To_Preview(W_Import_Excel , Path , Sheet_Number , Table_Preview_Data))
     Input_Sheet_Number.place(x=210 , y=410)
 
     Text_Input_Cells_Range = Label(W_Import_Excel , text="Ingrese el rango de celdas:" , bg="#d1e7d2" , font=("Times New Roman" , 13))

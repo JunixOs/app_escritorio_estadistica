@@ -20,60 +20,55 @@ class Entry_Widget_For_Export_Graphs_For_Not_Grouped_Data(Container_For_Entry_Ti
         self.Title_For_Step_Chart_Hi = StringVar(W_Export_Graph)
         self.Title_For_Step_Chart_Hi_percent = StringVar(W_Export_Graph)
 
-        self.Title_For_Axis_x = StringVar(W_Export_Graph)
-
         Container_For_Entry_Title_Widgets.__init__(self , W_Export_Graph , Axis_x_Title)
 
-    def Create_Entry_Widgets(self):
-        self.Text_Section_Bars_Graph = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulos para graficos de barras" , justify=CENTER)
-        
-        self.Text_Entry_For_Bars_Graph_fi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
-        self.Entry_For_Bars_Graph_fi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Bars_Graph_fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Frame_Section_Bars_Graph = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+        self.Frame_Section_Stick_Graph = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+        self.Frame_Section_Step_Chart = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Bars_Graph , text="Titulos para\ngraficos de barras")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Stick_Graph , text="Titulos para\ngraficos de bastones")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Step_Chart , text="Titulos para\ngraficos de escalones")
+
+    def Create_Entry_Widgets(self):        
+        self.Text_Entry_For_Bars_Graph_fi = Label(self.Frame_Section_Bars_Graph , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
+        self.Entry_For_Bars_Graph_fi = Entry(self.Frame_Section_Bars_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Bars_Graph_fi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Bars_Graph_fi.config(state="disabled")
 
-        self.Text_Entry_For_Bars_Graph_hi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
-        self.Entry_For_Bars_Graph_hi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Bars_Graph_hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Bars_Graph_hi = Label(self.Frame_Section_Bars_Graph , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
+        self.Entry_For_Bars_Graph_hi = Entry(self.Frame_Section_Bars_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Bars_Graph_hi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Bars_Graph_hi.config(state="disabled")
 
-        self.Text_Entry_For_Bars_Graph_hi_percent = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
-        self.Entry_For_Bars_Graph_hi_percent = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Bars_Graph_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Bars_Graph_hi_percent = Label(self.Frame_Section_Bars_Graph , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
+        self.Entry_For_Bars_Graph_hi_percent = Entry(self.Frame_Section_Bars_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Bars_Graph_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Bars_Graph_hi_percent.config(state="disabled")
 
 
-        self.Text_Section_Stick_Graph = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulos para graficos de bastones" , justify=CENTER)
-
-        self.Text_Entry_For_Stick_Graph_fi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
-        self.Entry_For_Stick_Graph_fi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Stick_Graph_fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Stick_Graph_fi = Label(self.Frame_Section_Stick_Graph , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
+        self.Entry_For_Stick_Graph_fi = Entry(self.Frame_Section_Stick_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Stick_Graph_fi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Stick_Graph_fi.config(state="disabled")
 
-        self.Text_Entry_For_Stick_Graph_hi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
-        self.Entry_For_Stick_Graph_hi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Stick_Graph_hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Stick_Graph_hi = Label(self.Frame_Section_Stick_Graph , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
+        self.Entry_For_Stick_Graph_hi = Entry(self.Frame_Section_Stick_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Stick_Graph_hi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Stick_Graph_hi.config(state="disabled")
         
-        self.Text_Entry_For_Stick_Graph_hi_percent = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
-        self.Entry_For_Stick_Graph_hi_percent = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Stick_Graph_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Stick_Graph_hi_percent = Label(self.Frame_Section_Stick_Graph , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
+        self.Entry_For_Stick_Graph_hi_percent = Entry(self.Frame_Section_Stick_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Stick_Graph_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Stick_Graph_hi_percent.config(state="disabled")
 
 
-        self.Text_Section_Step_Chart = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulos para graficos de escalones" , justify=CENTER)
-
-        self.Text_Entry_For_Step_Chart_Fi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Fi" , justify=LEFT)
-        self.Entry_For_Step_Chart_Fi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Step_Chart_Fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Step_Chart_Fi = Label(self.Frame_Section_Step_Chart , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Fi" , justify=LEFT)
+        self.Entry_For_Step_Chart_Fi = Entry(self.Frame_Section_Step_Chart , font=("Courier New" , 13) , textvariable=self.Title_For_Step_Chart_Fi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Step_Chart_Fi.config(state="disabled")
 
-        self.Text_Entry_For_Step_Chart_Hi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi" , justify=LEFT)
-        self.Entry_For_Step_Chart_Hi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Step_Chart_Hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Step_Chart_Hi = Label(self.Frame_Section_Step_Chart , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi" , justify=LEFT)
+        self.Entry_For_Step_Chart_Hi = Entry(self.Frame_Section_Step_Chart , font=("Courier New" , 13) , textvariable=self.Title_For_Step_Chart_Hi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Step_Chart_Hi.config(state="disabled")
         
-        self.Text_Entry_For_Step_Chart_Hi_percent = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi%" , justify=LEFT)
-        self.Entry_For_Step_Chart_Hi_percent = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Step_Chart_Hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Step_Chart_Hi_percent = Label(self.Frame_Section_Step_Chart , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi%" , justify=LEFT)
+        self.Entry_For_Step_Chart_Hi_percent = Entry(self.Frame_Section_Step_Chart , font=("Courier New" , 13) , textvariable=self.Title_For_Step_Chart_Hi_percent , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Step_Chart_Hi_percent.config(state="disabled")
 
-        self.Dictionary_Text_Sections = {
-            "Bars_Graph": self.Text_Section_Bars_Graph,
-            "Stick_Graph": self.Text_Section_Stick_Graph,
-            "Step_Chart": self.Text_Section_Step_Chart,
-        }
 
         self.Dictionary_Entry_Titles_Widgets = {
             "Bars_Graph": {

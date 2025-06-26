@@ -24,62 +24,59 @@ class Entry_Widget_For_Export_Graphs_For_Grouped_Data(Container_For_Entry_Title_
 
         Container_For_Entry_Title_Widgets.__init__(self , W_Export_Graph , Axis_x_Title)
 
-    def Create_Entry_Widgets(self):
-        self.Text_Section_Histogram = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulos para histogramas" , justify=CENTER)
+        self.Frame_Section_Histograme = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+        self.Frame_Section_Frecuences_Polygon = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+        self.Frame_Section_Acumulate_Frecuences_Polygon = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
+        self.Frame_Section_Boxplot = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
 
-        self.Text_Entry_For_Histogram_fi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
-        self.Entry_For_Histogram_fi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Histograme , text="Titulos para\nhistogramas")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Frecuences_Polygon , text="Titulos para\npoligonos de frecuencias")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Acumulate_Frecuences_Polygon , text="Titulos para\npoligonos de frecuencias acumuladas")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Boxplot , text="Titulo para\ngrafico de cajas")
+
+    def Create_Entry_Widgets(self):
+        self.Text_Entry_For_Histogram_fi = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
+        self.Entry_For_Histogram_fi = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_fi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Histogram_fi.config(state="disabled")
 
-        self.Text_Entry_For_Histogram_hi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
-        self.Entry_For_Histogram_hi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Histogram_hi = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
+        self.Entry_For_Histogram_hi = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Histogram_hi.config(state="disabled")
 
-        self.Text_Entry_For_Histogram_hi_percent = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
-        self.Entry_For_Histogram_hi_percent = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Histogram_hi_percent = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
+        self.Entry_For_Histogram_hi_percent = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Histogram_hi_percent.config(state="disabled")
 
 
-        self.Text_Section_Frecuences_Polygon = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulos para poligonos de frecuencias" , justify=CENTER)
-
-        self.Text_Entry_For_Frecuences_Polygon_fi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
-        self.Entry_For_Frecuences_Polygon_fi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Frecuences_Polygon_fi = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
+        self.Entry_For_Frecuences_Polygon_fi = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_fi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Frecuences_Polygon_fi.config(state="disabled")
 
-        self.Text_Entry_For_Frecuences_Polygon_hi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
-        self.Entry_For_Frecuences_Polygon_hi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Frecuences_Polygon_hi = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
+        self.Entry_For_Frecuences_Polygon_hi = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Frecuences_Polygon_hi.config(state="disabled")
         
-        self.Text_Entry_For_Frecuences_Polygon_hi_percent = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
-        self.Entry_For_Frecuences_Polygon_hi_percent = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Frecuences_Polygon_hi_percent = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
+        self.Entry_For_Frecuences_Polygon_hi_percent = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Frecuences_Polygon_hi_percent.config(state="disabled")
 
 
-        self.Text_Section_Acumulate_Frecuences_Polygon = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulos para poligonos de frecuencias acumuladas" , justify=CENTER)
-
-        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Fi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Fi" , justify=LEFT)
-        self.Entry_For_Acumulate_Frecuences_Polygon_Fi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Fi = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Fi" , justify=LEFT)
+        self.Entry_For_Acumulate_Frecuences_Polygon_Fi = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Fi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Acumulate_Frecuences_Polygon_Fi.config(state="disabled")
 
-        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi" , justify=LEFT)
-        self.Entry_For_Acumulate_Frecuences_Polygon_Hi = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi" , justify=LEFT)
+        self.Entry_For_Acumulate_Frecuences_Polygon_Hi = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Acumulate_Frecuences_Polygon_Hi.config(state="disabled")
         
-        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi%" , justify=LEFT)
-        self.Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi%" , justify=LEFT)
+        self.Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi_percent , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Acumulate_Frecuences_Polygon_Hi_percent.config(state="disabled")
 
 
-        self.Text_Entry_For_Boxplot = Label(self.Content_Frame_Sets , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo grafico de cajas" , justify=LEFT)
+        self.Text_Entry_For_Boxplot = Label(self.Frame_Section_Boxplot , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo grafico de cajas" , justify=LEFT)
         self.Entry_For_Boxplot = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Boxplot , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Boxplot.config(state="disabled")
-
-        self.Dictionary_Text_Sections = {
-            "Histogram": self.Text_Section_Histogram,
-            "Frecuences_Polygon": self.Text_Section_Frecuences_Polygon,
-            "Acumulate_Frecuences_Polygon": self.Text_Section_Acumulate_Frecuences_Polygon,
-            "Boxplot": None,
-        }
 
         self.Dictionary_Entry_Titles_Widgets = {
             "Histogram": {
