@@ -75,7 +75,9 @@ def Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Di
             else:
                 raise Exception("No se pudo detectar el tipo de variable.")
         #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
-
+    except RuntimeError:
+        W_Show_Graph.after(30 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
+        return
     except Exception as e:
         W_Show_Graph.after(0 , messagebox.showerror("Error" , f"{e}"))
         return

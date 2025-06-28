@@ -17,8 +17,12 @@ from Window_Progress_Bar import W_Progress_Bar
 import threading
 
 def Generate_Graph_For_Limited_Threads(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , Info_For_Graphs):
-    for category_graph , variable_frecuency_list in Info_For_Graphs.items():
-        Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , category_graph , variable_frecuency_list , None , None)
+    try:
+        for category_graph , variable_frecuency_list in Info_For_Graphs.items():
+            Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , category_graph , variable_frecuency_list , None , None)
+    except RuntimeError:
+        W_Show_Graph.after(30 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
+        return
 
 class Handler_Of_States_And_Actions:
     def __init__(self , W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Dictionary_Of_Generated_Widgets , Info_For_Generate_Graphs , Category_With_One_Checkbox=None):
