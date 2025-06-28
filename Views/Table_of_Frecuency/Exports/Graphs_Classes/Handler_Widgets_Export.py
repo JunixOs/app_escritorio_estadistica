@@ -17,11 +17,6 @@ class Handler_Actions:
 
     def Hidden_Widgets(self):
         self.Checkbox_Export_All_Graphs.place_forget()
-
-        for main_checkbox_widget , subcheckbox_dict in zip(self.Dictionary_Main_Checkboxes_Widgets.values() , self.Dictionary_Subcheckboxes_Widgets.values()):
-            main_checkbox_widget.place_forget()
-            for subcheckbox_widget in subcheckbox_dict.values():
-                subcheckbox_widget.place_forget()
         
         self.Text_Entry_For_Axis_x.place_forget()
         self.Entry_For_Axis_x.place_forget()
@@ -30,25 +25,11 @@ class Handler_Actions:
 
     def Display_Widgets(self):
         self.Checkbox_Export_All_Graphs.place(x=20 , y=260)
-        x_pos_checkboxes = 20
 
-        for (category_graph_name , main_checkbox_widget) , subcheckbox_dict in zip(self.Dictionary_Main_Checkboxes_Widgets.items() , self.Dictionary_Subcheckboxes_Widgets.values()):
-            y_pos_checkboxes = 310
-            main_checkbox_widget.place(x=x_pos_checkboxes , y=y_pos_checkboxes)
-            if(category_graph_name in self.Categories_With_Single_Main_Checkbox):
-                x_pos_checkboxes += 220
-                continue
-
-            for subcheckbox_widget in subcheckbox_dict.values():
-                y_pos_checkboxes += 30
-                subcheckbox_widget.place(x=x_pos_checkboxes+30 , y=y_pos_checkboxes)
-
-            x_pos_checkboxes += 220
-
-        self.Notebook_For_Entry_Titles_Section.place(x=20 , y=430 , width=840 , height=180)
+        self.Notebook_For_Entry_Titles_Section.place(x=20 , y=290 , width=840 , height=320)
 
         self.Text_Entry_For_Axis_x.place(x=30 , y=625)
-        self.Entry_For_Axis_x.place(x=120 , y=625)
+        self.Entry_For_Axis_x.place(x=175 , y=625)
 
     def Check_And_Block_Single_Checkbox(self , Category_Graph , Variable_Of_Frecuency):
         Is_All_Checked = []
@@ -156,12 +137,10 @@ class Container_For_Entry_Title_Widgets:
 
         self.Notebook_For_Entry_Titles_Section = ttk.Notebook(W_Export_Graph , style="Custom.TNotebook")
 
-        self.Width_For_Entry_Titles = 65
-
         self.Title_For_Axis_x = StringVar(W_Export_Graph)
         self.Title_For_Axis_x.set(Axis_x_Title)
         self.Text_Entry_For_Axis_x = Label(W_Export_Graph , font=("Times New Roman" , 13) , bg="#E7E4C1" , text="Titulo eje x" , justify=LEFT)
-        self.Entry_For_Axis_x = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Axis_x , border=1 , width=self.Width_For_Entry_Titles)
+        self.Entry_For_Axis_x = Entry(W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Title_For_Axis_x , border=1 , width=65)
 
     def _bind_mousewheel(self, event):
         self.Canvas_Set.bind("<MouseWheel>", self._on_mousewheel)      # Windows/macOS
@@ -184,16 +163,40 @@ class Container_For_Entry_Title_Widgets:
         elif event.num == 5:
             self.Canvas_Set.yview_scroll(1, "units")
 
-    def Insert_Widgets_In_Container(self):
-        idx = 0
+    def Insert_Widgets_In_Notebook_Container(self , Dictionary_Main_Checkboxes_Widgets , Dictionary_Subcheckboxes_Widgets , Categories_With_Single_Main_Checkbox , Collection_Of_Frames):
+        for widget_frame , dict_with_subcheckboxes_widgets in zip(self.Collection_Of_Frames , self.Dictionary_Subcheckboxes_Widgets.values()):
+            max_cols = len(dict_with_subcheckboxes_widgets) if len(dict_with_subcheckboxes_widgets) > 1 else 3
 
-        for dict_with_entry_widgets in self.Dictionary_Entry_Titles_Widgets.values():
-            for i , entry_titles_widget in enumerate(dict_with_entry_widgets.values()):
-                if(i == len(dict_with_entry_widgets) - 1):
-                    entry_titles_widget[0].grid(row=idx*2, column=0, padx=10, pady=(10 , 25), sticky="w")
-                    entry_titles_widget[1].grid(row=idx*2, column=1, padx=10, pady=(10 , 25), sticky="w")
-                else:
-                    entry_titles_widget[0].grid(row=idx*2, column=0, padx=10, pady=10, sticky="w")
-                    entry_titles_widget[1].grid(row=idx*2, column=1, padx=10, pady=10, sticky="w")
-                idx += 1
-            idx = 0
+            for col_idx in range(0 , max_cols):
+                widget_frame.grid_columnconfigure(col_idx , weight=1)
+
+            for row_idx in range(0 , 5):
+                widget_frame.rowconfigure(row_idx , weight=1)
+        
+        for (category_graph_name , main_checkbox_widget) , dict_with_subcheckboxes_widgets , dict_with_entry_widgets in zip(Dictionary_Main_Checkboxes_Widgets.items() , Dictionary_Subcheckboxes_Widgets.values() , self.Dictionary_Entry_Titles_Widgets.values()):
+            idx_row = 0
+
+            match(len(dict_with_subcheckboxes_widgets)):
+                case 1:
+                    columnspan = 2
+                case 2:
+                    columnspan = 1
+                case _:
+                    columnspan = len(dict_with_subcheckboxes_widgets) - 1
+
+            main_checkbox_columnspan = len(dict_with_subcheckboxes_widgets) if len(dict_with_subcheckboxes_widgets) > 1 else 3
+            main_checkbox_widget.grid(row=idx_row*2, column=0 , columnspan=main_checkbox_columnspan , padx=(0 , 0) , pady=0 , sticky="n")
+            
+            if(not category_graph_name in Categories_With_Single_Main_Checkbox):
+                idx_row += 1
+                for idx_col , subcheckbox_widget in enumerate(dict_with_subcheckboxes_widgets.values()):
+                    subcheckbox_widget.grid(row=idx_row*2, column=idx_col , padx=(12 , 0) , pady=0 , sticky="n")
+                idx_row += 1
+            else:
+                idx_row += 1
+
+            for entry_titles_widget in dict_with_entry_widgets.values():
+                entry_titles_widget[0].grid(row=idx_row*2 , column=0 , padx=10 , pady=10 , sticky="w")
+                entry_titles_widget[1].grid(row=idx_row*2 , column=1 , columnspan=columnspan , padx=10, pady=10 , sticky="ew")
+                
+                idx_row += 1

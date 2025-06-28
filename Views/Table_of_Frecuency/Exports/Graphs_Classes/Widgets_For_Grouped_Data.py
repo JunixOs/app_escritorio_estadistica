@@ -29,53 +29,55 @@ class Entry_Widget_For_Export_Graphs_For_Grouped_Data(Container_For_Entry_Title_
         self.Frame_Section_Acumulate_Frecuences_Polygon = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
         self.Frame_Section_Boxplot = Frame(self.Notebook_For_Entry_Titles_Section , bg="#F7F5DC")
 
-        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Histograme , text="Titulos para\nhistogramas")
-        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Frecuences_Polygon , text="Titulos para\npoligonos de frecuencias")
-        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Acumulate_Frecuences_Polygon , text="Titulos para\npoligonos de frecuencias acumuladas")
-        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Boxplot , text="Titulo para\ngrafico de cajas")
+        self.Collection_Of_Frames = [self.Frame_Section_Histograme , self.Frame_Section_Frecuences_Polygon , self.Frame_Section_Acumulate_Frecuences_Polygon , self.Frame_Section_Boxplot]
+
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Histograme , text="Seccion\nhistogramas")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Frecuences_Polygon , text="Seccion\npoligonos de frecuencias")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Acumulate_Frecuences_Polygon , text="Seccion\npoligonos de frecuencias acumuladas")
+        self.Notebook_For_Entry_Titles_Section.add(self.Frame_Section_Boxplot , text="Seccion\ngrafico de cajas")
 
     def Create_Entry_Widgets(self):
-        self.Text_Entry_For_Histogram_fi = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
-        self.Entry_For_Histogram_fi = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Histogram_fi = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico fi" , justify=LEFT)
+        self.Entry_For_Histogram_fi = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_fi , border=1)
         self.Entry_For_Histogram_fi.config(state="disabled")
 
-        self.Text_Entry_For_Histogram_hi = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
-        self.Entry_For_Histogram_hi = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Histogram_hi = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico hi" , justify=LEFT)
+        self.Entry_For_Histogram_hi = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi , border=1)
         self.Entry_For_Histogram_hi.config(state="disabled")
 
-        self.Text_Entry_For_Histogram_hi_percent = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
-        self.Entry_For_Histogram_hi_percent = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Histogram_hi_percent = Label(self.Frame_Section_Histograme , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico hi%" , justify=LEFT)
+        self.Entry_For_Histogram_hi_percent = Entry(self.Frame_Section_Histograme , font=("Courier New" , 13) , textvariable=self.Title_For_Histogram_hi_percent , border=1)
         self.Entry_For_Histogram_hi_percent.config(state="disabled")
 
 
-        self.Text_Entry_For_Frecuences_Polygon_fi = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para fi" , justify=LEFT)
-        self.Entry_For_Frecuences_Polygon_fi = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Frecuences_Polygon_fi = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico fi" , justify=LEFT)
+        self.Entry_For_Frecuences_Polygon_fi = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_fi , border=1)
         self.Entry_For_Frecuences_Polygon_fi.config(state="disabled")
 
-        self.Text_Entry_For_Frecuences_Polygon_hi = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi" , justify=LEFT)
-        self.Entry_For_Frecuences_Polygon_hi = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Frecuences_Polygon_hi = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico hi" , justify=LEFT)
+        self.Entry_For_Frecuences_Polygon_hi = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi , border=1)
         self.Entry_For_Frecuences_Polygon_hi.config(state="disabled")
         
-        self.Text_Entry_For_Frecuences_Polygon_hi_percent = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para hi%" , justify=LEFT)
-        self.Entry_For_Frecuences_Polygon_hi_percent = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Frecuences_Polygon_hi_percent = Label(self.Frame_Section_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico hi%" , justify=LEFT)
+        self.Entry_For_Frecuences_Polygon_hi_percent = Entry(self.Frame_Section_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Frecuences_Polygon_hi_percent , border=1)
         self.Entry_For_Frecuences_Polygon_hi_percent.config(state="disabled")
 
 
-        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Fi = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Fi" , justify=LEFT)
-        self.Entry_For_Acumulate_Frecuences_Polygon_Fi = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Fi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Fi = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico Fi" , justify=LEFT)
+        self.Entry_For_Acumulate_Frecuences_Polygon_Fi = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Fi , border=1)
         self.Entry_For_Acumulate_Frecuences_Polygon_Fi.config(state="disabled")
 
-        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi" , justify=LEFT)
-        self.Entry_For_Acumulate_Frecuences_Polygon_Hi = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico Hi" , justify=LEFT)
+        self.Entry_For_Acumulate_Frecuences_Polygon_Hi = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi , border=1)
         self.Entry_For_Acumulate_Frecuences_Polygon_Hi.config(state="disabled")
         
-        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Para Hi%" , justify=LEFT)
-        self.Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi_percent , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Label(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico Hi%" , justify=LEFT)
+        self.Entry_For_Acumulate_Frecuences_Polygon_Hi_percent = Entry(self.Frame_Section_Acumulate_Frecuences_Polygon , font=("Courier New" , 13) , textvariable=self.Title_For_Acumulate_Frecuences_Polygon_Hi_percent , border=1)
         self.Entry_For_Acumulate_Frecuences_Polygon_Hi_percent.config(state="disabled")
 
 
-        self.Text_Entry_For_Boxplot = Label(self.Frame_Section_Boxplot , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo grafico de cajas" , justify=LEFT)
-        self.Entry_For_Boxplot = Entry(self.Frame_Section_Boxplot , font=("Courier New" , 13) , textvariable=self.Title_For_Boxplot , border=1 , width=self.Width_For_Entry_Titles)
+        self.Text_Entry_For_Boxplot = Label(self.Frame_Section_Boxplot , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo para grafico de cajas" , justify=LEFT)
+        self.Entry_For_Boxplot = Entry(self.Frame_Section_Boxplot , font=("Courier New" , 13) , textvariable=self.Title_For_Boxplot , border=1)
         self.Entry_For_Boxplot.config(state="disabled")
 
         self.Dictionary_Entry_Titles_Widgets = {
@@ -119,8 +121,6 @@ class Entry_Widget_For_Export_Graphs_For_Grouped_Data(Container_For_Entry_Title_
                 "Boxplot_All_Data": self.Title_For_Boxplot,
             }
         }
-        
-        self.Insert_Widgets_In_Container()
 
 
 class Checkboxes_Export_Graphs_For_Grouped_Data(Handler_Actions , Entry_Widget_For_Export_Graphs_For_Grouped_Data):
@@ -149,22 +149,22 @@ class Checkboxes_Export_Graphs_For_Grouped_Data(Handler_Actions , Entry_Widget_F
         Entry_Widget_For_Export_Graphs_For_Grouped_Data.__init__(self , W_Export_Graph , Axis_x_Title)
 
     def Create_Widgets(self):
-        self.Checkbox_Histogram = Checkbutton(self.W_Export_Graph , text="Histograma" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Histogram , command= lambda: self.Check_And_Block_Multiple_Checkboxes("Histogram"))
-        self.Checkbox_Histogram_fi = Checkbutton(self.W_Export_Graph , text="Para fi" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Histogram_fi , command= lambda: self.Check_And_Block_Single_Checkbox("Histogram" , "fi"))
-        self.Checkbox_Histogram_hi = Checkbutton(self.W_Export_Graph , text="Para hi" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Histogram_hi , command= lambda: self.Check_And_Block_Single_Checkbox("Histogram" , "hi"))
-        self.Checkbox_Histogram_hi_percent = Checkbutton(self.W_Export_Graph , text="Para hi%" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Histogram_hi_percent , command=lambda: self.Check_And_Block_Single_Checkbox("Histogram" , "hi_percent"))
+        self.Checkbox_Histogram = Checkbutton(self.Frame_Section_Histograme , text="Exportar todos los histogramas" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Histogram , command= lambda: self.Check_And_Block_Multiple_Checkboxes("Histogram"))
+        self.Checkbox_Histogram_fi = Checkbutton(self.Frame_Section_Histograme , text="Exportar grafico fi" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Histogram_fi , command= lambda: self.Check_And_Block_Single_Checkbox("Histogram" , "fi"))
+        self.Checkbox_Histogram_hi = Checkbutton(self.Frame_Section_Histograme , text="Exportar grafico hi" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Histogram_hi , command= lambda: self.Check_And_Block_Single_Checkbox("Histogram" , "hi"))
+        self.Checkbox_Histogram_hi_percent = Checkbutton(self.Frame_Section_Histograme , text="Exportar grafico  hi%" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Histogram_hi_percent , command=lambda: self.Check_And_Block_Single_Checkbox("Histogram" , "hi_percent"))
 
-        self.Checkbox_Frecuences_Polygon = Checkbutton(self.W_Export_Graph , text="poligono de frecuencias" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Frecuences_Polygon , command= lambda: self.Check_And_Block_Multiple_Checkboxes("Frecuences_Polygon"))
-        self.Checkbox_Frecuences_Polygon_fi = Checkbutton(self.W_Export_Graph , text="Para fi" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Frecuences_Polygon_fi , command= lambda: self.Check_And_Block_Single_Checkbox("Frecuences_Polygon" , "fi"))
-        self.Checkbox_Frecuences_Polygon_hi = Checkbutton(self.W_Export_Graph , text="Para hi" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Frecuences_Polygon_hi , command= lambda: self.Check_And_Block_Single_Checkbox("Frecuences_Polygon" , "hi"))
-        self.Checkbox_Frecuences_Polygon_hi_percent = Checkbutton(self.W_Export_Graph , text="Para hi%" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Frecuences_Polygon_hi_percent , command= lambda: self.Check_And_Block_Single_Checkbox("Frecuences_Polygon" , "hi_percent"))
+        self.Checkbox_Frecuences_Polygon = Checkbutton(self.Frame_Section_Frecuences_Polygon , text="Exportar todos los poligonos de frecuencias" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Frecuences_Polygon , command= lambda: self.Check_And_Block_Multiple_Checkboxes("Frecuences_Polygon"))
+        self.Checkbox_Frecuences_Polygon_fi = Checkbutton(self.Frame_Section_Frecuences_Polygon , text="Exportar grafico fi" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Frecuences_Polygon_fi , command= lambda: self.Check_And_Block_Single_Checkbox("Frecuences_Polygon" , "fi"))
+        self.Checkbox_Frecuences_Polygon_hi = Checkbutton(self.Frame_Section_Frecuences_Polygon , text="Exportar grafico hi" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Frecuences_Polygon_hi , command= lambda: self.Check_And_Block_Single_Checkbox("Frecuences_Polygon" , "hi"))
+        self.Checkbox_Frecuences_Polygon_hi_percent = Checkbutton(self.Frame_Section_Frecuences_Polygon , text="Exportar grafico hi%" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Frecuences_Polygon_hi_percent , command= lambda: self.Check_And_Block_Single_Checkbox("Frecuences_Polygon" , "hi_percent"))
 
-        self.Checkbox_Acumulate_Frecuences_Polygon = Checkbutton(self.W_Export_Graph , text="Poligono de frecuencias acumuladas" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Acumulate_Frecuences_Polygon , command= lambda: self.Check_And_Block_Multiple_Checkboxes("Acumulate_Frecuences_Polygon"))
-        self.Checkbox_Acumulate_Frecuences_Polygon_Fi = Checkbutton(self.W_Export_Graph , text="Para Fi" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Acumulate_Frecuences_Polygon_Fi , command= lambda: self.Check_And_Block_Single_Checkbox("Acumulate_Frecuences_Polygon" , "Fi"))
-        self.Checkbox_Acumulate_Frecuences_Polygon_Hi = Checkbutton(self.W_Export_Graph , text="Para Hi" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Acumulate_Frecuences_Polygon_Hi , command= lambda: self.Check_And_Block_Single_Checkbox("Acumulate_Frecuences_Polygon" , "Hi"))
-        self.Checkbox_Acumulate_Frecuences_Polygon_Hi_percent = Checkbutton(self.W_Export_Graph , text="Para Hi%" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Acumulate_Frecuences_Polygon_Hi_percent , command= lambda: self.Check_And_Block_Single_Checkbox("Acumulate_Frecuences_Polygon" , "Hi_percent"))
+        self.Checkbox_Acumulate_Frecuences_Polygon = Checkbutton(self.Frame_Section_Acumulate_Frecuences_Polygon , text="Exportar todos los poligonos de frecuencias acumuladas" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Acumulate_Frecuences_Polygon , command= lambda: self.Check_And_Block_Multiple_Checkboxes("Acumulate_Frecuences_Polygon"))
+        self.Checkbox_Acumulate_Frecuences_Polygon_Fi = Checkbutton(self.Frame_Section_Acumulate_Frecuences_Polygon , text="Exportar grafico Fi" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Acumulate_Frecuences_Polygon_Fi , command= lambda: self.Check_And_Block_Single_Checkbox("Acumulate_Frecuences_Polygon" , "Fi"))
+        self.Checkbox_Acumulate_Frecuences_Polygon_Hi = Checkbutton(self.Frame_Section_Acumulate_Frecuences_Polygon , text="Exportar grafico Hi" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Acumulate_Frecuences_Polygon_Hi , command= lambda: self.Check_And_Block_Single_Checkbox("Acumulate_Frecuences_Polygon" , "Hi"))
+        self.Checkbox_Acumulate_Frecuences_Polygon_Hi_percent = Checkbutton(self.Frame_Section_Acumulate_Frecuences_Polygon , text="Exportar grafico Hi%" , font=("Times New Roman" , 13) , bg="#F7F5DC" , variable=self.Checked_Acumulate_Frecuences_Polygon_Hi_percent , command= lambda: self.Check_And_Block_Single_Checkbox("Acumulate_Frecuences_Polygon" , "Hi_percent"))
 
-        self.Checkbox_Boxplot = Checkbutton(self.W_Export_Graph , text="Grafico de cajas" , font=("Times New Roman" , 13) , variable=self.Checked_Boxplot , bg="#E7E4C1" , command= lambda: self.Check_And_Block_Single_Checkbox("Boxplot" , "All_Data"))
+        self.Checkbox_Boxplot = Checkbutton(self.Frame_Section_Boxplot , text="Exportar el grafico de cajas" , font=("Times New Roman" , 13) , variable=self.Checked_Boxplot , bg="#F7F5DC" , command= lambda: self.Check_And_Block_Single_Checkbox("Boxplot" , "All_Data"))
 
         self.Dictionary_Main_Checkboxes_Values = {
             "Histogram": self.Checked_Histogram,
@@ -221,3 +221,5 @@ class Checkboxes_Export_Graphs_For_Grouped_Data(Handler_Actions , Entry_Widget_F
         }
     
         self.Create_Entry_Widgets()
+
+        self.Insert_Widgets_In_Notebook_Container(self.Dictionary_Main_Checkboxes_Widgets , self.Dictionary_Subcheckboxes_Widgets , self.Categories_With_Single_Main_Checkbox , self.Collection_Of_Frames)
