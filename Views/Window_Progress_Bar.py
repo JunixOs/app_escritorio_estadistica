@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path
+from Tools import Get_Resource_Path , Delete_Actual_Window
 from tkinter import ttk
 from tkinter import *
 import time
@@ -35,10 +35,7 @@ class W_Progress_Bar:
 
     def Close_Progress_Bar(self):
         if(self.Progress_Window and self.Progress_Bar):
-            self.Progress_Bar.stop()
-            self.Progress_Window.destroy()
-            self.Root_Window.grab_set()
-            self.Root_Window.lift()
+            Delete_Actual_Window(self.Root_Window , self.Progress_Window)
 
 def tarea_larga(Progress , root):
     # Simula una tarea larga

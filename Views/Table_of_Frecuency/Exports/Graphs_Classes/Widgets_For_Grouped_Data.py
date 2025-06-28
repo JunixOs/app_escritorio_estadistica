@@ -75,7 +75,7 @@ class Entry_Widget_For_Export_Graphs_For_Grouped_Data(Container_For_Entry_Title_
 
 
         self.Text_Entry_For_Boxplot = Label(self.Frame_Section_Boxplot , font=("Times New Roman" , 13) , bg="#F7F5DC" , text="Titulo grafico de cajas" , justify=LEFT)
-        self.Entry_For_Boxplot = Entry(self.Content_Frame_Sets , font=("Courier New" , 13) , textvariable=self.Title_For_Boxplot , border=1 , width=self.Width_For_Entry_Titles)
+        self.Entry_For_Boxplot = Entry(self.Frame_Section_Boxplot , font=("Courier New" , 13) , textvariable=self.Title_For_Boxplot , border=1 , width=self.Width_For_Entry_Titles)
         self.Entry_For_Boxplot.config(state="disabled")
 
         self.Dictionary_Entry_Titles_Widgets = {

@@ -51,6 +51,15 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
         
         Father_Window.lift()
 
+# ==================================================================== Threads Tools ====================================================================
+def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Finish=None):
+    # Verifica si todos los hilos terminaron
+    if all(not t.is_alive() for t in Threads_List):
+        Class_Progress_Bar.Close_Progress_Bar()
+        if(On_Finish):
+            Root_Window.after(0 , On_Finish)
+    else:
+        Root_Window.after(500, Check_Threads_Alive, Threads_List, Root_Window , Class_Progress_Bar , On_Finish)
 
 # ==================================================================== JSON Settings Tools ====================================================================
 def Get_Number_Of_Util_Threads_In_Device(Percentaje_Of_Use = 0.5):
