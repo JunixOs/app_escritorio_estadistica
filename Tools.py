@@ -51,6 +51,103 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
         
         Father_Window.lift()
 
+def Load_Global_Styles(Global_ttk_Style):
+    """ Sirve para cargar los estilos de todos los widgets ttk """
+    """ ****************************************** Widget Label ****************************************** """
+    Global_ttk_Style.configure("TLabel",
+                    font=("Times New Roman", 10),
+                    foreground="#333")
+
+    """ ****************************************** Widget Entry ****************************************** """
+    Global_ttk_Style.configure("TEntry",
+                    font=("Times New Roman", 10),
+                    padding=5,
+                    relief="flat")
+
+    """ ****************************************** Widget Button ****************************************** """
+    Global_ttk_Style.configure("TButton",
+                    font=("Times New Roman", 10, "bold"),
+                    padding=6,
+                    foreground="#fff",
+                    background="#0078D7")
+    Global_ttk_Style.map("TButton",
+            background=[("active", "#005A9E")],
+            relief=[("pressed", "sunken")])
+
+    """ ****************************************** Widget Checkbutton ****************************************** """
+    Global_ttk_Style.configure("TCheckbutton",
+                    font=("Times New Roman", 10),
+                    padding=5)
+
+    """ ****************************************** Widget Combobox ****************************************** """
+    Global_ttk_Style.configure("TCombobox",
+                    font=("Times New Roman", 10),
+                    padding=5)
+
+    """ ****************************************** Widget Notebook ****************************************** """
+    Global_ttk_Style.configure("TNotebook",
+                    tabposition='n')
+
+    Global_ttk_Style.configure("TNotebook.Tab",
+                    font=("Times New Roman", 10),
+                    padding=[10, 5],
+                    background="#f0f0f0")
+
+    Global_ttk_Style.map("TNotebook.Tab",
+            background=[("selected", "#dcdcdc")],
+            expand=[("selected", [1, 1, 1, 0])])
+
+    """ ****************************************** Widget Treeview ****************************************** """
+    Global_ttk_Style.configure("Treeview",
+                    font=("Times New Roman", 10),
+                    rowheight=28,
+                    padding=5,
+                    relief="flat",
+                    background="#ffffff",
+                    fieldbackground="#ffffff",
+                    foreground="#333")
+
+    Global_ttk_Style.map("Treeview",
+            background=[("selected", "#0078D7")],
+            foreground=[("selected", "#ffffff")])
+
+    Global_ttk_Style.configure("Treeview.Heading",
+                    font=("Times New Roman", 10, "bold"),
+                    background="#f0f0f0",
+                    foreground="#333",
+                    relief="flat")
+
+    Global_ttk_Style.map("Treeview.Heading",
+            background=[("active", "#e0e0e0")])
+
+    """ ****************************************** Widget Scrollbar ****************************************** """
+    Global_ttk_Style.configure("Vertical.TScrollbar",
+                    gripcount=0,
+                    background="#d0d0d0",
+                    darkcolor="#c0c0c0",
+                    lightcolor="#e0e0e0",
+                    troughcolor="#f0f0f0",
+                    bordercolor="#f0f0f0",
+                    arrowcolor="#555")
+
+    Global_ttk_Style.configure("Horizontal.TScrollbar",
+                    gripcount=0,
+                    background="#d0d0d0",
+                    darkcolor="#c0c0c0",
+                    lightcolor="#e0e0e0",
+                    troughcolor="#f0f0f0",
+                    bordercolor="#f0f0f0",
+                    arrowcolor="#555")
+
+    """ ****************************************** Widget Progressbar ****************************************** """
+    Global_ttk_Style.configure("TProgressbar",
+                    troughcolor="#f0f0f0",
+                    background="#0078D7", 
+                    thickness=20,   
+                    bordercolor="#f0f0f0",
+                    lightcolor="#0078D7",
+                    darkcolor="#0078D7")
+
 # ==================================================================== Threads Tools ====================================================================
 def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Finish=None):
     # Verifica si todos los hilos terminaron

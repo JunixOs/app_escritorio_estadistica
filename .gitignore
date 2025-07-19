@@ -12,4 +12,9 @@ Config/
 build/
 dist/
 *.iss
+*.manifest
 Output/
+*.dll
+*.cpp
+
+DEMO/

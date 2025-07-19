@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Get_Version , Verify_Configurations_Folder
+from Tools import Get_Resource_Path , Get_Version , Verify_Configurations_Folder , Load_Global_Styles
 from Calcs.Center_Window import Center
 import Views.Table_of_Frecuency.Window_Calc_Table_of_Frecuency as W_Calc_Table
 import Views.Venn_Diagram.Window_Create_Venn_Diagram as W_Venn_Diagram
@@ -24,14 +24,16 @@ Image_Right_Section = PhotoImage(file=Get_Resource_Path("Images/normal_distribut
 Image_Right_Section.subsample(10)
 Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
 
+Global_ttk_Style = ttk.Style()
+Global_ttk_Style.theme_use("clam")
+
+Load_Global_Styles(Global_ttk_Style)
+
 Main_Window.geometry("1240x700")
 Center(Main_Window , 1240 , 700)
 Main_Window.title(f"StatPhi {Get_Version()}")
 Main_Window.config(bg="#9DAEC6")
 Main_Window.iconphoto(False , Icon)
-
-Global_ttk_Style = ttk.Style()
-Global_ttk_Style.theme_use("default")
 
 Right_Section = Label(Main_Window , width=531 , height=691 , bg="#F7EDCB" , image=Image_Right_Section , highlightthickness=2 , highlightbackground="#000000")
 Right_Section.place(x=700 , y=0)

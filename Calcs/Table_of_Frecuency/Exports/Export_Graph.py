@@ -41,7 +41,12 @@ def Get_Values_From_Widgets_When_There_Are_Multiple_Columns_Of_Data(Collection_F
         Value_Collection_Axis_x_Titles_For_Graphs[key] = axis_x_title.get()
     return Value_Collection_Formats , Value_Collection_DPIs , Value_Collection_Axis_x_Titles_For_Graphs
 
-def Manage_Export_Of_Graphs(W_Show_Graph , W_Export_Graph , File_Name , File_Path , Collection_Formats , Collection_DPIs , Collection_Axis_x_Titles_For_Graphs , Dictionary_Of_Generated_Figures , Collection_Subcheckboxes_With_Selected_Graphs , Collection_Entry_Titles_For_Graphs , Is_Single_Row):
+def Manage_Export_Of_Graphs(
+        W_Show_Graph , W_Export_Graph , File_Name , File_Path , Collection_Formats , Collection_DPIs , 
+        Collection_Axis_x_Titles_For_Graphs , Dictionary_Of_Generated_Figures , Collection_Subcheckboxes_With_Selected_Graphs , 
+        Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs , Collection_Titles_For_Multiple_Graphs ,
+        Collection_Entry_Titles_For_Graphs , Is_Single_Row , 
+    ):
     try:
         Route_And_File_Name = Validation_For_Export(File_Name , File_Path)
 
@@ -58,12 +63,17 @@ def Manage_Export_Of_Graphs(W_Show_Graph , W_Export_Graph , File_Name , File_Pat
 
         if(Is_Single_Row):
             for category_graph_name in Collection_Subcheckboxes_With_Selected_Graphs.keys():
-                Is_Any_Subchekbox_For_Category_Graph_Checked = Export_Graphs_Acoording_To_Subcheckbox_Value(Collection_Subcheckboxes_With_Selected_Graphs[category_graph_name] , Collection_Entry_Titles_For_Graphs[category_graph_name] , "" , Dictionary_Of_Generated_Figures[f"Figure_{category_graph_name}"] , Route_And_File_Name , Value_Collection_Formats , Value_Collection_DPIs , Value_Collection_Axis_x_Titles_For_Graphs)
+                Checkbox_Value_Title_Multiple_Graphs = Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs[category_graph_name] if category_graph_name in Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs else None
+                Title_For_Multiple_Graphs = Collection_Titles_For_Multiple_Graphs[category_graph_name] if category_graph_name in Collection_Titles_For_Multiple_Graphs else None
+
+                Is_Any_Subchekbox_For_Category_Graph_Checked = Export_Graphs_Acoording_To_Subcheckbox_Value(Collection_Subcheckboxes_With_Selected_Graphs[category_graph_name] , Collection_Entry_Titles_For_Graphs[category_graph_name] , Checkbox_Value_Title_Multiple_Graphs , Title_For_Multiple_Graphs , "" , Dictionary_Of_Generated_Figures[f"Figure_{category_graph_name}"] , Route_And_File_Name , Value_Collection_Formats , Value_Collection_DPIs , Value_Collection_Axis_x_Titles_For_Graphs)
                 List_Any_Subcheckbox_Checked.append(Is_Any_Subchekbox_For_Category_Graph_Checked)
         else:
-            for (variable_name , subcheckboxes_values_dict) , entry_titles_values_dict , figures_dict , img_format , dpi_graph , axis_x_title in zip(Collection_Subcheckboxes_With_Selected_Graphs.items() , Collection_Entry_Titles_For_Graphs.values() , Dictionary_Of_Generated_Figures.values() , Value_Collection_Formats.values() , Value_Collection_DPIs.values() , Value_Collection_Axis_x_Titles_For_Graphs.values()):
+            for (variable_name , subcheckboxes_values_dict) , entry_titles_values_dict , checkboxes_values_title_multiple_graphs , titles_for_multiple_graphs , figures_dict , img_format , dpi_graph , axis_x_title in zip(Collection_Subcheckboxes_With_Selected_Graphs.items() , Collection_Entry_Titles_For_Graphs.values() , Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs.values() , Collection_Titles_For_Multiple_Graphs.values() , Dictionary_Of_Generated_Figures.values() , Value_Collection_Formats.values() , Value_Collection_DPIs.values() , Value_Collection_Axis_x_Titles_For_Graphs.values()):
                 for category_graph_name in subcheckboxes_values_dict.keys():
-                    Is_Any_Subchekbox_For_Category_Graph_Checked = Export_Graphs_Acoording_To_Subcheckbox_Value(subcheckboxes_values_dict[category_graph_name] , entry_titles_values_dict[category_graph_name] , variable_name , figures_dict[f"Figure_{category_graph_name}"] , Route_And_File_Name , img_format , dpi_graph , axis_x_title)
+                    checkbox_value_title_multiple_graphs = checkboxes_values_title_multiple_graphs[category_graph_name] if category_graph_name in checkboxes_values_title_multiple_graphs else None
+                    title_for_multiple_graphs = titles_for_multiple_graphs[category_graph_name] if category_graph_name in titles_for_multiple_graphs else None
+                    Is_Any_Subchekbox_For_Category_Graph_Checked = Export_Graphs_Acoording_To_Subcheckbox_Value(subcheckboxes_values_dict[category_graph_name] , entry_titles_values_dict[category_graph_name] , checkbox_value_title_multiple_graphs , title_for_multiple_graphs , variable_name , figures_dict[f"Figure_{category_graph_name}"] , Route_And_File_Name , img_format , dpi_graph , axis_x_title)
                     List_Any_Subcheckbox_Checked.append(Is_Any_Subchekbox_For_Category_Graph_Checked)
         
         if(not any(List_Any_Subcheckbox_Checked)):
@@ -78,7 +88,7 @@ def Manage_Export_Of_Graphs(W_Show_Graph , W_Export_Graph , File_Name , File_Pat
         if(Reply == "yes"):
             Delete_Actual_Window(W_Show_Graph , W_Export_Graph , True)
 
-def Export_Graphs_Acoording_To_Subcheckbox_Value(Subcheckboxes_Values , Entry_Titles_Values , Variable_Name , Figures_For_Category_Graph , Route_And_File_Name , Img_Format , DPI_Graph , Axis_x_Ttile):
+def Export_Graphs_Acoording_To_Subcheckbox_Value(Subcheckboxes_Values , Entry_Titles_Values , Checkbox_Value_Title_Multiple_Graphs , Title_For_Multiple_Graphs , Variable_Name , Figures_For_Category_Graph , Route_And_File_Name , Img_Format , DPI_Graph , Axis_x_Ttile):
     for (name_of_graph , subcheckbox_value) , entry_title_value , figure in zip(Subcheckboxes_Values.items() , Entry_Titles_Values.values() , Figures_For_Category_Graph.values()):
         if(subcheckbox_value.get()):
             Complete_Route_To_Export = Build_Full_Export_Route(Route_And_File_Name , name_of_graph , Variable_Name , Img_Format)
@@ -86,14 +96,24 @@ def Export_Graphs_Acoording_To_Subcheckbox_Value(Subcheckboxes_Values , Entry_Ti
             before_axis_x_title = figure.axes[0]
             before_axis_x_title = before_axis_x_title.get_xlabel()
 
-            figure.suptitle(entry_title_value.get() , y=0.99 , fontsize=16 , fontweight='bold')
+            try:
+                same_title_multiple_graphs = Checkbox_Value_Title_Multiple_Graphs.get()
+                if(same_title_multiple_graphs):
+                    title_for_graph = Title_For_Multiple_Graphs.get()
+                else:
+                    title_for_graph = entry_title_value.get()
+            except Exception:
+                title_for_graph = entry_title_value.get()
+                same_title_multiple_graphs = False
+            
+            figure.suptitle(title_for_graph , y=0.99 , fontsize=16 , fontweight='bold')
 
             if(not "Pie" in name_of_graph):
                 figure.axes[0].set_xlabel(Axis_x_Ttile , labelpad=8 , fontweight='bold')
 
             figure.savefig(Complete_Route_To_Export , dpi=DPI_Graph , bbox_inches='tight')
 
-            if(entry_title_value.get()):
+            if(title_for_graph):
                 figure.suptitle("")
 
             if(not "Pie" in name_of_graph):

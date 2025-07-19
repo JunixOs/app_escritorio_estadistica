@@ -344,7 +344,7 @@ def Create_Window_Import_Excel(Father_Window , Value_For_Entry_Widget_W_Table_Fr
     Table_Preview_Data = TreeviewFrame_Preview(W_Import_Excel)
     Table_Preview_Data.W_Import_Excel = W_Import_Excel
     Table_Preview_Data.pack(fill=BOTH)
-    Table_Preview_Data.treeview.config(height=13)
+    Table_Preview_Data.treeview.config(height=9)
     Table_Preview_Data.treeview.config(columns=("1", "2" ,"3", "4", "5" , "6") , show="headings")
     Table_Preview_Data.treeview.heading("1" , text="fila/columna")
     Table_Preview_Data.treeview.heading("2" , text="A")

@@ -71,7 +71,7 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.treeview.heading("9" , text="hi%")
         self.Table_Frecuences.treeview.heading("10" , text="HI%")
 
-        self.Table_Frecuences.treeview.config(height=13)
+        self.Table_Frecuences.treeview.config(height=9)
 
         for a in range(1 , 11):
             if(a == 1):
@@ -104,7 +104,7 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.treeview.heading("6" , text="hi%")
         self.Table_Frecuences.treeview.heading("7" , text="HI%")
 
-        self.Table_Frecuences.treeview.config(height=13)
+        self.Table_Frecuences.treeview.config(height=9)
 
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
@@ -131,7 +131,7 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.treeview.heading("6" , text="hi%")
         self.Table_Frecuences.treeview.heading("7" , text="HI%")
 
-        self.Table_Frecuences.treeview.config(height=13)
+        self.Table_Frecuences.treeview.config(height=9)
 
         for a in range(1 , 8):
             self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=185)
@@ -319,7 +319,7 @@ class Quantiles_Table:
         Quantile_Table.treeview.config(columns=("1") , show="headings")
         Quantile_Table.treeview.heading("1" , text=f"{Quantile_Name} ({Quantile_Initial}_k)")
 
-        Quantile_Table.treeview.config(height=6)
+        Quantile_Table.treeview.config(height=4)
 
         for a in range(1 , 2):
             Quantile_Table.treeview.column(f"{a}" , anchor="center" , width=140)

@@ -1,4 +1,4 @@
-from tkinter import BooleanVar, StringVar, Checkbutton , Frame , Canvas , Label, ttk , Entry , LEFT
+from tkinter import BooleanVar, StringVar, Checkbutton , Label, ttk , Entry , LEFT
 
 class Handler_Actions:
     def __init__(self , W_Export_Graph):
@@ -9,6 +9,10 @@ class Handler_Actions:
 
         self.Dictionary_Entry_Titles_Widgets = None
         self.Dictionary_Entry_Titles_Values = None
+        self.Dictionary_Checkboxes_Multiple_Titles_Widgets = None
+        self.Dictionary_Checkboxes_Multiple_Titles_Values = None
+        self.Dictionary_Entry_Multiple_Titles_Widgets = None
+        self.Dictionary_Entry_Multiple_Titles_Values = None
 
         self.Checked_Export_All_Graphs = BooleanVar(W_Export_Graph)
         self.Checkbox_Export_All_Graphs = Checkbutton(W_Export_Graph , text="Exportar todos los graficos" , font=("Times New Roman" , 13) , bg="#E7E4C1" , variable=self.Checked_Export_All_Graphs , command=self.Check_All_Checkboxes)
@@ -33,17 +37,27 @@ class Handler_Actions:
 
     def Check_And_Block_Single_Checkbox(self , Category_Graph , Variable_Of_Frecuency):
         Is_All_Checked = []
-        for (category_graph , main_checkbox_value) , main_checkbox_widget , dict_with_subcheckboxes , dict_with_entry_titles_values , dict_with_entry_widgets in zip(self.Dictionary_Main_Checkboxes_Values.items() , self.Dictionary_Main_Checkboxes_Widgets.values() , self.Dictionary_Subcheckboxes_Values.values() , self.Dictionary_Entry_Titles_Values.values() , self.Dictionary_Entry_Titles_Widgets.values()):
+
+        if(sum(1 if value.get() else 0 for value in self.Dictionary_Subcheckboxes_Values[f"{Category_Graph}"].values()) > 1):
+            self.Dictionary_Checkboxes_Multiple_Titles_Widgets[Category_Graph].config(state="normal")
+
+        else:
+            self.Dictionary_Checkboxes_Multiple_Titles_Values[Category_Graph].set(False)
+            self.Dictionary_Checkboxes_Multiple_Titles_Widgets[Category_Graph].config(state="disabled")
+
+        self.Checkbox_Multiple_Titles_Behavior(Category_Graph)
+
+        for (category_graph , main_checkbox_value) , main_checkbox_widget , dict_with_subcheckboxes , dict_with_entry_titles_values , dict_with_entry_widgets in zip(self.Dictionary_Main_Checkboxes_Values.items() , self.Dictionary_Main_Checkboxes_Widgets.values() , self.Dictionary_Subcheckboxes_Values.values() , self.Dictionary_Entry_Titles_Values.values() , self.Dictionary_Entry_Titles_Widgets.values()):            
             Is_All_Checked.append(all(value.get() for value in dict_with_subcheckboxes.values()))
             if(category_graph == Category_Graph):
                 Is_All_Checked_In_Single_Category = all(value.get() for value in dict_with_subcheckboxes.values())
-
-                if(dict_with_subcheckboxes[f"{Category_Graph}_{Variable_Of_Frecuency}"].get()):
-                    dict_with_entry_titles_values[f"{Category_Graph}_{Variable_Of_Frecuency}"].set("")
-                    dict_with_entry_widgets[f"{Category_Graph}_{Variable_Of_Frecuency}"][1].config(state="normal")
-                else:
-                    dict_with_entry_titles_values[f"{Category_Graph}_{Variable_Of_Frecuency}"].set("")
-                    dict_with_entry_widgets[f"{Category_Graph}_{Variable_Of_Frecuency}"][1].config(state="disabled")
+                if(not self.Dictionary_Checkboxes_Multiple_Titles_Values[Category_Graph].get()):
+                    if(dict_with_subcheckboxes[f"{Category_Graph}_{Variable_Of_Frecuency}"].get()):
+                        dict_with_entry_titles_values[f"{Category_Graph}_{Variable_Of_Frecuency}"].set("")
+                        dict_with_entry_widgets[f"{Category_Graph}_{Variable_Of_Frecuency}"][1].config(state="normal")
+                    else:
+                        dict_with_entry_titles_values[f"{Category_Graph}_{Variable_Of_Frecuency}"].set("")
+                        dict_with_entry_widgets[f"{Category_Graph}_{Variable_Of_Frecuency}"][1].config(state="disabled")
 
                 if(not category_graph in self.Categories_With_Single_Main_Checkbox):
                     if(Is_All_Checked_In_Single_Category):
@@ -59,7 +73,6 @@ class Handler_Actions:
         else:
             self.Checked_Export_All_Graphs.set(False)
             self.Checkbox_Export_All_Graphs.config(state="normal")
-            
 
     def Check_And_Block_Multiple_Checkboxes(self , Category_Graph):
         Main_Checkbox = self.Dictionary_Main_Checkboxes_Values[Category_Graph]
@@ -72,18 +85,24 @@ class Handler_Actions:
             self.Checkbox_Export_All_Graphs.config(state="normal")
 
         for subcheckbox_value , subcheckbox_widget , entry_title_value , entry_widgets in zip(self.Dictionary_Subcheckboxes_Values[f"{Category_Graph}"].values() , self.Dictionary_Subcheckboxes_Widgets[Category_Graph].values() , self.Dictionary_Entry_Titles_Values[Category_Graph].values() , self.Dictionary_Entry_Titles_Widgets[Category_Graph].values()):
-                if(Main_Checkbox.get()):
-                    subcheckbox_value.set(True)
-                    subcheckbox_widget.config(state="disabled")
+            if(Main_Checkbox.get()):
+                subcheckbox_value.set(True)
+                subcheckbox_widget.config(state="disabled")
 
-                    entry_title_value.set("")
-                    entry_widgets[1].config(state="normal")
-                else:
-                    subcheckbox_value.set(False)
-                    subcheckbox_widget.config(state="normal")
+                entry_title_value.set("")
+                entry_widgets[1].config(state="normal")
 
-                    entry_title_value.set("")
-                    entry_widgets[1].config(state="disabled")
+                self.Dictionary_Checkboxes_Multiple_Titles_Widgets[Category_Graph].config(state="normal")
+            else:
+                subcheckbox_value.set(False)
+                subcheckbox_widget.config(state="normal")
+
+                entry_title_value.set("")
+                entry_widgets[1].config(state="disabled")
+
+                self.Dictionary_Checkboxes_Multiple_Titles_Values[Category_Graph].set(False)
+                self.Dictionary_Checkboxes_Multiple_Titles_Widgets[Category_Graph].config(state="disabled")
+                self.Checkbox_Multiple_Titles_Behavior(Category_Graph)
 
     def Check_All_Checkboxes(self):
         for (category_graph_name , main_checkbox_value) , main_checkbox_widget , dict_with_subcheckboxes_values , dict_with_subcheckboxes_widgets , dict_with_entry_titles_values , dict_with_entry_widgets in zip(self.Dictionary_Main_Checkboxes_Values.items() , self.Dictionary_Main_Checkboxes_Widgets.values() , self.Dictionary_Subcheckboxes_Values.values() , self.Dictionary_Subcheckboxes_Widgets.values() , self.Dictionary_Entry_Titles_Values.values() , self.Dictionary_Entry_Titles_Widgets.values()):
@@ -97,6 +116,11 @@ class Handler_Actions:
                         subcheckboxes_widgets.config(state="disabled")
                     entry_title_value.set("")
                     entry_widgets[1].config(state="normal")
+                
+                if(category_graph_name in self.Categories_With_Single_Main_Checkbox):
+                    continue
+
+                self.Dictionary_Checkboxes_Multiple_Titles_Widgets[category_graph_name].config(state="normal")
             else:
                 main_checkbox_value.set(False)
                 main_checkbox_widget.config(state="normal")
@@ -107,13 +131,33 @@ class Handler_Actions:
                         subcheckboxes_widgets.config(state="normal")
                     entry_title_value.set("")
                     entry_widgets[1].config(state="disabled")
+                
+                if(category_graph_name in self.Categories_With_Single_Main_Checkbox):
+                    continue
 
+                self.Dictionary_Checkboxes_Multiple_Titles_Values[category_graph_name].set(False)
+                self.Dictionary_Checkboxes_Multiple_Titles_Widgets[category_graph_name].config(state="disabled")
 
-class Container_For_Entry_Title_Widgets:
+                self.Dictionary_Entry_Multiple_Titles_Values[category_graph_name].set("")
+                self.Dictionary_Entry_Multiple_Titles_Widgets[category_graph_name][1].config(state="disabled")
+
+    def Checkbox_Multiple_Titles_Behavior(self , Category_Graph):
+        if(self.Dictionary_Checkboxes_Multiple_Titles_Values[Category_Graph].get()):
+            self.Dictionary_Entry_Multiple_Titles_Widgets[Category_Graph][1].config(state="normal")
+            for entry_title_value , entry_title_widget in zip(self.Dictionary_Entry_Titles_Values[Category_Graph].values() , self.Dictionary_Entry_Titles_Widgets[Category_Graph].values()):
+                entry_title_value.set("")
+                entry_title_widget[1].config(state="disabled")
+        else:
+            self.Dictionary_Entry_Multiple_Titles_Widgets[Category_Graph][1].config(state="disabled")
+            self.Dictionary_Entry_Multiple_Titles_Values[Category_Graph].set("")
+            for entry_title_widget , subcheckbox_value in zip(self.Dictionary_Entry_Titles_Widgets[Category_Graph].values() , self.Dictionary_Subcheckboxes_Values[Category_Graph].values()):
+                if(subcheckbox_value.get()):
+                    entry_title_widget[1].config(state="normal")
+                else:
+                    entry_title_widget[1].config(state="disabled")
+
+class Notebox_Widget_Container:
     def __init__(self , W_Export_Graph , Axis_x_Title):
-        self.Dictionary_Entry_Titles_Widgets = None
-        self.Dictionary_Text_Sections = None
-
         self.Style_For_Notebok = ttk.Style()
 
         # Cambiar el color del fondo del notebook
@@ -163,17 +207,17 @@ class Container_For_Entry_Title_Widgets:
         elif event.num == 5:
             self.Canvas_Set.yview_scroll(1, "units")
 
-    def Insert_Widgets_In_Notebook_Container(self , Dictionary_Main_Checkboxes_Widgets , Dictionary_Subcheckboxes_Widgets , Categories_With_Single_Main_Checkbox , Collection_Of_Frames):
+    def Insert_Widgets_In_Notebook_Container(self):
         for widget_frame , dict_with_subcheckboxes_widgets in zip(self.Collection_Of_Frames , self.Dictionary_Subcheckboxes_Widgets.values()):
             max_cols = len(dict_with_subcheckboxes_widgets) if len(dict_with_subcheckboxes_widgets) > 1 else 3
 
             for col_idx in range(0 , max_cols):
                 widget_frame.grid_columnconfigure(col_idx , weight=1)
 
-            for row_idx in range(0 , 5):
+            for row_idx in range(0 , 7):
                 widget_frame.rowconfigure(row_idx , weight=1)
         
-        for (category_graph_name , main_checkbox_widget) , dict_with_subcheckboxes_widgets , dict_with_entry_widgets in zip(Dictionary_Main_Checkboxes_Widgets.items() , Dictionary_Subcheckboxes_Widgets.values() , self.Dictionary_Entry_Titles_Widgets.values()):
+        for (category_graph_name , main_checkbox_widget) , dict_with_subcheckboxes_widgets , dict_with_entry_widgets in zip(self.Dictionary_Main_Checkboxes_Widgets.items() , self.Dictionary_Subcheckboxes_Widgets.values() , self.Dictionary_Entry_Titles_Widgets.values()):
             idx_row = 0
 
             match(len(dict_with_subcheckboxes_widgets)):
@@ -187,7 +231,7 @@ class Container_For_Entry_Title_Widgets:
             main_checkbox_columnspan = len(dict_with_subcheckboxes_widgets) if len(dict_with_subcheckboxes_widgets) > 1 else 3
             main_checkbox_widget.grid(row=idx_row*2, column=0 , columnspan=main_checkbox_columnspan , padx=(0 , 0) , pady=0 , sticky="n")
             
-            if(not category_graph_name in Categories_With_Single_Main_Checkbox):
+            if(not category_graph_name in self.Categories_With_Single_Main_Checkbox):
                 idx_row += 1
                 for idx_col , subcheckbox_widget in enumerate(dict_with_subcheckboxes_widgets.values()):
                     subcheckbox_widget.grid(row=idx_row*2, column=idx_col , padx=(12 , 0) , pady=0 , sticky="n")
@@ -198,5 +242,12 @@ class Container_For_Entry_Title_Widgets:
             for entry_titles_widget in dict_with_entry_widgets.values():
                 entry_titles_widget[0].grid(row=idx_row*2 , column=0 , padx=10 , pady=10 , sticky="w")
                 entry_titles_widget[1].grid(row=idx_row*2 , column=1 , columnspan=columnspan , padx=10, pady=10 , sticky="ew")
-                
+
                 idx_row += 1
+
+            if(not category_graph_name in self.Categories_With_Single_Main_Checkbox):
+                self.Dictionary_Checkboxes_Multiple_Titles_Widgets[category_graph_name].grid(row=idx_row*2 , column=0 , columnspan=columnspan , padx=(12 , 0) , pady=(12 , 0) , sticky="n")
+                idx_row += 1
+
+                self.Dictionary_Entry_Multiple_Titles_Widgets[category_graph_name][0].grid(row=idx_row*2 , column=0 , padx=10 , pady=10 , sticky="w")
+                self.Dictionary_Entry_Multiple_Titles_Widgets[category_graph_name][1].grid(row=idx_row*2 , column=1 , columnspan=columnspan , padx=10, pady=10 , sticky="ew")

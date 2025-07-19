@@ -4,54 +4,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '
 
 from Tools import Get_Resource_Path , Delete_Actual_Window
 from Calcs.Table_of_Frecuency.Exports.Export_Graph import Manage_Export_Of_Graphs
-from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Grouped_Data import Checkboxes_Export_Graphs_For_Grouped_Data
-from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Not_Grouped_Data import Checkboxes_Export_Graphs_For_Not_Grouped_Data
-from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Cualitative_Data import Checkboxes_Export_Graphs_For_Cualitative_Data
+from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Grouped_Data import Section_Export_Graphs_For_Grouped_Data
+from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Not_Grouped_Data import Section_Export_Graphs_For_Not_Grouped_Data
+from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Cualitative_Data import Section_Export_Graphs_For_Cualitative_Data
 
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
 
-class Widget_Input_Name_For_Graphs:
-    def __init__(self , Root_Window , There_Are_Boxplot):
-        self.W_Export_Graph = Root_Window
-        self.There_Are_Boxplot = There_Are_Boxplot
-
-        self.Name_Bar_Graph = StringVar(self.W_Export_Graph)
-        self.Name_Bar_Graph.set("")
-        self.Name_Pie_Graph = StringVar(self.W_Export_Graph)
-        self.Name_Bar_Graph.set("")
-        self.Name_Boxplot_Graph = StringVar(self.W_Export_Graph)
-        self.Name_Boxplot_Graph.set("")
-
-    def Create_Widgets(self):
-        self.Input_Name_Bar_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Bar_Graph)
-        self.Input_Name_Bar_Graph.config(state="disabled")
-
-        self.Input_Name_Píe_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Pie_Graph)
-        self.Input_Name_Píe_Graph.config(state="disabled")
-
-        if(self.There_Are_Boxplot):
-            self.Input_Name_Boxplot_Graph = Entry(self.W_Export_Graph , font=("Courier New" , 13) , textvariable=self.Name_Boxplot_Graph)
-            self.Input_Name_Boxplot_Graph.config(state="disabled")
-        else:
-            self.Input_Name_Boxplot_Graph = None
-    
-    def Display_Widgets(self):
-        self.Input_Name_Bar_Graph.place(x=250 , y=520 , width=630)
-
-        self.Input_Name_Píe_Graph.place(x=250 , y=570 , width=630)
-
-        if(self.Input_Name_Boxplot_Graph):
-            self.Input_Name_Boxplot_Graph.place(x=250 , y=620 , width=630)
-
-    def Hidden_Widgets(self):
-        self.Input_Name_Bar_Graph.place_forget()
-
-        self.Input_Name_Píe_Graph.place_forget()
-
-        if(self.Input_Name_Boxplot_Graph):
-            self.Input_Name_Boxplot_Graph.place_forget()
 class Widget_Combobox_For_DPI_And_Format:
     def __init__(self , Root_Window):
         self.W_Export_Graph = Root_Window
@@ -79,60 +39,60 @@ class Widget_Combobox_For_DPI_And_Format:
         self.Input_Format.place_forget()
 
 class Manage_Widgets_Export_Graphs_For_Grouped_Data(
-    Checkboxes_Export_Graphs_For_Grouped_Data , Widget_Combobox_For_DPI_And_Format
+    Section_Export_Graphs_For_Grouped_Data , Widget_Combobox_For_DPI_And_Format
 ):
     def __init__(self , W_Export_Graph , Axis_x_Title):
-        Checkboxes_Export_Graphs_For_Grouped_Data.__init__(self , W_Export_Graph , Axis_x_Title)
+        Section_Export_Graphs_For_Grouped_Data.__init__(self , W_Export_Graph , Axis_x_Title)
         Widget_Combobox_For_DPI_And_Format.__init__(self , W_Export_Graph)
 
     def Create_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Grouped_Data.Create_Widgets(self)
+        Section_Export_Graphs_For_Grouped_Data.Create_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Create_Widgets(self)
 
     def Display_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Grouped_Data.Display_Widgets(self)
+        Section_Export_Graphs_For_Grouped_Data.Display_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Display_Widgets(self)
 
     def Hidden_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Grouped_Data.Hidden_Widgets(self)
+        Section_Export_Graphs_For_Grouped_Data.Hidden_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Hidden_Widgets(self)
 
 class Manage_Widgets_Export_Graphs_For_Not_Grouped_Data(
-    Checkboxes_Export_Graphs_For_Not_Grouped_Data , Widget_Combobox_For_DPI_And_Format
+    Section_Export_Graphs_For_Not_Grouped_Data , Widget_Combobox_For_DPI_And_Format
 ):
     def __init__(self , W_Export_Graph , Axis_x_Title):
-        Checkboxes_Export_Graphs_For_Not_Grouped_Data.__init__(self , W_Export_Graph , Axis_x_Title)
+        Section_Export_Graphs_For_Not_Grouped_Data.__init__(self , W_Export_Graph , Axis_x_Title)
         Widget_Combobox_For_DPI_And_Format.__init__(self , W_Export_Graph)
 
     def Create_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Not_Grouped_Data.Create_Widgets(self)
+        Section_Export_Graphs_For_Not_Grouped_Data.Create_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Create_Widgets(self)
 
     def Display_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Not_Grouped_Data.Display_Widgets(self)
+        Section_Export_Graphs_For_Not_Grouped_Data.Display_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Display_Widgets(self)
 
     def Hidden_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Not_Grouped_Data.Hidden_Widgets(self)
+        Section_Export_Graphs_For_Not_Grouped_Data.Hidden_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Hidden_Widgets(self)
 
 class Manage_Widgets_Export_Graphs_For_Cualitative_Data(
-    Checkboxes_Export_Graphs_For_Cualitative_Data , Widget_Combobox_For_DPI_And_Format
+    Section_Export_Graphs_For_Cualitative_Data , Widget_Combobox_For_DPI_And_Format
 ):
     def __init__(self , W_Export_Graph , Axis_x_Title):
-        Checkboxes_Export_Graphs_For_Cualitative_Data.__init__(self , W_Export_Graph , Axis_x_Title)
+        Section_Export_Graphs_For_Cualitative_Data.__init__(self , W_Export_Graph , Axis_x_Title)
         Widget_Combobox_For_DPI_And_Format.__init__(self , W_Export_Graph)
 
     def Create_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Cualitative_Data.Create_Widgets(self)
+        Section_Export_Graphs_For_Cualitative_Data.Create_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Create_Widgets(self)
 
     def Display_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Cualitative_Data.Display_Widgets(self)
+        Section_Export_Graphs_For_Cualitative_Data.Display_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Display_Widgets(self)
 
     def Hidden_All_Widgets(self):
-        Checkboxes_Export_Graphs_For_Cualitative_Data.Hidden_Widgets(self)
+        Section_Export_Graphs_For_Cualitative_Data.Hidden_Widgets(self)
         Widget_Combobox_For_DPI_And_Format.Hidden_Widgets(self)
 
 
@@ -150,7 +110,6 @@ def Select_Path(W_Export_Graph , Path , Btn_Examine):
     Btn_Examine.config(state="normal")
 
 def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures , Type_Of_Calc , Axis_x_Title , Type_Of_Variable):
-    
     def Hidden_All_Widgets():
         for Classes in Collection_Classes_For_Create_Widgets.values():
             Classes.Hidden_All_Widgets()
@@ -178,6 +137,8 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
     Collection_Classes_For_Create_Widgets = {}
     Collection_Subcheckboxes_With_Selected_Graphs = {}
     Collection_Entry_Titles_For_Graphs = {}
+    Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs = {}
+    Collection_Titles_For_Multiple_Graphs = {}
 
     Collection_Formats = {}
     Collection_DPIs = {}
@@ -231,6 +192,9 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
         Collection_DPIs = Class_For_Create_Widgets.Input_dpi
         Collection_Axis_x_Titles_For_Graphs = Class_For_Create_Widgets.Title_For_Axis_x
 
+        Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs = Class_For_Create_Widgets.Dictionary_Checkboxes_Multiple_Titles_Values
+        Collection_Titles_For_Multiple_Graphs = Class_For_Create_Widgets.Dictionary_Entry_Multiple_Titles_Values
+
         #Btn_Download_Graphs.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Widgets_W_Export_Graph , Widgets_W_Export_Graph.Dictionary_Checkboxes , Variable_Name))
 
     elif(Type_Of_Calc == "Multiple_Columns"):
@@ -260,6 +224,9 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
             Collection_DPIs[f"{axis_x_title}"] = Class_For_Create_Widgets.Input_dpi
             Collection_Axis_x_Titles_For_Graphs[f"{axis_x_title}"] = Class_For_Create_Widgets.Title_For_Axis_x
 
+            Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs[f"{axis_x_title}"] = Class_For_Create_Widgets.Dictionary_Checkboxes_Multiple_Titles_Values
+            Collection_Titles_For_Multiple_Graphs[f"{axis_x_title}"] = Class_For_Create_Widgets.Dictionary_Entry_Multiple_Titles_Values
+
         Select_Column["values"] = Columns_Name
         Select_Column.set(Columns_Name[0])
         Select_Column.bind('<<ComboboxSelected>>' , Display_Widgets_Acoording_Column_Name)
@@ -271,7 +238,15 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
     else:
         raise Exception("Hubo un error al identificar el tipo de calculo.")
 
-    Btn_Download_Graphs = Button(W_Export_Graph , text="Descargar graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5" , command= lambda: Manage_Export_Of_Graphs(W_Show_Graph , W_Export_Graph , File_Name.get() , Input_Path.get() , Collection_Formats , Collection_DPIs , Collection_Axis_x_Titles_For_Graphs , Dictionary_Of_Generated_Figures , Collection_Subcheckboxes_With_Selected_Graphs , Collection_Entry_Titles_For_Graphs , False if Type_Of_Calc == "Multiple_Columns" else True))
+    Btn_Download_Graphs = Button(
+        W_Export_Graph , text="Descargar graficos" , font=("Times New Roman" , 13) , width=30 , bg="#E4DBD5" , 
+        command= lambda: Manage_Export_Of_Graphs(
+            W_Show_Graph , W_Export_Graph , File_Name.get() , Input_Path.get() , Collection_Formats , Collection_DPIs , 
+            Collection_Axis_x_Titles_For_Graphs , Dictionary_Of_Generated_Figures , Collection_Subcheckboxes_With_Selected_Graphs , 
+            Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs , Collection_Titles_For_Multiple_Graphs ,
+            Collection_Entry_Titles_For_Graphs , False if Type_Of_Calc == "Multiple_Columns" else True) , 
+        )
+    
     Btn_Download_Graphs.place(x=300 , y=660)
 
     W_Export_Graph.resizable(False , False)
