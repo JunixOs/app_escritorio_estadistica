@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
-from Tools import Get_Resource_Path
+from Tools import Get_Resource_Path , Delete_Actual_Window
 from Calcs.Table_of_Frecuency.Exports.Export_PDF import Export_Table_In_PDF
 from Calcs.Center_Window import Center
 
@@ -16,24 +16,20 @@ def Select_Path(Path):
         Path.set(File_Path)
 
 def Create_Window_Export_PDF(W_Export_As_File , Results_From_Single_Column , Results_From_Multiple_Column):
-    def Back():
-        for widget in W_Export_PDF.winfo_children():
-            widget.destroy()
-        W_Export_PDF.quit()
-        W_Export_PDF.destroy()
-        W_Export_As_File.state(newstate="normal")
-
     if(W_Export_As_File):
         W_Export_As_File.state(newstate="withdraw")
         W_Export_PDF = Toplevel(W_Export_As_File)
+        W_Export_PDF.geometry("700x180+430+350")
+        W_Export_PDF.grab_set()
         W_Export_PDF.lift()
     else:
         W_Export_PDF = Tk()
-    W_Export_PDF.geometry("700x180+430+350")
+        W_Export_PDF.geometry("700x180+430+350")
+
     W_Export_PDF.title("Exportar en PDF")
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Export_PDF.iconphoto(False , Icon)
-    W_Export_PDF.protocol("WM_DELETE_WINDOW" , Back)
+    W_Export_PDF.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Export_As_File , W_Export_PDF , True))
     W_Export_PDF.config(bg="#CDC4FF")
 
     File_Name = StringVar(W_Export_PDF)

@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
 
-from Tools import Get_Resource_Path
+from Tools import Get_Resource_Path , Delete_Actual_Window
 from Calcs.Center_Window import Center
 from Calcs.Table_of_Frecuency.Exports.Export_Excel import Export_Table_In_Excel
 from tkinter import *
@@ -19,24 +19,20 @@ def Select_File(Path):
             Path.set(Path_File)
 
 def Create_Window_Export_Excel(W_Export_As_File , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
-    def Back():
-        for widget in W_Export_Excel.winfo_children():
-            widget.destroy()
-        W_Export_Excel.quit()
-        W_Export_Excel.destroy()
-        W_Export_As_File.state(newstate="normal")
-    if __name__== "__main__":
-        W_Export_Excel = Tk()
-    else:
+    if(W_Export_As_File):
         W_Export_As_File.state(newstate="withdraw")
         W_Export_Excel = Toplevel(W_Export_As_File)
+        W_Export_Excel.geometry("700x180+430+350")
+        W_Export_Excel.grab_set()
         W_Export_Excel.lift()
-
-    W_Export_Excel.geometry("700x180+430+350")
+    else:
+        W_Export_Excel = Tk()
+        W_Export_Excel.geometry("700x180+430+350")
+        
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Export_Excel.iconphoto(False , Icon)
     W_Export_Excel.title("Exportar Excel")
-    W_Export_Excel.protocol("WM_DELETE_WINDOW" , Back)
+    W_Export_Excel.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Export_As_File , W_Export_Excel , True))
     W_Export_Excel.config(bg="#CDC4FF")
 
     File_Name = StringVar(W_Export_Excel)

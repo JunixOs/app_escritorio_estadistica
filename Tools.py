@@ -39,15 +39,22 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
     if(Father_Window and Children_Window):
         for widget in Children_Window.winfo_children():
             widget.destroy()
-        Children_Window.grab_release()
-        Children_Window.quit()
+        
+        try:
+            Children_Window.grab_release()
+        except:
+            pass
+
         Children_Window.destroy()
-        Level_Father_Window = Get_Window_Level(Father_Window)
         if(Display_Father_Window):
             Father_Window.state(newstate="normal")
         
+        Level_Father_Window = Get_Window_Level(Father_Window)
         if(Level_Father_Window > 1):
-            Father_Window.grab_set()
+            try:
+                Father_Window.grab_set()
+            except:
+                pass
         
         Father_Window.lift()
 
@@ -82,7 +89,7 @@ def Load_Global_Styles(Global_ttk_Style):
     """ ****************************************** Widget Combobox ****************************************** """
     Global_ttk_Style.configure("TCombobox",
                     font=("Times New Roman", 10),
-                    padding=5)
+                    padding=1)
 
     """ ****************************************** Widget Notebook ****************************************** """
     Global_ttk_Style.configure("TNotebook",

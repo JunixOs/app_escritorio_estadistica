@@ -19,14 +19,52 @@ class Widget_Combobox_For_DPI_And_Format:
         self.Formats = [".jpg" , ".png" , ".svg"]
         self.Sizes_In_pX = ["980x700" , "1280x720" , "1920x1080" , "2560x1440"] # (Width x Height)
 
+    def Load_Style_For_Widgets(self):
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure("Modern.TCombobox",
+                        font=("Times New Roman", 11),
+                        padding=1,
+                        foreground="#333333",
+                        background="#ffffff",
+                        fieldbackground="#f0f0f0",
+                        bordercolor="#cccccc",
+                        relief="flat")
+
+        style.map("Modern.TCombobox",
+                foreground=[
+                    ("readonly", "#333333"),
+                    ("!disabled", "#333333")
+                ],
+                fieldbackground=[
+                    ("readonly", "#f0f0f0"),
+                    ("active", "#f0f0f0"),
+                    ("!disabled", "#f0f0f0"),
+                    ("focus", "#f0f0f0"),
+                    ("!selected", "#f0f0f0")
+                ],
+                background=[
+                    ("readonly", "#ffffff"),
+                    ("!disabled", "#ffffff"),
+                    ("focus", "#ffffff"),
+                ],
+                bordercolor=[
+                    ("focus", "#4a90e2"),
+                    ("!focus", "#cccccc")
+                ])
+
+        return style
+
     def Create_Widgets(self):
-        self.Input_dpi = ttk.Combobox(self.W_Export_Graph , values=self.Resolutions , font=("Times New Roman", 13), state="readonly" , width=5)
+        self.Load_Style_For_Widgets()
+
+        self.Input_dpi = ttk.Combobox(self.W_Export_Graph , values=self.Resolutions , font=("Times New Roman", 13) , style="Modern.TCombobox" , state="readonly" , width=5)
         self.Input_dpi.set(self.Resolutions[0])
 
-        self.Input_Sizes = ttk.Combobox(self.W_Export_Graph , values=self.Sizes_In_pX , font=("Times New Roman" , 13) , state="readonly" , width=10)
+        self.Input_Sizes = ttk.Combobox(self.W_Export_Graph , values=self.Sizes_In_pX , font=("Times New Roman" , 13) , style="Modern.TCombobox" , state="readonly" , width=10)
         self.Input_Sizes.set(self.Sizes_In_pX[0])
 
-        self.Input_Format = ttk.Combobox(self.W_Export_Graph , values=self.Formats , font=("Times New Roman", 13), state="readonly" , width=4)
+        self.Input_Format = ttk.Combobox(self.W_Export_Graph , values=self.Formats , font=("Times New Roman", 13) , style="Modern.TCombobox" , state="readonly" , width=4)
         self.Input_Format.set(self.Formats[0])
 
     def Display_Widgets(self):
@@ -195,8 +233,6 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
         Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs = Class_For_Create_Widgets.Dictionary_Checkboxes_Multiple_Titles_Values
         Collection_Titles_For_Multiple_Graphs = Class_For_Create_Widgets.Dictionary_Entry_Multiple_Titles_Values
 
-        #Btn_Download_Graphs.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Widgets_W_Export_Graph , Widgets_W_Export_Graph.Dictionary_Checkboxes , Variable_Name))
-
     elif(Type_Of_Calc == "Multiple_Columns"):
         Label_Select_Column = Label(W_Export_Graph , text="Seleccione la columna: " , font=("Times New Roman" , 13) , justify=LEFT , bg="#E4DBD5") 
         Label_Select_Column.place(x=20 , y=10)
@@ -233,8 +269,6 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
         Select_Column.place(x=200 , y=10)
 
         Display_Widgets_Acoording_Column_Name()
-
-        #Btn_Export_Graph.config(command= lambda: Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name.get() , Path.get() , Collection_Classes_For_Create_Widgets , Collection_Checkboxes))
     else:
         raise Exception("Hubo un error al identificar el tipo de calculo.")
 
