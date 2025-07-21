@@ -1,4 +1,4 @@
-# **StatPhi v2.1.0**
+# **StatPhi v3.0.0**
 [![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20Desarrollo-blue)]()
 [![Licencia](https://img.shields.io/github/license/JunixOs/app_escritorio_estadistica)]()
 [![Última actualización](https://img.shields.io/github/commit-activity/w/JunixOs/app_escritorio_estadistica/develop)]()
@@ -37,6 +37,21 @@
 ## Descripcion
 
 **StatPhi** es un programa desarrollado en el lenguaje de programacion `Python`, usando la libreria `tkinter` como base para desarrollar la UI, asi como las librerias `numpy` , `scipy`, `matplotlib`, `seaborn`, `venn`, `pandas` , `python-calamine`, `openpyxl` y `reportlab` para los calculos, creacion de graficos e importacion y exportacion de archivos y datos.
+
+### ***Librerias Usadas***
+Las lista completa de librerias de **python** usadas en `StatPhi` es la siguiente:
+1. `tkinter`
+2. `pandas 2.2.3`
+3. `numpy 2.2.6`
+4. `matplotlib 3.10.0`
+5. `openpyxl 3.1.5`
+6. `scipy 1.15.1`
+7. `seaborn 0.13.2`
+8. `venn 0.1.3`
+9. `reportlab 3.6.13`
+10. `python-calamine 0.3.2`
+11. `psutil 7.0.0`
+12. `polars 1.30.0`
 
 Este proyecto es el producto final del curso de ***Estadistica General*** correspondiente al ciclo ***2025-0***, el objetivo principal del mismo es el de brindar una forma facil y amigable de calcular y analizar datos a personas que no estan familiarizadas con la programacion en lenguajes especializados para ese campo como `RStudio`.
 
@@ -182,7 +197,7 @@ Algunas caracteristicas importantes de StatPhi son:
 
 ✅ Creacion de Diagramas de Venn.
 
-⬜ Exportar tablas en PDF.
+✅ Exportar tablas en PDF.
 
 ⬜ Creacion y exportacion de multiples graficos en una sola imagen.
 
@@ -212,30 +227,41 @@ Statphi/
 │   │   │   ├── Calc_Frecuences_Cuantitative_Grouped.py
 │   │   │   └── Calc_Frecuences_Cuantitative_Not_Grouped.py
 │   │   ├── Graphs/
-│   │   │   ├── Calc_Bar_Pie_Graphs.py
 │   │   │   ├── Calc_Boxplot.py
-│   │   │   └── Calc_Multiple_Graphs.py
+│   │   │   ├── Calc_Multiple_Graphs.py
+│   │   │   ├── Draw_Graphs.py
+│   │   │   ├── For_Cualitative_Data.py
+│   │   │   ├── For_Grouped_Data.py
+│   │   │   └── For_Not_Grouped_Data.py
 │   │   ├── Summary_Measures/
 │   │   │   ├── Calc_For_Grouped_Data.py
 │   │   │   └── Calc_For_Not_Grouped_Data.py
 │   │   └── Calc_Values_Tables.py
-│   ├── Venn/
-│   │   ├── Calc_Venn_Diagram.py
-│   │   └── Export_Venn_Diagram.py
-│   └── Center_Window.py
+│   └── Venn/
+│       ├── Calc_Venn_Diagram.py
+│       └── Export_Venn_Diagram.py
 ├── Exceptions/
 │   └── Exception_Warning.py
 ├── Images/
-│   ├── DEMO/
+│   ├── icon_beta_version.png
+│   ├── icon.ico
 │   ├── icon.png
 │   └── normal_distribution.png
 ├── Views/
 │   ├── MAS/
 │   │   └── Window_MAS.py
 │   ├── Table_of_Frecuency/
+│   │   ├── Exports/
+│   │   │   ├── Graphs_Classes/
+│   │   │   │   ├── Handler_Widgets_Export.py
+│   │   │   │   ├── Widgets_For_Cualitative_Data.py
+│   │   │   │   ├── Widgets_For_Grouped_Data.py
+│   │   │   │   └── Widgets_For_Not_Grouped_Data.py
+│   │   │   ├── Window_Export_Excel.py
+│   │   │   ├── Window_Export_Graph.py
+│   │   │   └── Window_Export_PDF.py
 │   │   ├── Window_Calc_Table_of_Frecuency.py
-│   │   ├── Window_Export_Excel.py
-│   │   ├── Window_Export_Graph.py
+│   │   ├── Window_Export_As_File.py
 │   │   └── Window_Show_Graph.py
 │   ├── Venn_Diagram/
 │   │   ├── Window_Create_Venn_Diagram.py
@@ -244,35 +270,29 @@ Statphi/
 │   ├── Window_Create_Multiple_Graphs.py
 │   ├── Window_Import_Excel.py
 │   └── Window_Progress_Bar.py
-├── Path_Manager.py
 ├── .gitignore
+├── LICENCE.txt
 └── README.md
+└── Tools.py
 ```
 ---
 
 ## **Instalacion**
 
-Por el momento, no esta disponible un ejecutable que facilite su instalacion y uso, esto debido a que el proyecto todavia esta en fase de construccion y pruebas.
+Si eres un usuario que solo desea solo usar la aplicacion de manera normal sin editar el codigo, entonces te recomendamos descargar el programa por medio del instalador de `StatPhi`, el cual se encontrara
+disponible a partir de la version `v3.0.0` del programa.
+
+El instalador estara ubicado en la pestaña de `releases` del programa en
+GitHub.
+
+Si por el contrario deseas ver el codigo fuente y hacer algunas ediciones, entonces deberas realizar lo siguiente:
 
 ### ***Requisitos previos***
-Si deseas probar StatPhi en tu ordenador, deberas tener intalado los siguientes programas:
+Si deseas instalar el codigo fuente de `StatPhi` en tu ordenador, deberas tener intalado los siguientes programas:
 - Un editor de codigo como `VSCode` (si quieres editar el codigo).
-- `Python 3.11.X`
+- `Python 3.11.X` o superior.
 - El sistema de control de versiones de `git`.
 - Una cuenta en GitHub.
-
-### ***Librerias Necesarias***
-Ademas, deberas contar con las siguientes librerias de **python**:
-1. `tkinter`
-2. `pandas 2.2.3`
-3. `numpy 2.2.6`
-4. `matplotlib 3.10.0`
-5. `openpyxl 3.1.5`
-6. `scipy 1.15.1`
-7. `seaborn 0.13.2`
-8. `venn 0.1.3`
-9. `reportlab 3.6.13`
-10. `python-calamine 0.3.2`
 
 > [!WARNING]
 > Si ya tienes librerias instaladas, es recomendable crear un entorno virtual para evitar conflictos con las diferentes librerias de tu sistema.
@@ -289,7 +309,7 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 
 3. Crear el entorno virtual. Si no sabes como, ingresa el siguiente comando dentro de la terminal:
     ```bash
-    python -m venv nombre_del_entorno
+    python -m venv venv
     ```
 
 4. Activar el entorno virtual:
@@ -297,14 +317,14 @@ Ademas, deberas contar con las siguientes librerias de **python**:
     .\venv\Scripts\activate
     ```
 
-5. Instalar las librerias necesarias.
+5. Instalar las librerias necesarias por medio del archivo requirements.txt.
     - Usando `pip`:
         ```bash
-        pip install pandas==2.2.3 numpy==2.2.6 matplotlib==3.10.0 openpyxl==3.1.5 scipy==1.15.1 seaborn==0.13.2 venn==0.1.3 reportlab==3.6.13 python-calamine==0.3.2
+        pip install -r requirements.txt
         ```
-    - Usando `conda`:
+    - Usando `conda` (no recomendado, ya que ciertas librerias no se encuentran disponibles en los canales de Conda):
         ```bash
-        conda install pandas=2.2.3 matplotlib=3.10.0 openpyxl=3.1.5 scipy=1.15.1 seaborn=0.13.2 venn=0.1.3 reportlab=3.6.13 python-calamine=0.3.2
+        cconda install --file requirements.txt
         ```
 6. Verificar si los paquetes se instalaron correctamente:
     - Usando `pip`:
@@ -318,7 +338,7 @@ Ademas, deberas contar con las siguientes librerias de **python**:
 
 7. Ejecutar el programa:
     ```bash
-    python .\Windows\Main_Window.py
+    python .\Views\Main_Window.py
     ```
 
 ---
@@ -361,7 +381,7 @@ Aqui te encontraras con los siguientes elementos:
   - **Configuracion de Importacion**: Permite modificar ciertas caracteristicas de la importacion y la previsualizacion de datos en un Excel. Aqui te encontraras con los siguientes campos:
     - ***Toleracion de Celdas Vacias***: Permite modificar el numero de celdas vacias maxima que se ignoraran hasta encontrar de nuevo un dato valido al momento de ubicar el ultimo dato en cada columna.
 
-    - ***Filas en la Previsualizacion***: Modifica el numero de filas que se mostraran en la previsualizacion. Por defecto este valor es de 100. 
+    - ***Filas en la Previsualizacion***: Modifica el numero de filas que se mostraran en la previsualizacion. Por defecto este valor es de 100.
 
 - **Calcular Tabla**: Una vez que hayas introducido los datos manualmente o que los hayas importado de un excel, podras calcular la tabla de frecuencias junto con las demas medidas de resumen. 
 
@@ -371,12 +391,19 @@ Aqui te encontraras con los siguientes elementos:
   - **Exportar Tabla a PDF**: Esta opcion es util cuando necesitas presentar los resultados obtenidos de manera formal, sin tener que editarlos antes. Si tuvieras varias tablas de frecuencias, puedes seleccionar cuales exportar marcando su casilla correspondiente.
 
 - **Mostrar Grafico**:
-    Ofrece la posibilidad de ver los graficos para la tabla de frecuencias actual. Los graficos que podras ver son:
-    - *Grafico de Barras para la Frecuencia Absoluta Simple*
-    - *Grafico de Barras para la Frecuencia Relativa Simple*
-    - *Grafico de Barras para la Frecuencia Relativa Simple Porcentual*
-    - *Grafico de pastel*
-    - *Grafico de Cajas*
+    Ofrece la posibilidad de ver los graficos para la tabla de frecuencias actual. Los graficos que podras ver dependeran del tipo de variable de los datos analizados:
+    - Datos Cuantitativos Continuos:
+      - Histograma
+      - Poligonos de Frecuencia
+      - Poligonos de Frecuencia Acumulada (Ojivas)
+      - Grafico de Cajas
+    - Datos Cuantitativos Discretos:
+      - Grafico de Barras
+      - Grafico de Bastones
+      - Grafico de Escalones
+    - Datos Cualitativos:
+      -  Grafico de Barras Simples
+      -  Grafico de Pastel
 
     Si anteriormente importaste datos de multiples columnas de un Excel usando la opcion de `Importar datos`,
     podras elegir de que variable ver los graficos.
@@ -412,8 +439,10 @@ Aqui te encontraras con los siguientes elementos:
 
         - ***Seleccion de Graficos a Exportar***: Permite elegir si exportar algunos graficos o todos.
 
-        - ***Nombre de los Graficos***: Permite colocar un titulo que describa mejor el grafico a exportar, dependiendo de que graficos exportes podras colocar un nombre al grafico de barras, de pastel y de cajas.
-        Si no colocas ningun nombre, el grafico se exportara sin un titulo.
+        - ***Nombre de los Graficos***: Permite colocar un titulo que describa mejor el grafico a exportar. Ten en cuenta que si no colocas ningun nombre, el grafico se exportara sin un titulo o con los valores por defecto.
+          - *Colocar un Mismo Titulo a Varios Graficos*: Esta opcion permite colocar un mismo titulo a varios graficos de una misma categoria.
+          - *Titulo eje x*: Aqui podras especificar el nombre real de la variable de estudio, la cual se coloca como nombre para el eje x del grafico.
+
 ---
 
 #### ***Calculo de Diagramas de Venn***

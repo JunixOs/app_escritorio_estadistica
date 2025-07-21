@@ -3,7 +3,7 @@ import os
 import numpy
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Get_Version
+from Tools import Get_Resource_Path , Get_Version , Center_Window
 from Exceptions.Exception_Warning import Raise_Warning
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
 from Views.Table_of_Frecuency.Window_Export_As_File import Create_Window_Export_As_File
@@ -850,7 +850,8 @@ def Create_Window_Frecuences_Table(Main_Window):
             Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel)
 
     Window_Frecuences_Table = Toplevel(Main_Window)
-    Window_Frecuences_Table.geometry("1400x800+60+55")
+    # Window_Frecuences_Table.geometry("1400x800+60+55")
+    Center_Window(Window_Frecuences_Table , 1400 , 800)
     Window_Frecuences_Table.title("Tabla de frecuencias")
     Window_Frecuences_Table.config(bg="#6C6E72")
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))

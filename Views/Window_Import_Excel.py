@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON , Check_Threads_Alive
+from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON , Check_Threads_Alive , Center_Window
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
@@ -276,7 +276,8 @@ def Create_Window_Import_Configuration(W_Import_Excel=None):
     W_Import_Configuration = Toplevel(W_Import_Excel)
 
     W_Import_Configuration.grab_set()
-    W_Import_Configuration.geometry("500x200+500+350")
+    # W_Import_Configuration.geometry("500x200+500+350")
+    Center_Window(W_Import_Configuration , 500 , 200)
     W_Import_Configuration.title("Configurar Importacion")
     W_Import_Configuration.config(bg="#d1e7d2")
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
@@ -313,7 +314,8 @@ def Create_Window_Import_Excel(Father_Window , Value_For_Entry_Widget_W_Table_Fr
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
 
     W_Import_Excel.grab_set()
-    W_Import_Excel.geometry("800x550+350+170")
+    Center_Window(W_Import_Excel , 800 , 550)
+
     W_Import_Excel.title("Seleccionar Archivo")
     W_Import_Excel.config(bg="#d1e7d2")
     W_Import_Excel.iconphoto(False , Icon)

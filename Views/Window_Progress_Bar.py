@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window
+from Tools import Get_Resource_Path , Delete_Actual_Window , Center_Window
 from tkinter import ttk
 from tkinter import *
 import time
@@ -19,7 +19,7 @@ class W_Progress_Bar:
     def Start_Progress_Bar(self , Text_Progress_Bar = "Procesando, esto podria tomar un tiempo."):
         self.Progress_Window = Toplevel(self.Root_Window)
         self.Progress_Window.title("Cargando")
-        self.Progress_Window.geometry("500x100+500+400")
+        Center_Window(self.Progress_Window , 500 , 100)
         self.Progress_Window.protocol("WM_DELETE_WINDOW" , self.Back)
         Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
         self.Progress_Window.iconphoto(False , Icon)

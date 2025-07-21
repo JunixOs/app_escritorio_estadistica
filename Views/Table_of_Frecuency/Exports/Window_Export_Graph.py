@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window
+from Tools import Get_Resource_Path , Delete_Actual_Window , Center_Window
 from Calcs.Table_of_Frecuency.Exports.Export_Graph import Manage_Export_Of_Graphs
 from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Grouped_Data import Section_Export_Graphs_For_Grouped_Data
 from Views.Table_of_Frecuency.Exports.Graphs_Classes.Widgets_For_Not_Grouped_Data import Section_Export_Graphs_For_Not_Grouped_Data
@@ -161,7 +161,7 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
     W_Show_Graph.state(newstate="withdraw")
 
     W_Export_Graph.title("Exportar Graficos")
-    W_Export_Graph.geometry("900x700+310+90")
+    Center_Window(W_Export_Graph , 900 , 700)
     W_Export_Graph.lift()
     W_Export_Graph.grab_set()
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))

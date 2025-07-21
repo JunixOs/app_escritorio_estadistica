@@ -2,10 +2,11 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import Views.Window_Import_Excel as W_Import_Excel
+from Tools import Center_Window
 from Calcs.Venn.Calc_Venn_Diagram import Venn_Diagram
-import Views.Venn_Diagram.Window_Export_Venn_Diagram as W_Export_Venn_Diagram
 from Exceptions.Exception_Warning import Raise_Warning
+import Views.Window_Import_Excel as W_Import_Excel
+import Views.Venn_Diagram.Window_Export_Venn_Diagram as W_Export_Venn_Diagram
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -83,7 +84,8 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     Main_Window.state(newstate="withdraw")
     W_Create_Venn_Diagram = Toplevel(Main_Window)
 
-    W_Create_Venn_Diagram.geometry("1300x800+110+48")
+    # W_Create_Venn_Diagram.geometry("1300x800+110+48")
+    Center_Window(W_Create_Venn_Diagram , 1300 , 800)
     Icon = PhotoImage(file="Images/icon.png")
     W_Create_Venn_Diagram.iconphoto(False , Icon)
     W_Create_Venn_Diagram.title("Crear Diagramas de Venn")

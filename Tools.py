@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import psutil
 from Exceptions.Exception_Warning import Raise_JSON_Settings_Error
 
 # ==================================================================== Miscelaneous Tools ====================================================================
@@ -19,11 +20,20 @@ def Get_Resource_Path(Resource_Name):
 
     return Resource_Path
 
+def Get_RAM_Memory_In_Device():
+    Memory_RAM = psutil.virtual_memory()
+
+    return {
+        "Total": Memory_RAM.total / (1024 ** 3),
+        "In Use": Memory_RAM.used / (1024 ** 3),
+        "Available": Memory_RAM.available / (1024 ** 3),
+        "Pecentaje_Use": Memory_RAM.percent,
+    }
+
 def Get_Version():
-    Version = "v2.1.0"
+    Version = "v3.0.0"
 
     return Version
-
 
 # ==================================================================== Tkinter Tools ====================================================================
 def Get_Window_Level(Window):
@@ -57,6 +67,18 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
                 pass
         
         Father_Window.lift()
+
+def Center_Window(Window_To_Center , Window_Width , Window_Height):
+    try:
+        Screen_Width = Window_To_Center.winfo_screenwidth()
+        Screen_Height = Window_To_Center.winfo_screenheight()
+
+        x = (Screen_Width - Window_Width) // 2
+        y = (Screen_Height - Window_Height) // 2
+
+        Window_To_Center.geometry(f"{Window_Width}x{Window_Height}+{x}+{y}")
+    except Exception:
+        Window_To_Center.geometry(f"{Window_Width}x{Window_Height}")
 
 def Load_Global_Styles(Global_ttk_Style):
     """ Sirve para cargar los estilos de todos los widgets ttk """
@@ -288,4 +310,5 @@ if(__name__ == "__main__"):
     # version = "v1.2.3"
     # print(version.lstrip("v"))  ---> 1.2.3
     
+    # print(Get_Number_Of_Util_Threads_In_Device())
     print(Get_Version().strip().lstrip("v"))

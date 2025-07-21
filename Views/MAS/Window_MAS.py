@@ -3,8 +3,9 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from Tools import Center_Window
 import Calcs.MAS.MAS_Calc as MAS
-from Calcs.Center_Window import Center
+
 from tkinter import *
 
 def Create_Window_MAS(Main_Window=None):
@@ -26,8 +27,8 @@ def Create_Window_MAS(Main_Window=None):
 
     Icon = PhotoImage(file="Images/icon.png")
     Window_MAS.title("Calcular tamaño de muestra")
-    Window_MAS.geometry("550x510")
-    Center(Window_MAS , 550 , 510)
+
+    Center_Window(Window_MAS , 550 , 510)
 
     Window_MAS.iconphoto(False , Icon)
     Window_MAS.lift()

@@ -3,9 +3,8 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window
+from Tools import Get_Resource_Path , Delete_Actual_Window , Center_Window
 from Calcs.Table_of_Frecuency.Exports.Export_PDF import Export_Table_In_PDF
-from Calcs.Center_Window import Center
 
 from tkinter import *
 from tkinter import filedialog
@@ -70,8 +69,7 @@ def Create_Window_Export_PDF(W_Export_As_File , Results_From_Single_Column , Res
             Max_Height = y_pos
             Columns_To_Export[f"{variable_name}"] = Checked_Variable_To_Export
 
-        W_Export_PDF.geometry(f"700x{Max_Height + 100}")
-        Center(W_Export_PDF , 700 , Max_Height + 100)
+        Center_Window(W_Export_PDF , 700 , Max_Height + 100)
 
     Btn_Export_PDF = Button(W_Export_PDF , text="Exportar PDF" , font=("Times New Roman" , 13) , command= lambda: Export_Table_In_PDF(W_Export_As_File , W_Export_PDF , Results_From_Single_Column , Results_From_Multiple_Column , Path.get() , File_Name.get() , "" , Columns_To_Export) , bg="#FDA8C0")
     Btn_Export_PDF.pack(side=BOTTOM)

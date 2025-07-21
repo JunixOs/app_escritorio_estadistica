@@ -7,7 +7,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 
-from Tools import Get_Resource_Path , Get_Number_Of_Util_Threads_In_Device , Delete_Actual_Window , Check_Threads_Alive
+from Tools import Get_Resource_Path , Get_Number_Of_Util_Threads_In_Device , Delete_Actual_Window , Check_Threads_Alive , Center_Window
 from Calcs.Table_of_Frecuency.Graphs.Draw_Graphs import Manage_All_Graphs_Draw
 from Views.Table_of_Frecuency.Exports.Window_Export_Graph import Create_Window_Export_Graphs
 from Window_Create_Multiple_Graphs import Create_Window_Multiple_Graphs
@@ -589,7 +589,8 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
 
     W_Show_Graph = Toplevel(W_Calc_Frecuences_Table)
     W_Show_Graph.title("Ver graficos")
-    W_Show_Graph.geometry("1300x700+105+105")
+    # W_Show_Graph.geometry("1300x700+105+105")
+    Center_Window(W_Show_Graph , 1300 , 700)
     W_Show_Graph.grab_set()
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Show_Graph.iconphoto(False , Icon)

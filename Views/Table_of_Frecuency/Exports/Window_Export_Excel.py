@@ -3,8 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window
-from Calcs.Center_Window import Center
+from Tools import Get_Resource_Path , Delete_Actual_Window , Center_Window
 from Calcs.Table_of_Frecuency.Exports.Export_Excel import Export_Table_In_Excel
 from tkinter import *
 from tkinter import filedialog
@@ -70,8 +69,7 @@ def Create_Window_Export_Excel(W_Export_As_File , Results_From_Single_Column , R
             Max_Height = y_pos
             Columns_To_Export[key] = Checked_Checkbox_1
 
-        W_Export_Excel.geometry(f"700x{Max_Height + 100}")
-        Center(W_Export_Excel , 700 , Max_Height + 100)
+        Center_Window(W_Export_Excel , 700 , Max_Height + 100)
 
     Btn_Export = Button(W_Export_Excel , text="Exportar" , font=("Times New Roman" , 13) , width=20 , bg="#FDA8C0" , command=lambda: Export_Table_In_Excel(W_Export_As_File , W_Export_Excel , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column , Path.get() , Columns_To_Export , File_Name.get()))
     Btn_Export.pack(side=BOTTOM)

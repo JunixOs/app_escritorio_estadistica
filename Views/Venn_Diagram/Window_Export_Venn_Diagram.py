@@ -2,9 +2,9 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
+from Tools import Get_Resource_Path , Center_Window
 from Calcs.Venn.Export_Venn_Diagram import Export_Venn_Diagram_As_Image
-from Tools import Get_Resource_Path
-from Calcs.Center_Window import Center
+
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
@@ -37,8 +37,9 @@ def Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph):
         W_Export_Venn_Diagram.grab_set()
         W_Export_Venn_Diagram.lift()
         W_Export_Venn_Diagram.protocol("WM_DELETE_WINDOW" , Back)
-    W_Export_Venn_Diagram.geometry("800x300")
-    Center(W_Export_Venn_Diagram , 800 , 300)
+
+    Center_Window(W_Export_Venn_Diagram , 800 , 300)
+    
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
     W_Export_Venn_Diagram.iconphoto(False , Icon)
     W_Export_Venn_Diagram.title("Exportar Diagrama de Venn")

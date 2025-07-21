@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window
+from Tools import Get_Resource_Path , Delete_Actual_Window , Center_Window
 from Views.Table_of_Frecuency.Exports.Window_Export_Excel import Create_Window_Export_Excel
 from Views.Table_of_Frecuency.Exports.Window_Export_PDF import Create_Window_Export_PDF
 
@@ -11,12 +11,12 @@ from tkinter import *
 def Create_Window_Export_As_File(W_Calc_Frecuences_Table , Results_From_Single_Column , Results_From_Multiple_Column , Type_Of_Variable_For_Single_Column , Type_Of_Variable_For_Multiple_Column):
     if(W_Calc_Frecuences_Table):
         W_Export_As_File = Toplevel(W_Calc_Frecuences_Table)
-        W_Export_As_File.geometry("700x500+400+180")
+        Center_Window(W_Export_As_File , 700 , 500)
         W_Export_As_File.grab_set()
         W_Export_As_File.lift()
     else:
         W_Export_As_File = Tk()
-        W_Export_As_File.geometry("700x500+400+180")
+        Center_Window(W_Export_As_File , 700 , 500)
 
     W_Export_As_File.title("Exportar Tabla")
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
