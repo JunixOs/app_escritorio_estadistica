@@ -1,13 +1,16 @@
 import os
+import sys
 import json
 from Exceptions.Exception_Warning import Raise_JSON_Settings_Error
 
 # ==================================================================== Miscelaneous Tools ====================================================================
 def Get_Project_Root():
-    Script_Dir = os.path.dirname(os.path.realpath(__file__))
-    Project_Root = os.path.abspath(os.path.join(Script_Dir))
-
-    return Project_Root
+    if(getattr(sys , 'frozen' , False)):
+        return sys._MEIPASS
+    else:
+        Script_Dir = os.path.dirname(os.path.realpath(__file__))
+        Project_Root = os.path.abspath(os.path.join(Script_Dir))
+        return Project_Root
 
 def Get_Resource_Path(Resource_Name):
     Project_Root = Get_Project_Root()
@@ -36,20 +39,140 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
     if(Father_Window and Children_Window):
         for widget in Children_Window.winfo_children():
             widget.destroy()
-        Children_Window.grab_release()
-        Children_Window.quit()
-        Children_Window.destroy()
-        Level_Father_Window = Get_Window_Level(Father_Window)
-        if(Display_Father_Window):
-            Father_Window.state(newstate="Normal")
         
+        try:
+            Children_Window.grab_release()
+        except:
+            pass
+
+        Children_Window.destroy()
+        if(Display_Father_Window):
+            Father_Window.state(newstate="normal")
+        
+        Level_Father_Window = Get_Window_Level(Father_Window)
         if(Level_Father_Window > 1):
-            Father_Window.grab_set()
+            try:
+                Father_Window.grab_set()
+            except:
+                pass
         
         Father_Window.lift()
 
+def Load_Global_Styles(Global_ttk_Style):
+    """ Sirve para cargar los estilos de todos los widgets ttk """
+    """ ****************************************** Widget Label ****************************************** """
+    Global_ttk_Style.configure("TLabel",
+                    font=("Times New Roman", 10),
+                    foreground="#333")
+
+    """ ****************************************** Widget Entry ****************************************** """
+    Global_ttk_Style.configure("TEntry",
+                    font=("Times New Roman", 10),
+                    padding=5,
+                    relief="flat")
+
+    """ ****************************************** Widget Button ****************************************** """
+    Global_ttk_Style.configure("TButton",
+                    font=("Times New Roman", 10, "bold"),
+                    padding=6,
+                    foreground="#fff",
+                    background="#0078D7")
+    Global_ttk_Style.map("TButton",
+            background=[("active", "#005A9E")],
+            relief=[("pressed", "sunken")])
+
+    """ ****************************************** Widget Checkbutton ****************************************** """
+    Global_ttk_Style.configure("TCheckbutton",
+                    font=("Times New Roman", 10),
+                    padding=5)
+
+    """ ****************************************** Widget Combobox ****************************************** """
+    Global_ttk_Style.configure("TCombobox",
+                    font=("Times New Roman", 10),
+                    padding=1)
+
+    """ ****************************************** Widget Notebook ****************************************** """
+    Global_ttk_Style.configure("TNotebook",
+                    tabposition='n')
+
+    Global_ttk_Style.configure("TNotebook.Tab",
+                    font=("Times New Roman", 10),
+                    padding=[10, 5],
+                    background="#f0f0f0")
+
+    Global_ttk_Style.map("TNotebook.Tab",
+            background=[("selected", "#dcdcdc")],
+            expand=[("selected", [1, 1, 1, 0])])
+
+    """ ****************************************** Widget Treeview ****************************************** """
+    Global_ttk_Style.configure("Treeview",
+                    font=("Times New Roman", 10),
+                    rowheight=28,
+                    padding=5,
+                    relief="flat",
+                    background="#ffffff",
+                    fieldbackground="#ffffff",
+                    foreground="#333")
+
+    Global_ttk_Style.map("Treeview",
+            background=[("selected", "#0078D7")],
+            foreground=[("selected", "#ffffff")])
+
+    Global_ttk_Style.configure("Treeview.Heading",
+                    font=("Times New Roman", 10, "bold"),
+                    background="#f0f0f0",
+                    foreground="#333",
+                    relief="flat")
+
+    Global_ttk_Style.map("Treeview.Heading",
+            background=[("active", "#e0e0e0")])
+
+    """ ****************************************** Widget Scrollbar ****************************************** """
+    Global_ttk_Style.configure("Vertical.TScrollbar",
+                    gripcount=0,
+                    background="#d0d0d0",
+                    darkcolor="#c0c0c0",
+                    lightcolor="#e0e0e0",
+                    troughcolor="#f0f0f0",
+                    bordercolor="#f0f0f0",
+                    arrowcolor="#555")
+
+    Global_ttk_Style.configure("Horizontal.TScrollbar",
+                    gripcount=0,
+                    background="#d0d0d0",
+                    darkcolor="#c0c0c0",
+                    lightcolor="#e0e0e0",
+                    troughcolor="#f0f0f0",
+                    bordercolor="#f0f0f0",
+                    arrowcolor="#555")
+
+    """ ****************************************** Widget Progressbar ****************************************** """
+    Global_ttk_Style.configure("TProgressbar",
+                    troughcolor="#f0f0f0",
+                    background="#0078D7", 
+                    thickness=20,   
+                    bordercolor="#f0f0f0",
+                    lightcolor="#0078D7",
+                    darkcolor="#0078D7")
+
+# ==================================================================== Threads Tools ====================================================================
+def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Finish=None):
+    # Verifica si todos los hilos terminaron
+    if all(not t.is_alive() for t in Threads_List):
+        Class_Progress_Bar.Close_Progress_Bar()
+        if(On_Finish):
+            Root_Window.after(0 , On_Finish)
+    else:
+        Root_Window.after(500, Check_Threads_Alive, Threads_List, Root_Window , Class_Progress_Bar , On_Finish)
 
 # ==================================================================== JSON Settings Tools ====================================================================
+def Get_Number_Of_Util_Threads_In_Device(Percentaje_Of_Use = 0.5):
+    Max_Trheads = os.cpu_count()
+    if(Percentaje_Of_Use > 1):
+        Percentaje_Of_Use /= 100
+    Max_Trheads = round(Max_Trheads * Percentaje_Of_Use)
+    return Max_Trheads
+
 def Get_Default_Settings_Param_In_JSON():
     Import_Excel_Settings = {
         "void_tolerance": 2,
@@ -157,5 +280,12 @@ def Read_Data_From_JSON(JSON_Settings_Name):
     return JSON_Settings_Data
 
 if(__name__ == "__main__"):
-    print(Get_Project_Root())
-    print(Get_Version())
+    # strip() elimina caracteres de los lados (por defecto solo espacios pero puedes especificar)
+    # version = "!!!varsion!!!"
+    # print(versiion.strip("!"))  ---> version
+
+    # lstrip() solo elimina caracteres del lado izquierdo, por defecto espacios en blanco
+    # version = "v1.2.3"
+    # print(version.lstrip("v"))  ---> 1.2.3
+    
+    print(Get_Version().strip().lstrip("v"))

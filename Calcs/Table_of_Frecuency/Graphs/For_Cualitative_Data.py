@@ -6,56 +6,65 @@ import copy
 def pixels_to_inches(pixels, dpi=72):
     return pixels / dpi
 
-class Draw_Graph_for_Each_Variable:
-    def __init__(self , Data , Precision , Axis_x_Title):
-        self.Data = Data
-        self.Precision = Precision
+class Graphs_For_Cualitative_Variable:
+    def __init__(self , Copy_Results_From_Calcs , Axis_x_Title):
+        self.Copy_Results_From_Calcs = Copy_Results_From_Calcs
 
         self.Bar_Title = ""
 
         self.Pie_Title = ""
         self.Axis_x_Title = Axis_x_Title
-        self.Axis_y_Title = None
+
+        if(not self.Axis_x_Title):
+            self.Axis_x_Title = "Variables Observadas (ai)"
 
         self.Fig_Height = pixels_to_inches(700)
         self.Fig_Width = pixels_to_inches(980)
 
-    def Draw_Bars(self , Copy_Data , Variable_Of_Frecuency , Variable_To_Access):
+    def Draw_Simple_Bars(self , Variable_Of_Frecuency , Precision , Axis_y_Title):
         figure_bars = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
 
-        ax_Bars = figure_bars.add_subplot(111)  
+        ax_Bars = figure_bars.add_subplot(111)
         figure_bars.subplots_adjust(bottom=0.15)
+        
 
-        Bars = ax_Bars.bar(Copy_Data[f"{Variable_To_Access}"].astype(str) , Copy_Data[f"{Variable_Of_Frecuency}"] , color="skyblue" , width=0.6)
+        Bars = ax_Bars.bar(self.Copy_Results_From_Calcs["ai"].astype(str) , self.Copy_Results_From_Calcs[f"{Variable_Of_Frecuency}"] , color="#69b3a2", edgecolor="black", width=0.6)
 
-        ax_Bars.set_xticks(range(len(Copy_Data[f"{Variable_To_Access}"])))
-        ax_Bars.set_xticklabels(Copy_Data[f"{Variable_To_Access}"] , fontsize=8 , rotation=30 , rotation_mode="anchor" , ha="right")
+        ax_Bars.set_xticks(range(len(self.Copy_Results_From_Calcs["ai"])))
+        ax_Bars.set_xticklabels(self.Copy_Results_From_Calcs["ai"] , fontsize=8 , rotation=35 , rotation_mode="anchor" , ha="right")
 
         ax_Bars.set_title(self.Bar_Title)
 
-        ax_Bars.set_xlabel(f"{self.Axis_x_Title}")
-        ax_Bars.set_ylabel(f"{self.Axis_y_Title}")
+        ax_Bars.set_xlabel(f"{self.Axis_x_Title}" , labelpad=8 , fontweight='bold')
+        ax_Bars.set_ylabel(f"{Axis_y_Title}" , labelpad=10 , fontweight='bold')
+
+        ax_Bars.grid(axis="y", linestyle="--", alpha=0.5)
 
         for Bar in Bars:
             height = Bar.get_height()
             if Variable_Of_Frecuency == "fi":
                 ax_Bars.text(Bar.get_x() + (Bar.get_width() / 2), height + (height * 0.01), f"{int(height)}" , ha="center", va="bottom", fontsize=10)
             elif Variable_Of_Frecuency == "hi":
-                ax_Bars.text(Bar.get_x() + (Bar.get_width() / 2), height + (height * 0.01), f"{height:.{self.Precision}f}" , ha="center", va="bottom", fontsize=10)
+                ax_Bars.text(Bar.get_x() + (Bar.get_width() / 2), height + (height * 0.01), f"{height:.{Precision}f}" , ha="center", va="bottom", fontsize=10)
             elif Variable_Of_Frecuency == "hi_percent":
-                ax_Bars.text(Bar.get_x() + (Bar.get_width() / 2), height + (height * 0.01), f"{height:.{self.Precision}f}%" , ha="center", va="bottom", fontsize=10)
+                ax_Bars.text(Bar.get_x() + (Bar.get_width() / 2), height + (height * 0.01), f"{height:.{Precision}f}%" , ha="center", va="bottom", fontsize=10)
             
             Bar.set_zorder(2)
             # Agregar una sombra (simulando un desplazamiento)
             ax_Bars.bar(Bar.get_x() + 0.24, height - (height * 0.01), width=Bar.get_width(), bottom=0, color='gray', alpha=0.5, zorder=1)
+
+        for Spine in ["top", "right"]:
+            figure_bars.gca().spines[Spine].set_visible(False)
+        figure_bars.tight_layout()
+
         return figure_bars
 
-    def Draw_Pie(self , Copy_Data , Variable_Of_Frecuency , Variable_To_Access):
+    def Draw_Pie_Graph(self):
         """ Modificar para que los datos se muestren de mejor manera. """
         figure_pie = plt.Figure(figsize=(self.Fig_Width , self.Fig_Height) , dpi=72)
         ax_pie = figure_pie.add_subplot(111)
 
-        values = Copy_Data[f"{Variable_Of_Frecuency}"]
+        values = self.Copy_Results_From_Calcs["hi_percent"]
 
         # Ajuste de las porciones más pequeñas
         explode = [0.12 if v < max(values) * 0.1 else 0.04 for v in values]
@@ -63,7 +72,7 @@ class Draw_Graph_for_Each_Variable:
         # Agregar el gráfico de pastel
         wedges, texts, autotexts = ax_pie.pie(
             values,
-            labels=Copy_Data[f"{Variable_To_Access}"],
+            labels=self.Copy_Results_From_Calcs["ai"],
             autopct="%1.1f%%",
             startangle=90,
             labeldistance=1.1,  # Aleja las etiquetas de los centro
@@ -126,67 +135,9 @@ class Draw_Graph_for_Each_Variable:
         ax_pie.set_facecolor('lightgray')
         ax_pie.set_title(self.Pie_Title)
 
-        plt.tight_layout()
+        figure_pie.tight_layout()
 
         ax_pie.axis("equal")
 
         return figure_pie
-
-    def Draw_Graph(self , Variable_Of_Frecuency):
-        if(Variable_Of_Frecuency != "fi" and Variable_Of_Frecuency != "hi" and Variable_Of_Frecuency != "hi_percent"):
-            raise Exception("Error al verificar la frecuencia.")
-        
-        if(Variable_Of_Frecuency == "fi"):
-            self.Axis_y_Title = "Frecuencia Absoluta (fi)"
-        elif(Variable_Of_Frecuency == "hi"):
-            self.Axis_y_Title = "Frecuencia Relativa (hi)"
-        elif(Variable_Of_Frecuency == "hi_percent"):
-            self.Axis_y_Title = "Frecuencia Relativa Porcentual (hi%)"
-        
-        if ("Frecuences_Cuant_Grouped" in self.Data):
-            Copy_Data = copy.deepcopy(self.Data["Frecuences_Cuant_Grouped"])
-            Copy_Data = pd.DataFrame(Copy_Data)
-
-            if(not self.Axis_x_Title):
-                self.Axis_x_Title = "Intervalos de Clase"
-            
-            figure_bars = self.Draw_Bars(Copy_Data , Variable_Of_Frecuency , "Intervals")
-
-            """ Pie """
-            if(Variable_Of_Frecuency == "fi"):
-                figure_pie = self.Draw_Pie(Copy_Data , Variable_Of_Frecuency , "Intervals")
-                return figure_bars , figure_pie
-
-            return figure_bars
-
-        elif("Frecuences_Cuant_Not_Grouped" in self.Data):
-            Copy_Data = self.Data["Frecuences_Cuant_Not_Grouped"].copy()
-            Copy_Data = pd.DataFrame(Copy_Data)
-            
-            if(not self.Axis_x_Title):
-                self.Axis_x_Title = "Variables Observadas (xi)"
-
-            figure_bars = self.Draw_Bars(Copy_Data , Variable_Of_Frecuency , "xi")
-
-            if(Variable_Of_Frecuency == "fi"):
-                figure_pie = self.Draw_Pie(Copy_Data , Variable_Of_Frecuency , "xi")
-                return figure_bars , figure_pie
-            return figure_bars
-
-        elif("Frecuences_Cuali" in self.Data):
-            Copy_Data = self.Data["Frecuences_Cuali"].copy()
-            Copy_Data = pd.DataFrame(Copy_Data)
-
-            if(not self.Axis_x_Title):
-                self.Axis_x_Title = "Variables Observadas (ai)"
-
-            figure_bars = self.Draw_Bars(Copy_Data , Variable_Of_Frecuency , "ai")
-
-            if(Variable_Of_Frecuency == "fi"):
-                figure_pie = self.Draw_Pie(Copy_Data , Variable_Of_Frecuency , "ai")
-                return figure_bars , figure_pie
-
-            return figure_bars
-
-        else:
-            raise Exception("Error al procesar los datos.")
+    

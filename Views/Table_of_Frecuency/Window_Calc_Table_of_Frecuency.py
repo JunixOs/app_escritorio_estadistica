@@ -1,7 +1,6 @@
 import sys
 import os
 import numpy
-# Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Tools import Get_Resource_Path , Get_Version
@@ -23,6 +22,8 @@ Global_Results_From_Multiple_Columns = {}
 Global_Type_Of_Variable_Single_Column = "" # Obtiene el tipo de variable, solo para analisis que involucren una columna de datos
 Global_Type_Of_Variable_Multiple_Column = {} # Obtiene el tipo de variable, solo para analisis que involucren multiples columnas de datos
 Global_Views = {} # Se encarga de almacenar todas las tablas que resultan de cada columna analizada
+
+Dictionary_For_Generated_Figures = {}
 #
 class TreeviewFrame(ttk.Frame):
     def __init__(self, *args, **kwargs):
@@ -70,7 +71,7 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.treeview.heading("9" , text="hi%")
         self.Table_Frecuences.treeview.heading("10" , text="HI%")
 
-        self.Table_Frecuences.treeview.config(height=13)
+        self.Table_Frecuences.treeview.config(height=9)
 
         for a in range(1 , 11):
             if(a == 1):
@@ -103,7 +104,7 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.treeview.heading("6" , text="hi%")
         self.Table_Frecuences.treeview.heading("7" , text="HI%")
 
-        self.Table_Frecuences.treeview.config(height=13)
+        self.Table_Frecuences.treeview.config(height=9)
 
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
@@ -130,7 +131,7 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.treeview.heading("6" , text="hi%")
         self.Table_Frecuences.treeview.heading("7" , text="HI%")
 
-        self.Table_Frecuences.treeview.config(height=13)
+        self.Table_Frecuences.treeview.config(height=9)
 
         for a in range(1 , 8):
             self.Table_Frecuences.treeview.column(f"{a}" , anchor="center" , width=185)
@@ -278,27 +279,27 @@ class Table_Of_Frecuences:
         self.Table_Frecuences.destroy()
 
 
-class Checkbox_Is_Continue:
+class Checkbox_Group_Data_In_Intervals:
     def __init__(self , W_Calc_Table_Frec):
         self.W_Calc_Table_Frec = W_Calc_Table_Frec
-        self.Checkbox_Is_Continue = None
+        self.Checkbox_Group_Data_In_Intervals = None
         self.Checked_Is_Continue = BooleanVar(self.W_Calc_Table_Frec)
         self.Checked_Is_Continue.set(False)
     
     def Create_Checkbox(self):
-        self.Checkbox_Is_Continue = Checkbutton(self.W_Calc_Table_Frec , text="Variable Cuantitativa Continua" , variable=self.Checked_Is_Continue , font=("Times New Roman" , 13) , bg="#FEE1AB")
+        self.Checkbox_Group_Data_In_Intervals = Checkbutton(self.W_Calc_Table_Frec , text="Agrupar datos en intervalos" , variable=self.Checked_Is_Continue , font=("Times New Roman" , 13) , bg="#FEE1AB")
 
     def Display_Checkbox(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.place(x=40 , y=210)
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.place(x=40 , y=210)
     
     def Hidden_Checkbox(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.place_forget()
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.place_forget()
 
     def Destroy_Checkbox(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.destroy()
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.destroy()
 
 
 class Quantiles_Table:
@@ -318,7 +319,7 @@ class Quantiles_Table:
         Quantile_Table.treeview.config(columns=("1") , show="headings")
         Quantile_Table.treeview.heading("1" , text=f"{Quantile_Name} ({Quantile_Initial}_k)")
 
-        Quantile_Table.treeview.config(height=6)
+        Quantile_Table.treeview.config(height=4)
 
         for a in range(1 , 2):
             Quantile_Table.treeview.column(f"{a}" , anchor="center" , width=140)
@@ -519,7 +520,7 @@ class Labels_Summary_Measures:
         self.Frame_Summary_Measures.destroy()
 
 
-class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Quantiles_Table , Checkbox_Is_Continue):
+class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Quantiles_Table , Checkbox_Group_Data_In_Intervals):
     def __init__(self , W_Calc_Table_Frec , Data_To_Analized , Precision , Variable_Name , Multiple_Columns = False):
         self.W_Calc_Table_Frec = W_Calc_Table_Frec
 
@@ -537,11 +538,12 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
 
         Quantiles_Table.__init__(self , W_Calc_Table_Frec)
 
-        Checkbox_Is_Continue.__init__(self, W_Calc_Table_Frec)
-        Checkbox_Is_Continue.Create_Checkbox(self)
+        Checkbox_Group_Data_In_Intervals.__init__(self, W_Calc_Table_Frec)
+        Checkbox_Group_Data_In_Intervals.Create_Checkbox(self)
 
     def Calc_Results(self , Repeated_Calc):
-        Results = Main_Function(self.Data_To_Analized , [self.Checked_Is_Continue , self.Checkbox_Is_Continue] , Repeated_Calc)
+        global Dictionary_For_Generated_Figures
+        Results = Main_Function(self.Data_To_Analized , [self.Checked_Is_Continue , self.Checkbox_Group_Data_In_Intervals] , Repeated_Calc)
 
         if(Results["Frecuences_Cuant_Grouped"] != None):
             self.Type_Of_Variable = "Cuantitative_Grouped"
@@ -550,7 +552,7 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             self.Type_Of_Variable = "Cuantitative_Not_Grouped"
         elif(Results["Frecuences_Cuali"] != None):
             self.Type_Of_Variable = "Cualitative"
-            self.Checkbox_Is_Continue = None
+            self.Checkbox_Group_Data_In_Intervals = None
         
         Without_None = {}
         for key,value in Results.items():
@@ -566,6 +568,8 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             self.Put_Data_On_Widgets_For_Results()
             self.Display_Widgets_For_Results()
             self.Update_Global_Results_And_Type_Of_Variable()
+            if(self.Variable_Name in Dictionary_For_Generated_Figures):
+                Dictionary_For_Generated_Figures[self.Variable_Name].clear()
 
     def Update_Global_Results_And_Type_Of_Variable(self):
         global Global_Results_From_Multiple_Columns , Global_Results_From_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Type_Of_Variable_Single_Column
@@ -583,8 +587,8 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             Global_Type_Of_Variable_Single_Column = self.Type_Of_Variable
 
     def Activate_Checkbox_Funcionality(self):
-        if(self.Checkbox_Is_Continue):
-            self.Checkbox_Is_Continue.config(command= lambda: self.Calc_Results(True))
+        if(self.Checkbox_Group_Data_In_Intervals):
+            self.Checkbox_Group_Data_In_Intervals.config(command= lambda: self.Calc_Results(True))
 
     def Create_Widgets_For_Results(self , Repeated_Calc = False):
         match(self.Type_Of_Variable):
@@ -632,16 +636,16 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
         if(self.Type_Of_Variable == "Cuantitative_Grouped" or self.Type_Of_Variable == "Cuantitative_Not_Grouped"):
             Labels_Summary_Measures.Display_Labels(self)
             Quantiles_Table.Display_Tables(self)
-            if(self.Checkbox_Is_Continue):
-                Checkbox_Is_Continue.Display_Checkbox(self)
+            if(self.Checkbox_Group_Data_In_Intervals):
+                Checkbox_Group_Data_In_Intervals.Display_Checkbox(self)
 
     def Hidden_Widgets_For_Results(self):
         Table_Of_Frecuences.Hidden_Table(self)
         if(self.Type_Of_Variable == "Cuantitative_Grouped" or self.Type_Of_Variable == "Cuantitative_Not_Grouped"):
             Labels_Summary_Measures.Hidden_Labels(self)
             Quantiles_Table.Hidden_Tables(self)
-            if(self.Checkbox_Is_Continue):
-                Checkbox_Is_Continue.Hidden_Checkbox(self)
+            if(self.Checkbox_Group_Data_In_Intervals):
+                Checkbox_Group_Data_In_Intervals.Hidden_Checkbox(self)
 
     def Destroy_Widgets_For_Results(self):
         Table_Of_Frecuences.Destroy_Table(self)
@@ -649,8 +653,8 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             Labels_Summary_Measures.Destroy_Labels(self)
             Labels_Summary_Measures.Destroy_Frame_Summary_Measures(self)
             Quantiles_Table.Destroy_Tables(self)
-            if(self.Checkbox_Is_Continue):
-                Checkbox_Is_Continue.Destroy_Checkbox(self)
+            if(self.Checkbox_Group_Data_In_Intervals):
+                Checkbox_Group_Data_In_Intervals.Destroy_Checkbox(self)
 
 def Create_Window_Frecuences_Table(Main_Window):
     Main_Window.state(newstate="withdraw")
@@ -799,7 +803,7 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Import_Data_From_File.config(state="disabled")
 
     def Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel):
-        global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Views
+        global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Views , Dictionary_For_Generated_Figures
 
         Input_Data.config(state="normal")
         Input_Data.delete(0 , END)
@@ -820,7 +824,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
         Text_Column_Selection.place_forget()
         Column_Selection.place_forget()
-        Graphs.clear()
+        Dictionary_For_Generated_Figures.clear()
 
         for t in Global_Views.values():
             t.Destroy_Widgets_For_Results()
@@ -858,7 +862,6 @@ def Create_Window_Frecuences_Table(Main_Window):
     Precision.set(3)
     Columns_Name = []
     Imported_Data_From_Excel = {}
-    Graphs = {}
 
     Main_Title = Label(Window_Frecuences_Table , text="Calculo de Tablas de Frecuencia" , font=("Times New Roman" , 22), foreground="#ffffff", justify=CENTER , bg="#9DAEC6" , highlightthickness=1 ,highlightbackground="#ffffff")
     Main_Title.place(x=9 , y=10 , width=1380)
@@ -892,7 +895,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Btn_Export_As_File.place(x=960 , y=210)
     Btn_Export_As_File.config(state="disabled")
 
-    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Graphs))
+    Btn_Show_Graph = Button(Window_Frecuences_Table , text="Mostrar grafico" , font=("Times New Roman" , 13) , bg="#EBF3F7" , command= lambda: W_Show_Graph.Create_Window_Show_Graph(Window_Frecuences_Table , Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Precision.get() , Dictionary_For_Generated_Figures , Global_Type_Of_Variable_Single_Column if Global_Type_Of_Variable_Single_Column else Global_Type_Of_Variable_Multiple_Column))
     Btn_Show_Graph.place(x=1211 , y=210)
     Btn_Show_Graph.config(state="disabled")
 

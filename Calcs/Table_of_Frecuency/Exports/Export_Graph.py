@@ -1,174 +1,122 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
+
+from Exceptions.Exception_Warning import Raise_Warning; from Tools import Delete_Actual_Window
+
 from datetime import datetime
 import os
 from tkinter import messagebox
 
-class Validations:
-    def Validate_Route(self , File_Name , File_Path):
-        if(File_Name == ""):
-            File_Name = "grafico"
-        
-        if(File_Path == ""):
-            raise Exception("No se ha ingresado ninguna ruta de exportacion")
-        elif not File_Path.endswith("/"):
-            File_Path += "/"
-
-        if(not os.path.exists(File_Path) or not os.path.isdir(File_Path)):
-            raise Exception("Ruta de exportacion no valida")
-        return File_Path + File_Name
+def Validation_For_Export(File_Name , File_Path):
+    if(File_Name == ""):
+        File_Name = "grafico"
     
-class Exports(Validations):
-    def __init__(self , Graphs , File_Name , File_Path , Format , Resolution , Size , Variable_Name , Bar_Title , Pie_Title , Boxplot_Title):
-        self.Graphs = Graphs
-        self.Full_Route = self.Validate_Route(File_Name , File_Path)
-        self.Format = Format
-        self.Resolution = Resolution
-        self.Size = Size
-        self.Variable_Name = Variable_Name
-        self.Extra_Info_Graph = ["fi" , "hi" , "hi%" , "pie"]
-        self.Actual_Time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    if(File_Path == ""):
+        raise Raise_Warning("No se ha ingresado ninguna ruta de exportacion")
+    elif not File_Path.endswith("/"):
+        File_Path += "/"
 
-        self.Graphs_Title = [Bar_Title , Bar_Title , Bar_Title , Pie_Title]
+    if(not os.path.exists(File_Path) or not os.path.isdir(File_Path)):
+        raise Raise_Warning("Ruta de exportacion no valida")
+    return File_Path + File_Name
+    
+def Get_Actual_Time():
+    return datetime.now().strftime("%d_%m_%Y__%H_%M_%S")
 
-        if("boxplot_graph" in Graphs):
-            self.Extra_Info_Graph.append("boxplot")
-            self.Graphs_Title.append(Boxplot_Title)
+def Build_Full_Export_Route(Route_And_File_Name , Name_Of_Graph , Variable_Name , Img_Format):
+    if(Variable_Name):
+        return Route_And_File_Name + "_" + Name_Of_Graph + "_para_" + Variable_Name + "_" + Get_Actual_Time() + Img_Format
+    else:
+        return Route_And_File_Name + "_" + Name_Of_Graph + "_" + Get_Actual_Time() + Img_Format
 
-        if(self.Size):
-            List_Size = self.Size.split("x")
-            self.Width_In_Inches = int(List_Size[0])/self.Resolution
-            self.Height_In_Inches = int(List_Size[1])/self.Resolution
+def Get_Values_From_Widgets_When_There_Are_Multiple_Columns_Of_Data(Collection_Formats , Collection_DPIs , Collection_Axis_x_Titles_For_Graphs):
+    Value_Collection_Formats = {}
+    Value_Collection_DPIs = {}
+    Value_Collection_Axis_x_Titles_For_Graphs = {}
 
-    def Export_All(self):
-        for i , graphs in enumerate(self.Graphs.values()):
-            if(self.Variable_Name):
-                Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_para_" + self.Variable_Name + "_" + self.Actual_Time + self.Format
-            else:
-                Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_" + self.Actual_Time + self.Format
-            graphs.suptitle(f"{self.Graphs_Title[i]}")
-            graphs.savefig(Route_To_Export , dpi=self.Resolution , bbox_inches='tight')
+    for (key , img_format) , dpi , axis_x_title in zip(Collection_Formats.items() , Collection_DPIs.values() , Collection_Axis_x_Titles_For_Graphs.values()):
+        Value_Collection_Formats[key] = img_format.get()
+        Value_Collection_DPIs[key] = int(dpi.get())
+        Value_Collection_Axis_x_Titles_For_Graphs[key] = axis_x_title.get()
+    return Value_Collection_Formats , Value_Collection_DPIs , Value_Collection_Axis_x_Titles_For_Graphs
 
-    def Export_Only_Bars(self):
-        for i , bar in enumerate(self.Graphs.values()):
-            if(i <= 2):
-                if(self.Variable_Name):
-                    Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_para_" + self.Variable_Name + "_" + self.Actual_Time + self.Format
-                else:
-                    Route_To_Export = self.Full_Route + "_" + self.Extra_Info_Graph[i] + "_" + self.Actual_Time + self.Format
-                bar.suptitle(f"{self.Graphs_Title[i]}")
-                bar.savefig(Route_To_Export , dpi=self.Resolution , bbox_inches='tight')
-
-    def Export_One_Graph(self , Graph_Name , E_Info_Graph):
-        Graph = self.Graphs[f"{Graph_Name}"]
-
-        if("fi" in Graph_Name or "hi" in Graph_Name):
-            G_Name = self.Graphs_Title[0]
-        elif("pie" in Graph_Name):
-            G_Name = self.Graphs_Title[3]
-        elif("boxplot" in Graph_Name):
-            G_Name = self.Graphs_Title[4]
-
-        if(self.Variable_Name):
-            Route_To_Export = self.Full_Route + "_" + E_Info_Graph + "_para_" + self.Variable_Name + "_" + self.Actual_Time + self.Format
-        else:
-            Route_To_Export = self.Full_Route + "_" + E_Info_Graph + "_" + self.Actual_Time + self.Format
-        Graph.suptitle(f"{G_Name}")
-        Graph.savefig(Route_To_Export , dpi=self.Resolution , bbox_inches='tight')
-
-def Export_Graph_As_Image(W_Show_Graph , W_Export_Graph , Graphs , File_Name , File_Path , Info_For_Export , Checkboxes_Info , Variable_Name_For_Single_Column = None):
+def Manage_Export_Of_Graphs(
+        W_Show_Graph , W_Export_Graph , File_Name , File_Path , Collection_Formats , Collection_DPIs , 
+        Collection_Axis_x_Titles_For_Graphs , Dictionary_Of_Generated_Figures , Collection_Subcheckboxes_With_Selected_Graphs , 
+        Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs , Collection_Titles_For_Multiple_Graphs ,
+        Collection_Entry_Titles_For_Graphs , Is_Single_Row , 
+    ):
     try:
-        if(isinstance(Info_For_Export , dict)):
-            Check_Checked = []
-            for check in Checkboxes_Info.values():
-                Check_Checked.append(any([boolean[1].get() for boolean in check.values()]))
+        Route_And_File_Name = Validation_For_Export(File_Name , File_Path)
 
-            if(not any(Check_Checked)):
-                raise Exception("No se ha seleccionado un grafico para exportar")
+        Value_Collection_Formats , Value_Collection_DPIs , Value_Collection_Axis_x_Titles_For_Graphs = None , None , None
 
-            for i , (key , I_Export) in enumerate(Info_For_Export.items()):
-                Export = None
-                if(not Check_Checked[i]):
-                    continue
-
-                Export = Exports(
-                    Graphs[f"{key}"] , File_Name , File_Path , I_Export.Input_Format.get() , int(I_Export.Input_dpi.get()) , I_Export.Input_Sizes.get() ,
-                    key , I_Export.Name_Bar_Graph.get() , I_Export.Name_Pie_Graph.get() , I_Export.Name_Boxplot_Graph.get()
-                )
-                if(Checkboxes_Info[f"{key}"]["All"][1].get()):
-                    Export.Export_All()
-                elif(Checkboxes_Info[f"{key}"]["All_Bars"][1].get()):
-                    Export.Export_Only_Bars()
-                    if(Checkboxes_Info[f"{key}"]["Pie"][1].get()):
-                        Export.Export_One_Graph("pie_graph" , "pie")
-                    if("Boxplot" in Checkboxes_Info[f"{key}"]):
-                        if(Checkboxes_Info[f"{key}"]["Boxplot"][1].get()):
-                            Export.Export_One_Graph("boxplot_graph" , "boxplot")
-                else:
-                    if(Checkboxes_Info[f"{key}"]["Bars_fi"][1].get()):
-                        Export.Export_One_Graph("bar_fi" , "fi")
-                    if(Checkboxes_Info[f"{key}"]["Bar_hi"][1].get()):
-                        Export.Export_One_Graph("bar_hi" , "hi")
-                    if(Checkboxes_Info[f"{key}"]["Bar_hi_percent"][1].get()):
-                        Export.Export_One_Graph("bar_hi_percent" , "hi%")
-                    if(Checkboxes_Info[f"{key}"]["Pie"][1].get()):
-                        Export.Export_One_Graph("pie_graph" , "pie")
-                    if("Boxplot" in Checkboxes_Info[f"{key}"]):
-                        if(Checkboxes_Info[f"{key}"]["Boxplot"][1].get()):
-                            Export.Export_One_Graph("boxplot_graph" , "boxplot")
-            
+        if(Is_Single_Row):
+            Value_Collection_Formats = Collection_Formats.get()
+            Value_Collection_DPIs = int(Collection_DPIs.get())
+            Value_Collection_Axis_x_Titles_For_Graphs = Collection_Axis_x_Titles_For_Graphs.get()
         else:
-            if(not any(Checkboxes_Info)):
-                raise Exception("No se ha seleccionado un grafico para exportar")
-            Export = Exports(
-                Graphs , File_Name , File_Path , Info_For_Export.Input_Format.get() , int(Info_For_Export.Input_dpi.get()) , Info_For_Export.Input_Sizes.get() ,
-                Variable_Name_For_Single_Column , Info_For_Export.Name_Bar_Graph.get() , Info_For_Export.Name_Pie_Graph.get() ,
-                Info_For_Export.Name_Boxplot_Graph.get())
+            Value_Collection_Formats , Value_Collection_DPIs , Value_Collection_Axis_x_Titles_For_Graphs = Get_Values_From_Widgets_When_There_Are_Multiple_Columns_Of_Data(Collection_Formats , Collection_DPIs , Collection_Axis_x_Titles_For_Graphs)
 
-            if(Checkboxes_Info["All"][1].get()):
-                Export.Export_All()
-            elif(Checkboxes_Info["All_Bars"][1].get()):
-                Export.Export_Only_Bars()
-                if(Checkboxes_Info["Pie"][1].get()):
-                    Export.Export_One_Graph("pie_graph" , "pie")
-                if("Boxplot" in Checkboxes_Info):
-                    if(Checkboxes_Info["Boxplot"][1].get()):
-                        Export.Export_One_Graph("boxplot_graph" , "boxplot")
-            else:
-                if(Checkboxes_Info["Bars_fi"][1].get()):
-                    Export.Export_One_Graph("bar_fi" , "fi")
-                if(Checkboxes_Info["Bar_hi"][1].get()):
-                    Export.Export_One_Graph("bar_hi" , "hi")
-                if(Checkboxes_Info["Bar_hi_percent"][1].get()):
-                    Export.Export_One_Graph("bar_hi_percent" , "hi%")
-                if(Checkboxes_Info["Pie"][1].get()):
-                    Export.Export_One_Graph("pie_graph" , "pie")
-                if("Boxplot" in Checkboxes_Info):
-                    if(Checkboxes_Info["Boxplot"][1].get()):
-                        Export.Export_One_Graph("boxplot_graph" , "boxplot")
+        List_Any_Subcheckbox_Checked = []
 
+        if(Is_Single_Row):
+            for category_graph_name in Collection_Subcheckboxes_With_Selected_Graphs.keys():
+                Checkbox_Value_Title_Multiple_Graphs = Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs[category_graph_name] if category_graph_name in Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs else None
+                Title_For_Multiple_Graphs = Collection_Titles_For_Multiple_Graphs[category_graph_name] if category_graph_name in Collection_Titles_For_Multiple_Graphs else None
+
+                Is_Any_Subchekbox_For_Category_Graph_Checked = Export_Graphs_Acoording_To_Subcheckbox_Value(Collection_Subcheckboxes_With_Selected_Graphs[category_graph_name] , Collection_Entry_Titles_For_Graphs[category_graph_name] , Checkbox_Value_Title_Multiple_Graphs , Title_For_Multiple_Graphs , "" , Dictionary_Of_Generated_Figures[f"Figure_{category_graph_name}"] , Route_And_File_Name , Value_Collection_Formats , Value_Collection_DPIs , Value_Collection_Axis_x_Titles_For_Graphs)
+                List_Any_Subcheckbox_Checked.append(Is_Any_Subchekbox_For_Category_Graph_Checked)
+        else:
+            for (variable_name , subcheckboxes_values_dict) , entry_titles_values_dict , checkboxes_values_title_multiple_graphs , titles_for_multiple_graphs , figures_dict , img_format , dpi_graph , axis_x_title in zip(Collection_Subcheckboxes_With_Selected_Graphs.items() , Collection_Entry_Titles_For_Graphs.values() , Collection_Checkboxes_Values_For_Titles_For_Multiple_Graphs.values() , Collection_Titles_For_Multiple_Graphs.values() , Dictionary_Of_Generated_Figures.values() , Value_Collection_Formats.values() , Value_Collection_DPIs.values() , Value_Collection_Axis_x_Titles_For_Graphs.values()):
+                for category_graph_name in subcheckboxes_values_dict.keys():
+                    checkbox_value_title_multiple_graphs = checkboxes_values_title_multiple_graphs[category_graph_name] if category_graph_name in checkboxes_values_title_multiple_graphs else None
+                    title_for_multiple_graphs = titles_for_multiple_graphs[category_graph_name] if category_graph_name in titles_for_multiple_graphs else None
+                    Is_Any_Subchekbox_For_Category_Graph_Checked = Export_Graphs_Acoording_To_Subcheckbox_Value(subcheckboxes_values_dict[category_graph_name] , entry_titles_values_dict[category_graph_name] , checkbox_value_title_multiple_graphs , title_for_multiple_graphs , variable_name , figures_dict[f"Figure_{category_graph_name}"] , Route_And_File_Name , img_format , dpi_graph , axis_x_title)
+                    List_Any_Subcheckbox_Checked.append(Is_Any_Subchekbox_For_Category_Graph_Checked)
+        
+        if(not any(List_Any_Subcheckbox_Checked)):
+            raise Raise_Warning("Debe seleccionar al menos un grafico a exportar.")
+        
+    except Raise_Warning as e:
+        messagebox.showwarning("Advertencia" , f"{e}")
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
     else:
-        if(isinstance(Info_For_Export , dict)):
-            for graph in Graphs.values():
-                graph["bar_fi"].suptitle("")
-                graph["bar_hi"].suptitle("")
-                graph["bar_hi_percent"].suptitle("")
-                graph["pie_graph"].suptitle("")
-                if("boxplot_graph" in graph):
-                    graph["boxplot_graph"].suptitle("")
-        else:
-            Graphs["bar_fi"].suptitle("")
-            Graphs["bar_hi"].suptitle("")
-            Graphs["bar_hi_percent"].suptitle("")
-            Graphs["pie_graph"].suptitle("")
-            if("boxplot_graph" in Graphs):
-                Graphs["boxplot_graph"].suptitle("")
-
         Reply = messagebox.askquestion("Success" , f"Las imagenes fueron exportadas con exito a\n{File_Path}\n¿Desea salir de la ventana de exportacion?")
         if(Reply == "yes"):
-            W_Export_Graph.quit()
-            W_Export_Graph.destroy()
+            Delete_Actual_Window(W_Show_Graph , W_Export_Graph , True)
 
-            W_Show_Graph.state(newstate="normal")
-            W_Show_Graph.lift()
-            W_Show_Graph.grab_set()
+def Export_Graphs_Acoording_To_Subcheckbox_Value(Subcheckboxes_Values , Entry_Titles_Values , Checkbox_Value_Title_Multiple_Graphs , Title_For_Multiple_Graphs , Variable_Name , Figures_For_Category_Graph , Route_And_File_Name , Img_Format , DPI_Graph , Axis_x_Ttile):
+    for (name_of_graph , subcheckbox_value) , entry_title_value , figure in zip(Subcheckboxes_Values.items() , Entry_Titles_Values.values() , Figures_For_Category_Graph.values()):
+        if(subcheckbox_value.get()):
+            Complete_Route_To_Export = Build_Full_Export_Route(Route_And_File_Name , name_of_graph , Variable_Name , Img_Format)
+            
+            before_axis_x_title = figure.axes[0]
+            before_axis_x_title = before_axis_x_title.get_xlabel()
+
+            try:
+                same_title_multiple_graphs = Checkbox_Value_Title_Multiple_Graphs.get()
+                if(same_title_multiple_graphs):
+                    title_for_graph = Title_For_Multiple_Graphs.get()
+                else:
+                    title_for_graph = entry_title_value.get()
+            except Exception:
+                title_for_graph = entry_title_value.get()
+                same_title_multiple_graphs = False
+            
+            figure.suptitle(title_for_graph , y=0.99 , fontsize=16 , fontweight='bold')
+
+            if(not "Pie" in name_of_graph):
+                figure.axes[0].set_xlabel(Axis_x_Ttile , labelpad=8 , fontweight='bold')
+
+            figure.savefig(Complete_Route_To_Export , dpi=DPI_Graph , bbox_inches='tight')
+
+            if(title_for_graph):
+                figure.suptitle("")
+
+            if(not "Pie" in name_of_graph):
+                figure.axes[0].set_xlabel(before_axis_x_title , labelpad=8 , fontweight='bold')
+
+    return any(subcheckbox_value.get() for subcheckbox_value in Subcheckboxes_Values.values())

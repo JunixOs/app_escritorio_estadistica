@@ -3,12 +3,13 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Get_Version , Verify_Configurations_Folder
+from Tools import Get_Resource_Path , Get_Version , Verify_Configurations_Folder , Load_Global_Styles
 from Calcs.Center_Window import Center
 import Views.Table_of_Frecuency.Window_Calc_Table_of_Frecuency as W_Calc_Table
 import Views.Venn_Diagram.Window_Create_Venn_Diagram as W_Venn_Diagram
 import Views.MAS.Window_MAS as W_MAS
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
 
 def On_Closing():
@@ -22,6 +23,11 @@ Main_Window = Tk()
 Image_Right_Section = PhotoImage(file=Get_Resource_Path("Images/normal_distribution.png"))
 Image_Right_Section.subsample(10)
 Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+
+Global_ttk_Style = ttk.Style()
+Global_ttk_Style.theme_use("clam")
+
+Load_Global_Styles(Global_ttk_Style)
 
 Main_Window.geometry("1240x700")
 Center(Main_Window , 1240 , 700)

@@ -9,3 +9,13 @@ Calcs/__pycache__/Calc_Frecuences_Cuantitative_Many_Values.cpython-312.pyc
 *.json
 *.pyw
 Config/
+build/
+dist/
+*.iss
+*.manifest
+Output/
+*.dll
+*.cpp
+
+DEMO/
+Images/Tutorial/

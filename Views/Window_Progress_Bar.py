@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path
+from Tools import Get_Resource_Path , Delete_Actual_Window
 from tkinter import ttk
 from tkinter import *
 import time
@@ -35,26 +35,24 @@ class W_Progress_Bar:
 
     def Close_Progress_Bar(self):
         if(self.Progress_Window and self.Progress_Bar):
-            self.Progress_Bar.stop()
-            self.Progress_Window.destroy()
-            self.Root_Window.grab_set()
-            self.Root_Window.lift()
+            Delete_Actual_Window(self.Root_Window , self.Progress_Window)
 
-def tarea_larga(Progress):
+def tarea_larga(Progress , root):
     # Simula una tarea larga
     time.sleep(5)  # Aquí va la operación que tarde mucho
     print("Tarea finalizada!")
 
-    Progress.Close_Progress_Bar()
+    root.after(0 , Progress.Close_Progress_Bar)
+
 def iniciar_tarea():
     try:
         Progress = W_Progress_Bar(root)
         Progress.Start_Progress_Bar()
 
         # Iniciar la tarea en un hilo separado
-        threading.Thread(target=tarea_larga , args=(Progress ,)).start()
+        threading.Thread(target=tarea_larga , args=(Progress , root)).start()
     except Exception as e:
-        Progress.Close_Progress_Bar()
+        root.after(0, Progress.Close_Progress_Bar)
         print(f"{e}")
 
 if __name__ == "__main__":

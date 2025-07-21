@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON
+from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON , Check_Threads_Alive
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
@@ -45,12 +45,16 @@ class TreeviewFrame_Preview(ttk.Frame):
         self.vscrollbar.pack(side=RIGHT, fill=Y)
         self.treeview.pack(fill="both" , expand=True)
 
-        self.Progress_Bar = None
-        self.Root_Window = None
+        self.W_Import_Excel = None
 
-        self.Excel_Dataframe = None
-        self.Total_Columns_In_Excel = None
         self.Total_Rows_In_Excel = None
+        self.Total_Columns_In_Excel = None
+
+        self.Excel_Dataframe = pd.DataFrame()
+        self.First_One_Hundred_Data = None
+        self.List_Number_Data_In_Row = None
+
+        self.Error_In_Thread = False
 
     def Has_Rows(self):
         return len(self.treeview.get_children()) > 0
@@ -67,18 +71,36 @@ class TreeviewFrame_Preview(ttk.Frame):
     def Hidden(self):
         self.place_forget()
 
-    def Load_Excel_File(self , File_Path , Sheet_Number):
+    def Fix_Invalid_Sheet_Number(self , Sheet_Number_Intvar):
+        Sheet_Number_Intvar.set(Sheet_Number_Intvar.get() - 1)
+        raise Raise_Warning(f"El numero de hoja {Sheet_Number_Intvar.get()} no existe.")
+
+    def Function_Start_Thread(self , File_Path , Sheet_Number_Value , Sheet_Number_Intvar , Class_Progress_Bar , Function_Close_Thread = None):
+        Thread_List = []
+
+        Thread = threading.Thread(target= lambda: self.Get_Excel_File(File_Path , Sheet_Number_Value , Sheet_Number_Intvar))
+        Thread_List.append(Thread)
+        Thread.start()
+
+        self.W_Import_Excel.after(500 , Check_Threads_Alive , Thread_List , self.W_Import_Excel , Class_Progress_Bar , Function_Close_Thread)
+
+    def Function_Close_Thread(self):
+        if(self.Error_In_Thread):
+            self.Error_In_Thread = False
+        else:
+            self.Load_Excel_In_Preview()
+
+    def Get_Excel_File(self , File_Path , Sheet_Number_Value , Sheet_Number_Intvar):
         try:
             if(File_Path):
                 prev_load_excel = openpyxl.load_workbook(File_Path , read_only=True , data_only=True , keep_links=False)
                 self.sheets = prev_load_excel.sheetnames
 
-
-                if(Sheet_Number.get() > len(self.sheets)):
-                    Sheet_Number.set(Sheet_Number.get() - 1)
-                    raise Raise_Warning(f"El numero de hoja {Sheet_Number.get()} no existe.")
+                if(Sheet_Number_Value > len(self.sheets)):
+                    self.W_Import_Excel.after(0 , lambda: self.Fix_Invalid_Sheet_Number(Sheet_Number_Intvar))
+                    return
                 
-                Idx_Sheet = Sheet_Number.get() - 1
+                Idx_Sheet = Sheet_Number_Value - 1
 
                 Sheet_Name = self.sheets[Idx_Sheet]
                 One_Sheet = prev_load_excel[Sheet_Name]
@@ -86,18 +108,18 @@ class TreeviewFrame_Preview(ttk.Frame):
                 self.Total_Rows_In_Excel = One_Sheet.max_row
                 self.Total_Columns_In_Excel = One_Sheet.max_column
 
-                self.Load_Sheet_Data(File_Path , Idx_Sheet)
+                self.Get_Sheet_Data(File_Path , Idx_Sheet)
 
         except Raise_Warning as e:
-            self.Progress_Bar.Close_Progress_Bar()
-            messagebox.showwarning("Advertencia" , f"{e}")
+            self.Error_In_Thread = True
+            self.W_Import_Excel.after(0 , messagebox.showwarning("Advertencia" , f"{e}"))
+            return
         except Exception as e:
-            self.Progress_Bar.Close_Progress_Bar()
-            messagebox.showerror("Error" , f"{e}")
+            self.Error_In_Thread = True
+            self.W_Import_Excel.after(0 , messagebox.showerror("Error" , f"{e}"))
+            return
 
-    def Load_Sheet_Data(self , File_Path , Idx_Sheet):
-        self.treeview.delete(*self.treeview.get_children())
-
+    def Get_Sheet_Data(self , File_Path , Idx_Sheet):
         JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
 
         Data_Excel = CalamineWorkbook.from_path(File_Path).get_sheet_by_index(Idx_Sheet).to_python(skip_empty_area=False)
@@ -106,9 +128,10 @@ class TreeviewFrame_Preview(ttk.Frame):
         else:
             self.Excel_Dataframe = pd.DataFrame(data=[""] , columns=["No hay datos"])
 
-        First_One_Hundred_Data = self.Excel_Dataframe.head(JSON_Settings_Data["maximun_rows_to_display_in_preview"] - 1)
-        List_Number_Data_In_Row = []
+        self.First_One_Hundred_Data = self.Excel_Dataframe.head(JSON_Settings_Data["maximun_rows_to_display_in_preview"] - 1)
+        self.List_Number_Data_In_Row = []
         Values_Recognized_as_Null = ["" , "NaN" , "None"]
+
         for col_pos in range(self.Excel_Dataframe.shape[1]):
             val = self.Excel_Dataframe.iloc[: , col_pos].to_list()
             counter_data_in_row = 0
@@ -126,35 +149,35 @@ class TreeviewFrame_Preview(ttk.Frame):
                 if(counter_void_places > JSON_Settings_Data["void_tolerance"]):
                     break
 
-            List_Number_Data_In_Row.append(counter_data_in_row + 1)
+            self.List_Number_Data_In_Row.append(counter_data_in_row + 1)
+    
+    def Load_Excel_In_Preview(self):
+        self.clear_table()
 
         self.treeview["columns"] = []
-        self.treeview["columns"] = ["N° fila/columna"] + [f"{i}" for i in range(len(First_One_Hundred_Data.columns))]
-        Void_Space_In_Bottom_Preview = [""] + ["" for _ in range(len(First_One_Hundred_Data.columns))]
+        self.treeview["columns"] = ["N° fila/columna"] + [f"{i}" for i in range(len(self.First_One_Hundred_Data.columns))]
+        Void_Space_In_Bottom_Preview = [""] + ["" for _ in range(len(self.First_One_Hundred_Data.columns))]
 
         self.treeview.heading("N° fila/columna", text="N° fila/columna")
         self.treeview.column("N° fila/columna" , anchor="center" , width=120 , stretch=False)
         List_With_All_Columns_Letters = []
-        for i , col in enumerate(First_One_Hundred_Data.columns):
+        for i , col in enumerate(self.First_One_Hundred_Data.columns):
             Col_Letter = index_to_string(i)
             List_With_All_Columns_Letters.append(Col_Letter)
 
             self.treeview.heading(f"{i}" , text=Col_Letter)
             self.treeview.column(f"{i}" , anchor="center" , width=120 , stretch=False)
 
-        val = tuple([1] + First_One_Hundred_Data.columns.tolist())
+        val = tuple([1] + self.First_One_Hundred_Data.columns.tolist())
         self.treeview.insert("" , "end" , values=val)
-        for (index, row) in First_One_Hundred_Data.iterrows():
+        for (index, row) in self.First_One_Hundred_Data.iterrows():
             values = tuple([index + 2] + row.tolist())
             self.treeview.insert("", "end", values=values)
 
         self.treeview.insert("", "end", values=tuple(Void_Space_In_Bottom_Preview))
         
-        Values_For_Bottom_Preview = [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , List_Number_Data_In_Row)]
+        Values_For_Bottom_Preview = [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , self.List_Number_Data_In_Row)]
         self.treeview.insert("", "end", values=tuple(["Ultimo dato en:"] + Values_For_Bottom_Preview))
-
-        self.Progress_Bar.Close_Progress_Bar()
-    
 
 class Spinbox_With_Validation:
     def __init__(self , Root_Window , Max_Value , Min_Value , Increment_Value , Spinbox_Width , Value_Associed , **Place):
@@ -177,7 +200,7 @@ class Spinbox_With_Validation:
             return False
 
     
-def Select_File(Path , Preview , Sheet_Number):
+def Select_File(W_Import_Excel , Path , Preview , Sheet_Number):
     Path_File = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
     if Path_File:
         if Path:
@@ -186,12 +209,13 @@ def Select_File(Path , Preview , Sheet_Number):
         else:
             Path.set(Path_File)
 
-        Load_Excel_To_Preview(Path , Sheet_Number , Preview)
+        Load_Excel_To_Preview(W_Import_Excel , Path , Sheet_Number , Preview)
 
-def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
+def Load_Excel_To_Preview(W_Import_Excel , Path, Sheet_Number , Table_Preview_Data):
     if(Path):
         try:
-            Preview.Progress_Bar.Start_Progress_Bar("Cargando excel, esto podria tomar un momento...")
+            Class_Progress_Bar = W_Progress_Bar(W_Import_Excel)
+            Class_Progress_Bar.Start_Progress_Bar("Cargando excel, esto podria tomar un momento...")
 
             if (not os.path.exists(Path.get())):
                 Path.set("")
@@ -201,53 +225,41 @@ def Load_Excel_To_Preview(Path, Sheet_Number , Preview):
                 Sheet_Number.set(1)
                 raise Raise_Warning("Numero de hoja no valido, solo valores enteros")
             Path_Value = Path.get()
-            threading.Thread(target= lambda: Preview.Load_Excel_File(Path_Value , Sheet_Number)).start()
+            Sheet_Number_Value = Sheet_Number.get()
+
+            Table_Preview_Data.Function_Start_Thread(Path_Value , Sheet_Number_Value , Sheet_Number , Class_Progress_Bar , Function_Close_Thread = Table_Preview_Data.Function_Close_Thread)
         except Raise_Warning as e:
-            Preview.Progress_Bar.Close_Progress_Bar()
+            Class_Progress_Bar.Close_Progress_Bar()
             messagebox.showwarning("Advertencia" , f"{e}")
         except Exception as e:
-            Preview.Progress_Bar.Close_Progress_Bar()
+            Class_Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
 
-def Process_File_Data(File_Path , Widget_Sheet_Number , Cell_Range , Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
+def Call_Import_Classes(W_Import_Excel , Cell_Range , Table_Preview_Data , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel):
     try:
-        Preview.Progress_Bar.Start_Progress_Bar()
-
+        """ 
+            FALTA MODIFICAR ESTO PARA EVITAR RUNTIME ERROR CON THREADS
+        """
         if(not Cell_Range.get()):
             raise Raise_Warning("No se ha ingresado un rango de celdas.")
         
         if(";" in Cell_Range.get()):
-            Import_Excel = Import_Excel_Using_Multiple_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
+            Class_For_Import_Excel = Import_Excel_Using_Multiple_Range_Of_Cells(W_Import_Excel , Table_Preview_Data , Cell_Range.get() , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel)
 
-            Import_Excel.Process_Input_Data()
+            Class_For_Import_Excel.Process_Input_Data()
+            Class_For_Import_Excel.Start_Thread_For_Import_Of_Data(Function_Close_Thread = Class_For_Import_Excel.Function_Close_Thread)
 
-            match(Source_Module_Name):
-                case "Table_Of_Frecuency":
-                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
-                case "Venn_Diagram":
-                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Venn_Diagram(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
-                case _:
-                    raise Exception("Error al resolver el modulo de origen.")
         elif(":" in Cell_Range.get()):
-            Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(File_Path.get() , Widget_Sheet_Number.get() , Cell_Range.get())
+            Class_For_Import_Excel = Import_Excel_Using_Single_Range_Of_Cells(W_Import_Excel , Table_Preview_Data , Cell_Range.get() , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel)
 
-            Import_Excel.Process_Input_Data()
-
-            match(Source_Module_Name):
-                case "Table_Of_Frecuency":
-                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Table_Of_Frecuency(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
-                case "Venn_Diagram":
-                    threading.Thread(target= lambda: Import_Excel.Manage_Import_For_Module_Venn_Diagram(Preview , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel)).start()
-                case _:
-                    raise Exception("Error al resolver el modulo de origen.")
+            Class_For_Import_Excel.Process_Input_Data()
+            Class_For_Import_Excel.Start_Thread_For_Import_Of_Data(Function_Close_Thread = Class_For_Import_Excel.Function_Close_Thread)
         else:
             raise Raise_Warning("El rango de celdas ingresado es invalido.")
 
     except (FileNotFoundError , Raise_Warning) as e:
-        Preview.Progress_Bar.Close_Progress_Bar()
         messagebox.showwarning("Advertencia" , f"{e}")
     except Exception as e:
-        Preview.Progress_Bar.Close_Progress_Bar()
         messagebox.showerror("Error" , f"{e}")
 
 def Create_Window_Import_Configuration(W_Import_Excel=None):
@@ -295,7 +307,7 @@ def Create_Window_Import_Configuration(W_Import_Excel=None):
 
     W_Import_Configuration.mainloop()
 
-def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name):
+def Create_Window_Import_Excel(Father_Window , Value_For_Entry_Widget_W_Table_Frecuency , Entry_Widget_For_W_Table_Frecuency , Imported_Data_From_Excel , Source_Module_Name):
     W_Import_Excel = Toplevel(Father_Window)
 
     Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
@@ -311,8 +323,6 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     Cell_Range = StringVar(W_Import_Excel)
     Sheet_Number = IntVar(W_Import_Excel)
 
-    Progress_Bar = W_Progress_Bar(W_Import_Excel)
-
     Btn_Configuracion = Button(W_Import_Excel , text="\u2699" , font=("Segoe UI Emoji", 9) , bg="#d1e7d2" , command= lambda: Create_Window_Import_Configuration(W_Import_Excel))
     Btn_Configuracion.place(x=20 , y=312)
 
@@ -320,12 +330,12 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     Text_Input_Path_File.place(x=20 , y=340)
     Path_File = Entry(W_Import_Excel , font=("Courier New" , 13) , textvariable=Path , width=55 , state="readonly")
     Path_File.place(x=210 , y=340)
-    Btn_Select_File = Button(W_Import_Excel , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_File(Path , Table_Preview_Data , Sheet_Number) , width=10 , bg="#ffe3d4")
+    Btn_Select_File = Button(W_Import_Excel , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_File(W_Import_Excel , Path , Table_Preview_Data , Sheet_Number) , width=10 , bg="#ffe3d4")
     Btn_Select_File.place(x=50 , y=370)
 
     Text_Input_Sheet_Number = Label(W_Import_Excel , text="Numero de Hoja: " , bg="#d1e7d2" , font=("Times New Roman" , 13))
     Text_Input_Sheet_Number.place(x=20 , y=410)
-    Input_Sheet_Number = Spinbox(W_Import_Excel , font=("Courier New" , 13) , textvariable=Sheet_Number , from_=1 , to=100 , width=4 , state="readonly" , command= lambda: Load_Excel_To_Preview(Path , Sheet_Number , Table_Preview_Data))
+    Input_Sheet_Number = Spinbox(W_Import_Excel , font=("Courier New" , 13) , textvariable=Sheet_Number , from_=1 , to=100 , width=4 , state="readonly" , command= lambda: Load_Excel_To_Preview(W_Import_Excel , Path , Sheet_Number , Table_Preview_Data))
     Input_Sheet_Number.place(x=210 , y=410)
 
     Text_Input_Cells_Range = Label(W_Import_Excel , text="Ingrese el rango de celdas:" , bg="#d1e7d2" , font=("Times New Roman" , 13))
@@ -335,10 +345,9 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     Cells_Range.focus()
 
     Table_Preview_Data = TreeviewFrame_Preview(W_Import_Excel)
-    Table_Preview_Data.Progress_Bar = Progress_Bar
-    Table_Preview_Data.Root_Window = W_Import_Excel
+    Table_Preview_Data.W_Import_Excel = W_Import_Excel
     Table_Preview_Data.pack(fill=BOTH)
-    Table_Preview_Data.treeview.config(height=13)
+    Table_Preview_Data.treeview.config(height=9)
     Table_Preview_Data.treeview.config(columns=("1", "2" ,"3", "4", "5" , "6") , show="headings")
     Table_Preview_Data.treeview.heading("1" , text="fila/columna")
     Table_Preview_Data.treeview.heading("2" , text="A")
@@ -349,7 +358,7 @@ def Create_Window_Import_Excel(Father_Window , Data_From_Widget_Entry , Widget_I
     for a in range(1 , 7):
         Table_Preview_Data.treeview.column(f"{a}" , anchor="center" , width=106 , stretch=True)
 
-    Btn_Process_Data = Button(W_Import_Excel , text="Importar Datos" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Process_File_Data(Path , Sheet_Number , Cell_Range , Table_Preview_Data , Data_From_Widget_Entry , Widget_Input_Data , Imported_Data_From_Excel , Source_Module_Name))
+    Btn_Process_Data = Button(W_Import_Excel , text="Importar Datos" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Call_Import_Classes(W_Import_Excel , Cell_Range , Table_Preview_Data , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel))
     Btn_Process_Data.pack(side=BOTTOM)
 
     W_Import_Excel.resizable(False,False)
