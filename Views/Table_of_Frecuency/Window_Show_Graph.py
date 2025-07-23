@@ -7,7 +7,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 
-from Tools import Get_Resource_Path , Get_Number_Of_Util_Threads_In_Device , Delete_Actual_Window , Check_Threads_Alive , Center_Window
+from Tools import Get_Resource_Path , Get_Number_Of_Util_Threads_In_Device , Delete_Actual_Window , Check_Threads_Alive , Center_Window , Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Calcs.Table_of_Frecuency.Graphs.Draw_Graphs import Manage_All_Graphs_Draw
 from Views.Table_of_Frecuency.Exports.Window_Export_Graph import Create_Window_Export_Graphs
 from Window_Create_Multiple_Graphs import Create_Window_Multiple_Graphs
@@ -20,8 +20,9 @@ def Generate_Graph_For_Limited_Threads(W_Show_Graph , Results_From_Calcs , Axis_
     try:
         for category_graph , variable_frecuency_list in Info_For_Graphs.items():
             Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , category_graph , variable_frecuency_list , None , None)
-    except RuntimeError:
+    except RuntimeError as e:
         W_Show_Graph.after(30 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
+        W_Show_Graph.after(40 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error()))
         return
 
 class Handler_Of_States_And_Actions:
@@ -105,7 +106,8 @@ class Handler_Of_States_And_Actions:
             self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar , On_Finish)
 
         except Exception as e:
-            messagebox.showerror("Error" , f"{e}")
+            self.W_Show_Graph.after(30 , messagebox.showerror("Error" , f"{e}"))
+            self.W_Show_Graph.after(40 , Insert_Data_In_Log_File(e , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error()))
 
     def Generate_Widgets(self , Category_Graph , Variable_Of_Frecuency):
         if(not f"Widget_{Category_Graph}_{Variable_Of_Frecuency}" in self.Dictionary_Of_Generated_Widgets[f"Widget_{Category_Graph}"]):
@@ -570,6 +572,9 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
             Class_For_Checkboxes.Generate_Graphs(On_Finish=lambda: Continue_Processing_Of_Columns_Graphs(Class_For_Checkboxes , variable_name , Index))
         except Exception as e:
             messagebox.showerror("Error" , f"{e}")
+            Insert_Data_In_Log_File(e , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error())
+        else:
+            Insert_Data_In_Log_File("Graficos generados con exito" , "Operacion exitosa" , "Visualizacion de graficos")
 
     def Continue_Processing_Of_Columns_Graphs(class_checkbox , variable_name , index):
         class_checkbox.Generate_Checkboxes()
@@ -643,6 +648,7 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
 
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
+        Insert_Data_In_Log_File(e , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error())
 
     Btn_Export_Graph = Button(W_Show_Graph , text="Exportar graficos" , font=("Times New Roman" , 13) , width=15 , bg="#FDA8C0" , command= lambda: Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures , "Single_Column" if Results_From_Single_Column else "Multiple_Columns" , Axis_x_Title , Type_Of_Variable))
     Btn_Export_Graph.place(x=90 , y=520)

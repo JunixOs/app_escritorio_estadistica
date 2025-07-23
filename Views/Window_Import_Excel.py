@@ -3,7 +3,7 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON , Check_Threads_Alive , Center_Window
+from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON , Check_Threads_Alive , Center_Window , Insert_Data_In_Log_File
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
@@ -72,8 +72,13 @@ class TreeviewFrame_Preview(ttk.Frame):
         self.place_forget()
 
     def Fix_Invalid_Sheet_Number(self , Sheet_Number_Intvar):
-        Sheet_Number_Intvar.set(Sheet_Number_Intvar.get() - 1)
-        raise Raise_Warning(f"El numero de hoja {Sheet_Number_Intvar.get()} no existe.")
+        try:
+            Sheet_Number_Intvar.set(Sheet_Number_Intvar.get() - 1)
+            raise Raise_Warning(f"El numero de hoja {Sheet_Number_Intvar.get() + 1} no existe.")
+        except Raise_Warning as e:
+            self.Error_In_Thread = True
+            messagebox.showwarning("Advertencia", f"{e}")
+            Insert_Data_In_Log_File(e, "Advertencia", "Importacion de datos")
 
     def Function_Start_Thread(self , File_Path , Sheet_Number_Value , Sheet_Number_Intvar , Class_Progress_Bar , Function_Close_Thread = None):
         Thread_List = []
@@ -97,7 +102,7 @@ class TreeviewFrame_Preview(ttk.Frame):
                 self.sheets = prev_load_excel.sheetnames
 
                 if(Sheet_Number_Value > len(self.sheets)):
-                    self.W_Import_Excel.after(0 , lambda: self.Fix_Invalid_Sheet_Number(Sheet_Number_Intvar))
+                    self.W_Import_Excel.after(550 , lambda: self.Fix_Invalid_Sheet_Number(Sheet_Number_Intvar))
                     return
                 
                 Idx_Sheet = Sheet_Number_Value - 1
@@ -113,10 +118,12 @@ class TreeviewFrame_Preview(ttk.Frame):
         except Raise_Warning as e:
             self.Error_In_Thread = True
             self.W_Import_Excel.after(0 , messagebox.showwarning("Advertencia" , f"{e}"))
+            self.W_Import_Excel.after(30 , Insert_Data_In_Log_File(e , "Advertencia" , "Importacion de datos"))
             return
         except Exception as e:
             self.Error_In_Thread = True
             self.W_Import_Excel.after(0 , messagebox.showerror("Error" , f"{e}"))
+            self.W_Import_Excel.after(30 , Insert_Data_In_Log_File(e , "Error" , "Importacion de datos"))
             return
 
     def Get_Sheet_Data(self , File_Path , Idx_Sheet):
@@ -231,9 +238,11 @@ def Load_Excel_To_Preview(W_Import_Excel , Path, Sheet_Number , Table_Preview_Da
         except Raise_Warning as e:
             Class_Progress_Bar.Close_Progress_Bar()
             messagebox.showwarning("Advertencia" , f"{e}")
+            Insert_Data_In_Log_File(e , "Advertencia" , "Importacion de datos")
         except Exception as e:
             Class_Progress_Bar.Close_Progress_Bar()
             messagebox.showerror("Error" , f"{e}")
+            Insert_Data_In_Log_File(e , "Error" , "Importacion de datos")
 
 def Call_Import_Classes(W_Import_Excel , Cell_Range , Table_Preview_Data , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel):
     try:
@@ -259,17 +268,21 @@ def Call_Import_Classes(W_Import_Excel , Cell_Range , Table_Preview_Data , Sourc
 
     except (FileNotFoundError , Raise_Warning) as e:
         messagebox.showwarning("Advertencia" , f"{e}")
+        Insert_Data_In_Log_File(e , "Advertencia" , "Importacion de datos")
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
+        Insert_Data_In_Log_File(e , "Error" , "Importacion de datos")
 
 def Create_Window_Import_Configuration(W_Import_Excel=None):
     def Close_Settings_Window():
         try:
             Save_New_Configurations_In_JSON_File("import_excel_settings" , void_tolerance=Void_Tolerance_Number.get() , maximun_rows_to_display_in_preview=Number_Rows_To_Display.get() , import_matrix_data=Import_Data_Matrix.get())
-        except Exception:
+        except Exception as e:
             messagebox.showerror("Error" , "Algo salio mal al guardar la configuracion.\nAsegurese que todos los datos esten bien escritos.")
+            Insert_Data_In_Log_File("Algo salio mal al guardar la configuracion. Asegurese que todos los datos esten bien escritos." , "Error" , "Importacion de datos" , e)
         else:
             Delete_Actual_Window(W_Import_Excel , W_Import_Configuration)
+            Insert_Data_In_Log_File("Datos guardados correctamente en el archivo de configuracion" , "Operacion exitosa" , "Importacion de datos")
     
     JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
     

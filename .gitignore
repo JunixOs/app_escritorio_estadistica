@@ -1,21 +1,24 @@
+# Carpetas
 __pycache__/
+.vscode/
 venv_app_estadistica/
 venv/
 Calcs/__pycache__/Calc_Frecuences_Cualitative_Normal_Extended.cpython-312.pyc
 Calcs/__pycache__/Calc_Frecuences_Cuantitative_Many_Values.cpython-312.pyc
-.vscode/
+DEMO/
+Images/Tutorial/
+Logs/
+Config/
+build/
+Output/
+dist/
+
+# Archivos con ciertas extensiones
 *.spec
 *.bat
 *.json
 *.pyw
-Config/
-build/
-dist/
 *.iss
 *.manifest
-Output/
 *.dll
 *.cpp
-
-DEMO/
-Images/Tutorial/

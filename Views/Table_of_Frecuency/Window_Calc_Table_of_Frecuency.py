@@ -3,7 +3,7 @@ import os
 import numpy
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Get_Version , Center_Window
+from Tools import Get_Resource_Path , Get_Version , Center_Window , Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Exceptions.Exception_Warning import Raise_Warning
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
 from Views.Table_of_Frecuency.Window_Export_As_File import Create_Window_Export_As_File
@@ -791,9 +791,11 @@ def Create_Window_Frecuences_Table(Main_Window):
         except Raise_Warning as e:
             messagebox.showinfo("Advertencia" , f"{e}")
             Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
+            Insert_Data_In_Log_File(e , "Advertencia" , "Calculo de tablas de frecuencia")
         except Exception as e:
             messagebox.showerror("Error" , f"{e}")
             Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
+            Insert_Data_In_Log_File(e , "Error" , "Calculo de tablas de frecuencia" , Get_Detailed_Info_About_Error())
         else:
             Input_Data.config(state="disabled")
 
@@ -802,39 +804,46 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Show_Graph.config(state="normal")
             Btn_Import_Data_From_File.config(state="disabled")
 
+            Insert_Data_In_Log_File("Calculo de tabla de frecuencia realizada correctamente" , "Operacion exitosa" , "Calculo de tablas de frecuencia")
+
     def Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel):
         global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Views , Dictionary_For_Generated_Figures
+        try:
+            Input_Data.config(state="normal")
+            Input_Data.delete(0 , END)
+            Precision.set(3)
+            Btn_Import_Data_From_File.config(state="normal")
 
-        Input_Data.config(state="normal")
-        Input_Data.delete(0 , END)
-        Precision.set(3)
-        Btn_Import_Data_From_File.config(state="normal")
+            Imported_Data_From_Excel.clear()
 
-        Imported_Data_From_Excel.clear()
+            Global_Results_From_Single_Column.clear()
+            Global_Results_From_Multiple_Columns.clear()
+            Global_Type_Of_Variable_Single_Column = ""
+            Global_Type_Of_Variable_Multiple_Column.clear()
 
-        Global_Results_From_Single_Column.clear()
-        Global_Results_From_Multiple_Columns.clear()
-        Global_Type_Of_Variable_Single_Column = ""
-        Global_Type_Of_Variable_Multiple_Column.clear()
+            Column_Selection.set("")
+            Column_Selection['values'] = tuple([])
+            Columns_Name.clear() # NOTA: Usa clear() para limpiar correctamente todos los valores dentro de la variable
+            Column_Selection.update()
 
-        Column_Selection.set("")
-        Column_Selection['values'] = tuple([])
-        Columns_Name.clear() # NOTA: Usa clear() para limpiar correctamente todos los valores dentro de la variable
-        Column_Selection.update()
+            Text_Column_Selection.place_forget()
+            Column_Selection.place_forget()
+            Dictionary_For_Generated_Figures.clear()
 
-        Text_Column_Selection.place_forget()
-        Column_Selection.place_forget()
-        Dictionary_For_Generated_Figures.clear()
+            for t in Global_Views.values():
+                t.Destroy_Widgets_For_Results()
+                t = None
 
-        for t in Global_Views.values():
-            t.Destroy_Widgets_For_Results()
-            t = None
+            Global_Views.clear()
 
-        Global_Views.clear()
-
-        Btn_Generate_Table.config(state="normal")
-        Btn_Export_As_File.config(state="disabled")
-        Btn_Show_Graph.config(state="disabled")
+            Btn_Generate_Table.config(state="normal")
+            Btn_Export_As_File.config(state="disabled")
+            Btn_Show_Graph.config(state="disabled")
+        except Exception as e:
+            messagebox.showerror("Error" , "Ocurrio un error al intentar eliminar\nlos resultados del calculo anterior.")
+            Insert_Data_In_Log_File("Ocurrio un error al intentar eliminar\nlos resultados del calculo anterior" , "Error" , "Calculo de tablas de frecuencia" , Get_Detailed_Info_About_Error())
+        else:
+            Insert_Data_In_Log_File("Datos anteriores eliminados con exito" , "Operacion exitosa" , "Calculo de tablas de frecuencia")
 
     def Interact_Precision():
         global Global_Results_From_Multiple_Columns , Global_Results_From_Single_Column

@@ -1,22 +1,36 @@
+from Exceptions.Exception_Warning import Raise_JSON_Settings_Error
+
 import os
 import sys
 import json
 import psutil
-from Exceptions.Exception_Warning import Raise_JSON_Settings_Error
+from datetime import datetime
+import time
+import traceback
 
 # ==================================================================== Miscelaneous Tools ====================================================================
-def Get_Project_Root():
+def Get_Project_Root(Ignore_Compiler_Path_System):
+    Script_Dir = os.path.dirname(os.path.realpath(__file__))
+    Project_Root = os.path.abspath(os.path.join(Script_Dir))
+
+    if(Ignore_Compiler_Path_System):
+        return Project_Root
+    
     if(getattr(sys , 'frozen' , False)):
         return sys._MEIPASS
     else:
-        Script_Dir = os.path.dirname(os.path.realpath(__file__))
-        Project_Root = os.path.abspath(os.path.join(Script_Dir))
         return Project_Root
 
-def Get_Resource_Path(Resource_Name):
-    Project_Root = Get_Project_Root()
+def Get_Resource_Path(Resource_Name , Ignore_Compiler_Path_System=False):
+    Project_Root = Get_Project_Root(Ignore_Compiler_Path_System)
 
-    Resource_Path = os.path.join(Project_Root , Resource_Name)
+    Resource_Name = Resource_Name.strip("/\\")
+
+    if("/" in Resource_Name):
+        Resource_Name = Resource_Name.split("/")
+        Resource_Path = os.path.join(Project_Root , *Resource_Name)
+    else:
+        Resource_Path = os.path.join(Project_Root , Resource_Name)
 
     return Resource_Path
 
@@ -34,6 +48,20 @@ def Get_Version():
     Version = "v3.0.0"
 
     return Version
+
+def Get_Detailed_Info_About_Error():
+    Exception_Type , Value , tb = sys.exc_info()
+    File_Name = tb.tb_frame.f_code.co_filename
+    Line_Error = tb.tb_lineno
+    Function_Error = tb.tb_frame.f_code.co_name
+
+    Extended_Massage_Error = f"""
+        Tipo de Excepcion: {Exception_Type.__name__}
+        Mensaje: {Value}
+        Archivo: {File_Name}
+        Funcion: {Function_Error}
+        Linea de error: {Line_Error}"""
+    return Extended_Massage_Error
 
 # ==================================================================== Tkinter Tools ====================================================================
 def Get_Window_Level(Window):
@@ -84,7 +112,8 @@ def Load_Global_Styles(Global_ttk_Style):
     """ Sirve para cargar los estilos de todos los widgets ttk """
     """ ****************************************** Widget Label ****************************************** """
     Global_ttk_Style.configure("TLabel",
-                    font=("Times New Roman", 10),
+                    font=("Times New Roman", 13),
+                    background="#d0d0d0",
                     foreground="#333")
 
     """ ****************************************** Widget Entry ****************************************** """
@@ -187,6 +216,102 @@ def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Fin
     else:
         Root_Window.after(500, Check_Threads_Alive, Threads_List, Root_Window , Class_Progress_Bar , On_Finish)
 
+# ==================================================================== Log Files Tools ====================================================================
+def Verify_Logs_Folder():
+    Path_Logs_Folder = Get_Resource_Path("Logs" , True)
+    if(not os.path.exists(Path_Logs_Folder)):
+        os.mkdir(Path_Logs_Folder)
+
+def Get_Log_Files_Names(Get_Only_Log_File_Name=False):
+    Path_Logs_Folder = Get_Resource_Path("Logs" , True)
+
+    if(Get_Only_Log_File_Name):
+        Log_Files_Names = [file_name for file_name in os.listdir(Path_Logs_Folder) if os.path.isfile(os.path.join(Path_Logs_Folder, file_name))]
+    else:
+        Log_Files_Names = [[file_name , Get_Resource_Path(f"Logs/{file_name}")] for file_name in os.listdir(Path_Logs_Folder) if os.path.isfile(os.path.join(Path_Logs_Folder, file_name))]
+    
+    return Log_Files_Names
+
+def Get_Metadata_Info_From_Log_Files(Get_All_Metadata_Info=False):
+    Verify_Logs_Folder()
+
+    Log_Files_Names = Get_Log_Files_Names()
+    Log_Files_Netadata_Info = {}
+
+    for log_file_name in Log_Files_Names:
+        metadata_info = os.stat(log_file_name[1])
+        if(Get_All_Metadata_Info):
+            Log_Files_Netadata_Info[log_file_name[0]] = metadata_info
+        else:
+            Log_Files_Netadata_Info[log_file_name[0]] = {
+                "Size": metadata_info.st_size,
+                "Last_Access": time.ctime(metadata_info.st_atime),
+                "Last_Modification": time.ctime(metadata_info.st_mtime),
+                "Creation_Date": time.ctime(metadata_info.st_birthtime),
+            }
+    
+    return Log_Files_Netadata_Info
+
+def Verify_Log_File_Exists_In_Logs_Folder():
+    Today_Date = datetime.now().strftime("%d-%m-%Y")
+    Name_Of_Log_File = Today_Date + " - log.txt"
+
+    Log_Files_Names = Get_Log_Files_Names(True)
+
+    return True if Name_Of_Log_File in Log_Files_Names else False
+
+def Insert_Data_In_Log_File(Event_Message , Event_Type , Event_Section , Detailed_Message_Error=""):
+    Verify_Logs_Folder()
+
+    Today_Date = datetime.now().strftime("%d-%m-%Y")
+    Full_Path_Of_Log_File = Get_Resource_Path(f"Logs/{Today_Date} - log.txt" , True)
+
+    Actual_Time = datetime.now().strftime("%H-%M-%S")
+
+    Log_File_Exists = Verify_Log_File_Exists_In_Logs_Folder()
+
+    if(not Log_File_Exists):
+        Log_File = open(Full_Path_Of_Log_File , "w")
+    else:
+        Log_File = open(Full_Path_Of_Log_File , "a")
+
+    if(Detailed_Message_Error):
+        Log_File.write(f"({Actual_Time} - [{Event_Type}] - [Seccion: {Event_Section}]) > {Event_Message}\n===>Mensaje detallado del evento{Detailed_Message_Error}")
+    else:
+        Log_File.write(f"({Actual_Time} - [{Event_Type}] - [Seccion: {Event_Section}]) > {Event_Message}\n")
+
+    Log_File.close()
+
+def Read_Content_In_Log_Files():
+    Verify_Logs_Folder()
+    Log_File_Exists = Verify_Log_File_Exists_In_Logs_Folder()
+
+    if(not Log_File_Exists):
+        return ""
+
+    Log_Files_Names = Get_Log_Files_Names()
+    Content_In_Log_Files = {}
+
+    for log_file_name in Log_Files_Names:
+        log_file = open(log_file_name[1] , "r" , encoding="utf-8")
+        Content_In_Log_Files[log_file_name[0]] = log_file.readlines()
+        log_file.close()
+
+    return Content_In_Log_Files
+
+def Delete_Log_Files_After_Certain_Time():
+    Actual_Date = time.time()
+
+    Logs_Settings = Read_Data_From_JSON("logs_settings")
+    Metadata_Info_Log_Files = Get_Metadata_Info_From_Log_Files(True)
+    Log_Files_Names = Get_Log_Files_Names()
+
+    Days_Until_Delete = Logs_Settings["delete_files_after_certain_time"]
+
+    for metadata_info_log_file , log_file_name in zip(Metadata_Info_Log_Files.values() , Log_Files_Names):
+        if((Actual_Date - metadata_info_log_file.st_birthtime) / (60 * 60 * 24) >= Days_Until_Delete):
+            os.remove(log_file_name[1])
+
 # ==================================================================== JSON Settings Tools ====================================================================
 def Get_Number_Of_Util_Threads_In_Device(Percentaje_Of_Use = 0.5):
     Max_Trheads = os.cpu_count()
@@ -206,6 +331,10 @@ def Get_Default_Settings_Param_In_JSON():
         "round_up_amplitude": True,
     }
 
+    Logs_Settings = {
+        "delete_files_after_certain_time": 6,    # En dias
+    }
+
     return {
         "import_excel_settings": [
             Get_Resource_Path("Config/import_excel_settings.json") ,
@@ -215,6 +344,10 @@ def Get_Default_Settings_Param_In_JSON():
             Get_Resource_Path("Config/calc_frecuences_table_settings.json") ,
             Calc_Frecuences_Table_Settings ,
         ],
+        "logs_settings": [
+            Get_Resource_Path("Config/logs_settings.json"),
+            Logs_Settings,
+        ]
     }
 
 def Verify_JSON_Files():
@@ -251,6 +384,9 @@ def Validate_Data_From_GUI(JSON_Settings_Name , New_Settings):
                 New_Settings["maximun_rows_to_display_in_preview"] = Default_Settings_Data[JSON_Settings_Name][1]["maximun_rows_to_display_in_preview"]
         case "calc_frecuences_table_settings":
             pass
+        case "logs_settings":
+            if(not New_Settings["delete_files_after_certain_time"]):
+                New_Settings["delete_files_after_certain_time"] = Default_Settings_Data[JSON_Settings_Name][1]["delete_files_after_certain_time"]
     return New_Settings
 
 def Save_New_Configurations_In_JSON_File(JSON_Settings_Name , **New_Settings):
@@ -280,6 +416,10 @@ def Validate_Data_From_JSON(JSON_Settings_Name , JSON_Settings_Data):
                 raise Raise_JSON_Settings_Error("Error con los tipos de datos del JSON")
         case "calc_frecuences_table_settings":
             if(not isinstance(JSON_Settings_Data["round_up_amplitude"] , bool)):
+                raise Raise_JSON_Settings_Error("Error con los tipos de datos del JSON")
+            
+        case "logs_settings":
+            if(not isinstance(JSON_Settings_Data["delete_files_after_certain_time"] , int)):
                 raise Raise_JSON_Settings_Error("Error con los tipos de datos del JSON")
 
 def Read_Data_From_JSON(JSON_Settings_Name):

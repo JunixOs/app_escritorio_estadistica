@@ -158,20 +158,20 @@ class Handler_Actions:
 
 class Notebox_Widget_Container:
     def __init__(self , W_Export_Graph , Axis_x_Title):
-        self.Style_For_Notebok = ttk.Style()
+        self.Style_For_Notebook = ttk.Style()
 
         # Cambiar el color del fondo del notebook
-        self.Style_For_Notebok.configure("Custom.TNotebook", background="#E7E4C1", borderwidth=0)
-        self.Style_For_Notebok.configure("Custom.TNotebook.Tab", background="#E7E4C1", padding=10 , borderwidth=0)
+        self.Style_For_Notebook.configure("Custom.TNotebook", background="#E7E4C1", borderwidth=0)
+        self.Style_For_Notebook.configure("Custom.TNotebook.Tab", background="#E7E4C1", padding=10 , borderwidth=0)
 
         # Color de la pestaña seleccionada
-        self.Style_For_Notebok.map("Custom.TNotebook.Tab",
+        self.Style_For_Notebook.map("Custom.TNotebook.Tab",
             background=[("selected", "#D6D3AE")],
             foreground=[("selected", "black")],
             expand=[("selected", [1, 1, 1, 0])]
         )
 
-        self.Style_For_Notebok.layout("Custom.TNotebook.Tab", [
+        self.Style_For_Notebook.layout("Custom.TNotebook.Tab", [
             ('Notebook.tab', {'sticky': 'nswe', 'children': [
                 ('Notebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
                     ('Notebook.label', {'side': 'top', 'sticky': ''})
