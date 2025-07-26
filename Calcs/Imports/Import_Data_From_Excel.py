@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Check_Threads_Alive
+from Tools import Check_Threads_Alive , Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Exceptions.Exception_Warning import Raise_Warning
 from Views.Window_Progress_Bar import W_Progress_Bar
 
@@ -264,10 +264,12 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Loader_Of_Data):
 
         except Raise_Warning as e:
             self.W_Import_Excel.after(0 , messagebox.showwarning("Advertencia" , f"{e}"))
+            self.W_Import_Excel.after(10 , Insert_Data_In_Log_File(e , "Advertencia" , "Importacion de Datos"))
             self.Error_In_Thread = True
             return
         except Exception as e:
             self.W_Import_Excel.after(0 , messagebox.showerror("Error" , f"{e}"))
+            self.W_Import_Excel.after(10 , Insert_Data_In_Log_File(e , "Error" , "Importacion de Datos" , Get_Detailed_Info_About_Error()))
             self.Error_In_Thread = True
             return
 
@@ -311,17 +313,20 @@ class Import_Excel_Using_Single_Range_Of_Cells(Validator , Loader_Of_Data):
             self.Imported_Data = self.Imported_Data.dropna()
 
             Validator.Validate_Data_Imported_Is_Null(self , self.Imported_Data)
-        except RuntimeError:
+        except RuntimeError as e:
             self.Error_In_Thread = True
             self.Info_About_Error = ["RuntimeError" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."]
+            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread en Importacion de Datos" , Get_Detailed_Info_About_Error()))
             return
         except Raise_Warning as e:
             self.Error_In_Thread = True
             self.Info_About_Error = ["Raise_Warning" , e]
+            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File(e , "Advertencia" , "Thread en Importacion de Datos"))
             return
         except Exception as e:
             self.Error_In_Thread = True
             self.Info_About_Error = ["Exception" , e]
+            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File(e , "Error" , "Thread en Importacion de Datos" , Get_Detailed_Info_About_Error()))
             return
 
 class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Loader_Of_Data):
@@ -387,10 +392,12 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Loader_Of_Data):
         except Raise_Warning as e:
             self.W_Import_Excel.after(0 , messagebox.showwarning("Advertencia" , f"{e}"))
             self.Error_In_Thread = True
+            self.W_Import_Excel.after(10 , Insert_Data_In_Log_File(e , "Advertencia" , "Importacion de Datos"))
             return
         except Exception as e:
             self.W_Import_Excel.after(0 , messagebox.showerror("Error" , f"{e}"))
             self.Error_In_Thread = True
+            self.W_Import_Excel.after(10 , Insert_Data_In_Log_File(e , "Error" , "Importacion de Datos" , Get_Detailed_Info_About_Error()))
             return
 
     def Function_Close_Thread(self):
@@ -487,12 +494,15 @@ class Import_Excel_Using_Multiple_Range_Of_Cells(Validator , Loader_Of_Data):
         except RuntimeError:
             self.Error_In_Thread = True
             self.Info_About_Error = ["RuntimeError" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."]
+            self.W_Import_Excel.after(10 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread en Importacion de Datos" , Get_Detailed_Info_About_Error()))
             return
         except Raise_Warning as e:
             self.Error_In_Thread = True
             self.Info_About_Error = ["Raise_Warning" , e]
+            self.W_Import_Excel.after(10 , Insert_Data_In_Log_File(e , "Advertencia" , "Thread en Importacion de Datos"))
             return
         except Exception as e:
             self.Error_In_Thread = True
             self.Info_About_Error = ["Exception" , e]
+            self.W_Import_Excel.after(10 , Insert_Data_In_Log_File(e , "Error" , "Thread en Importacion de Datos" , Get_Detailed_Info_About_Error()))
             return

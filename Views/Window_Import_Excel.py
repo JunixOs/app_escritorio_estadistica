@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Tools import Get_Resource_Path , Delete_Actual_Window , Save_New_Configurations_In_JSON_File , Read_Data_From_JSON , Check_Threads_Alive , Center_Window , Insert_Data_In_Log_File
+from Special_Tkinter_Widgets import Spinbox_With_Validation
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Single_Range_Of_Cells
 from Calcs.Imports.Import_Data_From_Excel import Import_Excel_Using_Multiple_Range_Of_Cells
 from Window_Progress_Bar import W_Progress_Bar
@@ -186,26 +187,6 @@ class TreeviewFrame_Preview(ttk.Frame):
         Values_For_Bottom_Preview = [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , self.List_Number_Data_In_Row)]
         self.treeview.insert("", "end", values=tuple(["Ultimo dato en:"] + Values_For_Bottom_Preview))
 
-class Spinbox_With_Validation:
-    def __init__(self , Root_Window , Max_Value , Min_Value , Increment_Value , Spinbox_Width , Value_Associed , **Place):
-        self.Register_For_Spinbox = (Root_Window.register(self.Avoid_Unwanted_Values_In_Spinbox), '%P')
-        self.Min_Value = Min_Value
-        self.Max_Value = Max_Value
-        
-        self.Spinbox_In_App = Spinbox(Root_Window , textvariable=Value_Associed , from_=Min_Value , to=Max_Value , increment=Increment_Value , width=Spinbox_Width , font=("Courier New" , 13) , validate="all" , validatecommand=self.Register_For_Spinbox)
-        self.Spinbox_In_App.place(x=Place["x"] , y=Place["y"])
-
-    def Avoid_Unwanted_Values_In_Spinbox(self , Actual_Spinbox_Value):
-        if(Actual_Spinbox_Value == ""):
-            return True
-        try:
-            Number = int(Actual_Spinbox_Value)
-            if("." in Actual_Spinbox_Value):
-                return False
-            return self.Min_Value <= Number <= self.Max_Value
-        except ValueError:
-            return False
-
     
 def Select_File(W_Import_Excel , Path , Preview , Sheet_Number):
     Path_File = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
@@ -304,12 +285,12 @@ def Create_Window_Import_Configuration(W_Import_Excel=None):
 
     Label_Input_Void_Tolerance = Label(W_Import_Configuration , text="Tolerancia de celdas vacias (0 - 25):" , font=("Times New Roman" , 12) , bg="#d1e7d2")
     Label_Input_Void_Tolerance.place(x=20 , y=20)
-    Input_Void_Tolerance = Spinbox_With_Validation(W_Import_Configuration , 25 , 0 , 1 , 3 , Void_Tolerance_Number , x=400 , y=20)
+    Input_Void_Tolerance = Spinbox_With_Validation(W_Import_Configuration , 25 , 0 , 1 , Void_Tolerance_Number , "place" , 3 , x=400 , y=20)
     Void_Tolerance_Number.set(JSON_Settings_Data["void_tolerance"])
 
     Label_Input_Number_Rows_To_Display = Label(W_Import_Configuration , text="Filas en la previsualizacion (0 - 2000)" , font=("Times New Roman" , 13) , bg="#d1e7d2")
     Label_Input_Number_Rows_To_Display.place(x=20 , y=60)
-    Input_Number_Rows_To_Display = Spinbox_With_Validation(W_Import_Configuration , 1000 , 10 , 10 , 5 , Number_Rows_To_Display , x=400 , y=60)
+    Input_Number_Rows_To_Display = Spinbox_With_Validation(W_Import_Configuration , 1000 , 10 , 10 , Number_Rows_To_Display , "place" , 5 , x=400 , y=60)
     Number_Rows_To_Display.set(JSON_Settings_Data["maximun_rows_to_display_in_preview"])
 
     #Checkbox_Import_Data_Matrix = Checkbutton(W_Import_Configuration , text="Importar matriz de datos" , font=("Times New Roman" , 13) , bg="#d1e7d2" , variable=Import_Data_Matrix)

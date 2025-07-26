@@ -7,6 +7,7 @@ import psutil
 from datetime import datetime
 import time
 import traceback
+from typing import Literal
 
 # ==================================================================== Miscelaneous Tools ====================================================================
 def Get_Project_Root(Ignore_Compiler_Path_System):
@@ -60,7 +61,8 @@ def Get_Detailed_Info_About_Error():
         Mensaje: {Value}
         Archivo: {File_Name}
         Funcion: {Function_Error}
-        Linea de error: {Line_Error}"""
+        Linea de error: {Line_Error}
+    """
     return Extended_Massage_Error
 
 # ==================================================================== Tkinter Tools ====================================================================
@@ -73,7 +75,7 @@ def Get_Window_Level(Window):
 
     return Level
 
-def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Father_Window=False):
+def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Father_Window=False , Function=None):
     if(Father_Window and Children_Window):
         for widget in Children_Window.winfo_children():
             widget.destroy()
@@ -94,6 +96,9 @@ def Delete_Actual_Window(Father_Window=None , Children_Window=None , Display_Fat
             except:
                 pass
         
+        if(Function and callable(Function)):
+            Function()
+
         Father_Window.lift()
 
 def Center_Window(Window_To_Center , Window_Width , Window_Height):
@@ -180,22 +185,39 @@ def Load_Global_Styles(Global_ttk_Style):
 
     """ ****************************************** Widget Scrollbar ****************************************** """
     Global_ttk_Style.configure("Vertical.TScrollbar",
-                    gripcount=0,
-                    background="#d0d0d0",
-                    darkcolor="#c0c0c0",
-                    lightcolor="#e0e0e0",
-                    troughcolor="#f0f0f0",
-                    bordercolor="#f0f0f0",
-                    arrowcolor="#555")
+        gripcount=0,
+        borderwidth=0,
+        relief="flat",
+        background="#d0d0d0",
+        darkcolor="#d0d0d0",
+        lightcolor="#d0d0d0",
+        troughcolor="#f0f0f0",
+        arrowcolor="#666",
+        arrowsize=12
+    )
 
     Global_ttk_Style.configure("Horizontal.TScrollbar",
-                    gripcount=0,
-                    background="#d0d0d0",
-                    darkcolor="#c0c0c0",
-                    lightcolor="#e0e0e0",
-                    troughcolor="#f0f0f0",
-                    bordercolor="#f0f0f0",
-                    arrowcolor="#555")
+        gripcount=0,
+        borderwidth=0,
+        relief="flat",
+        background="#d0d0d0",
+        darkcolor="#d0d0d0",
+        lightcolor="#d0d0d0",
+        troughcolor="#f0f0f0",
+        arrowcolor="#666",
+        arrowsize=12
+    )
+
+    # Opcional: efecto de hover y presionado
+    Global_ttk_Style.map("Vertical.TScrollbar",
+        background=[("active", "#c0c0c0"), ("pressed", "#a0a0a0")],
+        arrowcolor=[("active", "#333"), ("pressed", "#222")]
+    )
+
+    Global_ttk_Style.map("Horizontal.TScrollbar",
+        background=[("active", "#c0c0c0"), ("pressed", "#a0a0a0")],
+        arrowcolor=[("active", "#333"), ("pressed", "#222")]
+    )
 
     """ ****************************************** Widget Progressbar ****************************************** """
     Global_ttk_Style.configure("TProgressbar",
@@ -222,28 +244,37 @@ def Verify_Logs_Folder():
     if(not os.path.exists(Path_Logs_Folder)):
         os.mkdir(Path_Logs_Folder)
 
-def Get_Log_Files_Names(Get_Only_Log_File_Name=False):
+def Get_Log_Files_Names_And_Paths():
     Path_Logs_Folder = Get_Resource_Path("Logs" , True)
-
-    if(Get_Only_Log_File_Name):
-        Log_Files_Names = [file_name for file_name in os.listdir(Path_Logs_Folder) if os.path.isfile(os.path.join(Path_Logs_Folder, file_name))]
-    else:
-        Log_Files_Names = [[file_name , Get_Resource_Path(f"Logs/{file_name}")] for file_name in os.listdir(Path_Logs_Folder) if os.path.isfile(os.path.join(Path_Logs_Folder, file_name))]
+    Log_Files_Names_And_Paths = [[file_name , Get_Resource_Path(f"Logs/{file_name}")] for file_name in os.listdir(Path_Logs_Folder) if os.path.isfile(os.path.join(Path_Logs_Folder, file_name))]
     
-    return Log_Files_Names
+    return Log_Files_Names_And_Paths
 
-def Get_Metadata_Info_From_Log_Files(Get_All_Metadata_Info=False):
+def Get_Log_Files_Names_Or_Paths(Resource_To_Get: Literal["names" , "paths"]):
+    Path_Logs_Folder = Get_Resource_Path("Logs" , True)
+    match(Resource_To_Get):
+        case "names":
+            Log_Files_Names = [file_name for file_name in os.listdir(Path_Logs_Folder) if os.path.isfile(os.path.join(Path_Logs_Folder, file_name))]
+            return Log_Files_Names
+        case "paths":
+            Log_Files_Paths = [Get_Resource_Path(f"Logs/{file_name}") for file_name in os.listdir(Path_Logs_Folder) if os.path.isfile(os.path.join(Path_Logs_Folder, file_name))]
+            return Log_Files_Paths
+
+def Get_Metadata_Info_From_Log_Files(Specific_Log_File_Name="" , Get_All_Metadata_Info=False):
     Verify_Logs_Folder()
 
-    Log_Files_Names = Get_Log_Files_Names()
+    Log_Files_Names_And_Paths = Get_Log_Files_Names_And_Paths()
     Log_Files_Netadata_Info = {}
 
-    for log_file_name in Log_Files_Names:
-        metadata_info = os.stat(log_file_name[1])
+    for (log_file_name , log_file_path) in Log_Files_Names_And_Paths:
+        if(Specific_Log_File_Name and log_file_name != Specific_Log_File_Name):
+            continue
+
+        metadata_info = os.stat(log_file_path)
         if(Get_All_Metadata_Info):
-            Log_Files_Netadata_Info[log_file_name[0]] = metadata_info
+            Log_Files_Netadata_Info[log_file_name] = metadata_info
         else:
-            Log_Files_Netadata_Info[log_file_name[0]] = {
+            Log_Files_Netadata_Info[log_file_name] = {
                 "Size": metadata_info.st_size,
                 "Last_Access": time.ctime(metadata_info.st_atime),
                 "Last_Modification": time.ctime(metadata_info.st_mtime),
@@ -256,7 +287,7 @@ def Verify_Log_File_Exists_In_Logs_Folder():
     Today_Date = datetime.now().strftime("%d-%m-%Y")
     Name_Of_Log_File = Today_Date + " - log.txt"
 
-    Log_Files_Names = Get_Log_Files_Names(True)
+    Log_Files_Names = Get_Log_Files_Names_Or_Paths("names")
 
     return True if Name_Of_Log_File in Log_Files_Names else False
 
@@ -282,19 +313,22 @@ def Insert_Data_In_Log_File(Event_Message , Event_Type , Event_Section , Detaile
 
     Log_File.close()
 
-def Read_Content_In_Log_Files():
+def Read_Content_In_Log_Files(Specific_Log_File_Name=""):
     Verify_Logs_Folder()
     Log_File_Exists = Verify_Log_File_Exists_In_Logs_Folder()
 
     if(not Log_File_Exists):
         return ""
 
-    Log_Files_Names = Get_Log_Files_Names()
+    Log_Files_Names_And_Paths = Get_Log_Files_Names_And_Paths()
     Content_In_Log_Files = {}
 
-    for log_file_name in Log_Files_Names:
-        log_file = open(log_file_name[1] , "r" , encoding="utf-8")
-        Content_In_Log_Files[log_file_name[0]] = log_file.readlines()
+    for (log_file_name , log_file_path) in Log_Files_Names_And_Paths:
+        if(Specific_Log_File_Name and log_file_name != Specific_Log_File_Name):
+            continue
+
+        log_file = open(log_file_path , "r" , encoding="utf-8")
+        Content_In_Log_Files[log_file_name] = log_file.readlines()
         log_file.close()
 
     return Content_In_Log_Files
@@ -303,14 +337,14 @@ def Delete_Log_Files_After_Certain_Time():
     Actual_Date = time.time()
 
     Logs_Settings = Read_Data_From_JSON("logs_settings")
-    Metadata_Info_Log_Files = Get_Metadata_Info_From_Log_Files(True)
-    Log_Files_Names = Get_Log_Files_Names()
+    Metadata_Info_Log_Files = Get_Metadata_Info_From_Log_Files("" , True)
+    Log_Files_Paths = Get_Log_Files_Names_Or_Paths("paths")
 
     Days_Until_Delete = Logs_Settings["delete_files_after_certain_time"]
 
-    for metadata_info_log_file , log_file_name in zip(Metadata_Info_Log_Files.values() , Log_Files_Names):
+    for metadata_info_log_file , log_file_path in zip(Metadata_Info_Log_Files.values() , Log_Files_Paths):
         if((Actual_Date - metadata_info_log_file.st_birthtime) / (60 * 60 * 24) >= Days_Until_Delete):
-            os.remove(log_file_name[1])
+            os.remove(log_file_path)
 
 # ==================================================================== JSON Settings Tools ====================================================================
 def Get_Number_Of_Util_Threads_In_Device(Percentaje_Of_Use = 0.5):
@@ -358,13 +392,17 @@ def Verify_JSON_Files():
             with open(default_settings_data[0] , "w") as json_file:
                 json.dump(default_settings_data[1] , json_file , indent=4)
         else:
-            with open(default_settings_data[0] , "r") as json_file:
-                Data_From_JSON = json.load(json_file)
-            Missing_Keys = set(default_settings_data[1].keys()) - Data_From_JSON.keys()
-            Extra_Keys = Data_From_JSON.keys() - set(default_settings_data[1].keys())
-            if(Missing_Keys or Extra_Keys):
+            if(os.path.getsize(default_settings_data[0]) == 0):
                 with open(default_settings_data[0] , "w") as json_file:
                     json.dump(default_settings_data[1] , json_file , indent=4)
+            else:
+                with open(default_settings_data[0] , "r") as json_file:
+                    Data_From_JSON = json.load(json_file)
+                Missing_Keys = set(default_settings_data[1].keys()) - Data_From_JSON.keys()
+                Extra_Keys = Data_From_JSON.keys() - set(default_settings_data[1].keys())
+                if(Missing_Keys or Extra_Keys):
+                    with open(default_settings_data[0] , "w") as json_file:
+                        json.dump(default_settings_data[1] , json_file , indent=4)
 
 def Verify_Configurations_Folder():
     Path_File = Get_Resource_Path("Config")

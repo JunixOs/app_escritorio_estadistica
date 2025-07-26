@@ -107,7 +107,9 @@ class Handler_Of_States_And_Actions:
 
         except Exception as e:
             self.W_Show_Graph.after(30 , messagebox.showerror("Error" , f"{e}"))
-            self.W_Show_Graph.after(40 , Insert_Data_In_Log_File(e , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error()))
+            self.W_Show_Graph.after(40 , Insert_Data_In_Log_File(e , "Error" , "Creacion de graficos" , Get_Detailed_Info_About_Error()))
+        else:
+            self.W_Show_Graph.after(10 , Insert_Data_In_Log_File("La funcion de generacion de graficos se ejecuto e inicio los hilos correctamente." , "Operacion exitosa" , "Creacion de graficos"))
 
     def Generate_Widgets(self , Category_Graph , Variable_Of_Frecuency):
         if(not f"Widget_{Category_Graph}_{Variable_Of_Frecuency}" in self.Dictionary_Of_Generated_Widgets[f"Widget_{Category_Graph}"]):
@@ -573,14 +575,14 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
         except Exception as e:
             messagebox.showerror("Error" , f"{e}")
             Insert_Data_In_Log_File(e , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error())
-        else:
-            Insert_Data_In_Log_File("Graficos generados con exito" , "Operacion exitosa" , "Visualizacion de graficos")
 
     def Continue_Processing_Of_Columns_Graphs(class_checkbox , variable_name , index):
         class_checkbox.Generate_Checkboxes()
 
         Figures_Graphs = class_checkbox.Get_Dictionary_Of_Graphs()
         Dictionary_Of_Generated_Figures[variable_name] = Figures_Graphs
+
+        Insert_Data_In_Log_File(f"Todos los elementos y graficos para \"{variable_name if variable_name else 'una variable'}\" se generaron con exito." , "Operacion exitosa" , "Visualizacion de graficos")
 
         Process_Multiple_Column_Graphs(index + 1)
 
@@ -591,6 +593,8 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
         Combobox_For_Variable_Names.bind('<<ComboboxSelected>>' , Change_To_Different_Variable_Graph)
 
         Change_To_Different_Variable_Graph()
+
+        Insert_Data_In_Log_File("Todos los elementos y graficos se generaron con exito." , "Operacion exitosa" , "Visualizacion de graficos")
 
     W_Show_Graph = Toplevel(W_Calc_Frecuences_Table)
     W_Show_Graph.title("Ver graficos")
@@ -649,6 +653,8 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
     except Exception as e:
         messagebox.showerror("Error" , f"{e}")
         Insert_Data_In_Log_File(e , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error())
+    else:
+        Insert_Data_In_Log_File("Ventana de visualizacion de graficos generada con exito." , "Operacion exitosa" , "Visualizacion de graficos")
 
     Btn_Export_Graph = Button(W_Show_Graph , text="Exportar graficos" , font=("Times New Roman" , 13) , width=15 , bg="#FDA8C0" , command= lambda: Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures , "Single_Column" if Results_From_Single_Column else "Multiple_Columns" , Axis_x_Title , Type_Of_Variable))
     Btn_Export_Graph.place(x=90 , y=520)

@@ -25,23 +25,28 @@ def Rounding_Up(Number , N_Decimals):
         if(N_Decimals > len(Decimal_Part) - 1):
             Decimal_Part += "0"
     
-        if(int(Decimal_Part[N_Decimals]) >= 5):
+        # Anterior sistema, redondeaba teniendo en cuenta si el valor del decimal posterior al numero de decimales de los datos
+        #  era igual o mayor a 5. Se puede añadir una configuracion para activar este tipo de redondeo
+        """ if(int(Decimal_Part[N_Decimals]) >= 5):
             Decimal_Part = "".join([val for i , val in enumerate(Decimal_Part , start=1) if i <= N_Decimals])
-            Value_To_Add = float("0." + "0"*(N_Decimals - 1) + "1")
+            Value_To_Add = float("0." + "0"*(N_Decimals - 1) + "1") if N_Decimals != 0 else 1
         else:
             Decimal_Part = "".join([val for i , val in enumerate(Decimal_Part , start=1) if i <= N_Decimals + 1])
             Value_To_Add = "0." + "0"*N_Decimals + "1"
-            N_Decimals += 1
+            N_Decimals += 1 """
+
+        # Actual sistema, simplemente añade una decima mas al decimal posterior
+        Decimal_Part = "".join([val for i , val in enumerate(Decimal_Part , start=1) if i <= N_Decimals + 1])
+        Value_To_Add = "0." + "0"*N_Decimals + "1"
+        N_Decimals += 1
 
         Number = float(Integer_Part + "." + Decimal_Part)
 
         Decimals_To_Round = "1." + "0"*(N_Decimals) if N_Decimals > 0 else "1"
 
-        Number + float(Value_To_Add)
+        Number += float(Value_To_Add)
 
         Number = float(Decimal(str(Number)).quantize(Decimal(Decimals_To_Round)))
-        
-        Number += float(Value_To_Add)
 
         return round(Number , N_Decimals) , N_Decimals
     else:

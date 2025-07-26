@@ -1,3 +1,4 @@
+from Tools import Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Calcs.Table_of_Frecuency.Graphs.For_Cualitative_Data import Graphs_For_Cualitative_Variable
 from Calcs.Table_of_Frecuency.Graphs.For_Grouped_Data import Graphs_For_Grouped_Data
 from Calcs.Table_of_Frecuency.Graphs.For_Not_Grouped_Data import Graphs_For_No_Grouped_Data
@@ -75,13 +76,21 @@ def Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Di
             else:
                 raise Exception("No se pudo detectar el tipo de variable.")
         #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
-    except RuntimeError:
-        W_Show_Graph.after(30 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
+    except RuntimeError as e:
+        W_Show_Graph.after(0 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
+        W_Show_Graph.after(40 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
         return
     except Exception as e:
         W_Show_Graph.after(0 , messagebox.showerror("Error" , f"{e}"))
+        W_Show_Graph.after(40 , Insert_Data_In_Log_File(e , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
         return
-        
+    else:
+        W_Show_Graph.after(0 , Insert_Data_In_Log_File(
+            f"Tanda de graficos \"{Category_Graph}\" para \"{Axis_x_Title}\" creada con exito" if Axis_x_Title else f"Tanda de graficos de \"{Category_Graph}\" para la variable creada con exito", 
+            "Operacion exitosa" , 
+            "Thread de Creacion de Graficos")
+        )
+
 def Manage_Generation_Of_Graphs_For_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , Variable_Of_Frecuency , Axis_y_Title , Category_Graph):
     Generator_Of_Graphs = Class_Generator_Of_Graphs[0]
 

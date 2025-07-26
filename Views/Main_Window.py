@@ -70,6 +70,9 @@ else:
     Right_Section = Label(Main_Window , width=531 , height=691 , bg="#F7EDCB" , image=Image_Right_Section , highlightthickness=2 , highlightbackground="#000000")
     Right_Section.place(x=700 , y=0)
 
+    Btn_Logs = Button(Main_Window , text="\U0001F4DC" , font=("Segoe UI Emoji", 12) , bg="#F7EDCB" , command= lambda: Create_Window_View_Logs(Main_Window))
+    Btn_Logs.place(x=5 , y=5)
+
     BtnFrecuencyTable = Button(Main_Window , text="Crear tabla de frecuencias" , font=("Times New Roman", 14) , command= lambda: W_Calc_Table.Create_Window_Frecuences_Table(Main_Window) , width=30 , bg="#FBCFC6")
     BtnFrecuencyTable.place(x=190 , y=220)
 
@@ -83,9 +86,6 @@ else:
     Main_Window.resizable(False,False)
     
     Insert_Data_In_Log_File("Programa iniciado con exito" , "Operacion exitosa" , "Seccion principal")
-
-    Btn_Logs = Button(Main_Window , text="\U0001F4DC" , font=("Segoe UI Emoji", 12) , bg="#F7EDCB" , command= lambda: Create_Window_View_Logs(Main_Window))
-    Btn_Logs.place(x=5 , y=5)
 
     Main_Window.mainloop()
 
