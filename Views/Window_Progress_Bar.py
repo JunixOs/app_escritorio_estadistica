@@ -21,7 +21,7 @@ class W_Progress_Bar:
         self.Progress_Window.title("Cargando")
         Center_Window(self.Progress_Window , 500 , 100)
         self.Progress_Window.protocol("WM_DELETE_WINDOW" , self.Back)
-        Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+        Icon = PhotoImage(master=self.Progress_Window , file=Get_Resource_Path("Images/icon.png"))
         self.Progress_Window.iconphoto(False , Icon)
         self.Progress_Window.grab_set()
         self.Progress_Window.lift()

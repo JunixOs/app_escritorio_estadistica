@@ -25,7 +25,7 @@ def Create_Window_MAS(Main_Window=None):
         Window_MAS = Toplevel(Main_Window)
         Main_Window.state(newstate="withdraw")
 
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(master=Window_MAS , file="Images/icon.png")
     Window_MAS.title("Calcular tamaño de muestra")
 
     Center_Window(Window_MAS , 550 , 510)

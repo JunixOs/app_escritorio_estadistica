@@ -19,10 +19,14 @@ import threading
 def Generate_Graph_For_Limited_Threads(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , Info_For_Graphs):
     try:
         for category_graph , variable_frecuency_list in Info_For_Graphs.items():
-            Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , category_graph , variable_frecuency_list , None , None)
-    except RuntimeError as e:
+            Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , category_graph , variable_frecuency_list)
+    except RuntimeError:
         W_Show_Graph.after(30 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
         W_Show_Graph.after(40 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error()))
+        return
+    except Exception:
+        W_Show_Graph.after(30 , messagebox.showerror("Error" , "Hubo un error al generar los graficos."))
+        W_Show_Graph.after(30 , Insert_Data_In_Log_File("Hubo un error al generar los graficos en hilos." , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error()))
         return
 
 class Handler_Of_States_And_Actions:
@@ -60,7 +64,7 @@ class Handler_Of_States_And_Actions:
                     On_Finish()
                 return
             
-            Number_Of_Threads = Get_Number_Of_Util_Threads_In_Device()
+            Number_Of_Util_Threads = Get_Number_Of_Util_Threads_In_Device()
             Lock = threading.Lock()
 
             Class_Progress_Bar = W_Progress_Bar(self.W_Show_Graph)
@@ -71,18 +75,18 @@ class Handler_Of_States_And_Actions:
                 Class_Progress_Bar.Start_Progress_Bar(f"Generando graficos...")
 
             Threads_List = []
-            if(Number_Of_Threads > self.Total_Of_Works):
+            if(Number_Of_Util_Threads >= self.Total_Of_Works):
                 for category_graph , variable_frecuency_list in self.Info_For_Generate_Graphs.items():
                     Thread = threading.Thread(target= lambda: Manage_All_Graphs_Draw(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , category_graph , variable_frecuency_list))
                     Threads_List.append(Thread)
                     Thread.start()
         
-            elif(Number_Of_Threads > 2 and Number_Of_Threads <= self.Total_Of_Works):
-                Chunks = [{} for i in range(Number_Of_Threads - 1)]
+            elif(Number_Of_Util_Threads > 2 and Number_Of_Util_Threads < self.Total_Of_Works):
+                Chunks = [{} for i in range(Number_Of_Util_Threads - 1)]
                 
                 idx = 0
                 for key , value in self.Info_For_Generate_Graphs.items():
-                    if(idx == Number_Of_Threads - 1):
+                    if(idx == Number_Of_Util_Threads - 1):
                         idx = 0
                     else:
                         idx += 1
@@ -93,14 +97,14 @@ class Handler_Of_States_And_Actions:
                     Threads_List.append(Thread)
                     Thread.start()
 
-            elif(Number_Of_Threads == 2):
+            elif(Number_Of_Util_Threads == 2):
                 def Work():
                     Generate_Graph_For_Limited_Threads(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , self.Info_For_Generate_Graphs)
 
                 Thread = threading.Thread(target=Work)
                 Threads_List.append(Thread)
                 Thread.start()
-            elif(Number_Of_Threads < 2):
+            elif(Number_Of_Util_Threads < 2):
                 raise Exception("Error" , "No se puede ejecutar la generacion de graficos.\nSe detectaron menos de 2 nucleos de CPU\nen su dispositivo.")
             
             self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar , On_Finish)

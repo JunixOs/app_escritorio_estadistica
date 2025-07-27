@@ -86,7 +86,7 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
 
     # W_Create_Venn_Diagram.geometry("1300x800+110+48")
     Center_Window(W_Create_Venn_Diagram , 1300 , 800)
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(master=W_Create_Venn_Diagram , file="Images/icon.png")
     W_Create_Venn_Diagram.iconphoto(False , Icon)
     W_Create_Venn_Diagram.title("Crear Diagramas de Venn")
     W_Create_Venn_Diagram.lift()

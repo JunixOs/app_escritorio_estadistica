@@ -28,7 +28,7 @@ def Create_Window_Export_Excel(W_Export_As_File , Results_From_Single_Column , R
         W_Export_Excel = Tk()
         W_Export_Excel.geometry("700x180+430+350")
         
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Export_Excel , file=Get_Resource_Path("Images/icon.png"))
     W_Export_Excel.iconphoto(False , Icon)
     W_Export_Excel.title("Exportar Excel")
     W_Export_Excel.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Export_As_File , W_Export_Excel , True))

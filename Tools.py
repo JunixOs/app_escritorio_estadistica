@@ -8,6 +8,7 @@ from datetime import datetime
 import time
 import traceback
 from typing import Literal
+import platform
 
 # ==================================================================== Miscelaneous Tools ====================================================================
 def Get_Project_Root(Ignore_Compiler_Path_System):
@@ -62,7 +63,7 @@ def Get_Detailed_Info_About_Error():
         Archivo: {File_Name}
         Funcion: {Function_Error}
         Linea de error: {Line_Error}
-    """
+"""
     return Extended_Massage_Error
 
 # ==================================================================== Tkinter Tools ====================================================================
@@ -261,10 +262,24 @@ def Get_Log_Files_Names_Or_Paths(Resource_To_Get: Literal["names" , "paths"]):
             return Log_Files_Paths
 
 def Get_Metadata_Info_From_Log_Files(Specific_Log_File_Name="" , Get_All_Metadata_Info=False):
+    def Format_Time(Timestamp):
+        Months = [
+            "enero" , "febrero" , "marzo" , 
+            "abril" , "mayo" , "junio" , 
+            "julio" , "agosto" , "septiembre" , 
+            "octubre" , "noviembre" , "diciembre"
+        ]
+        Date = time.strftime("%d-%m-%Y", time.localtime(Timestamp)).split("-")
+        Time = time.strftime("%H:%M:%S" , time.localtime(Timestamp))
+
+        Time_Text = f"{Date[0]} de {Months[int(Date[1]) - 1]} del {Date[2]} a las {Time}"
+
+        return Time_Text
+    
     Verify_Logs_Folder()
 
     Log_Files_Names_And_Paths = Get_Log_Files_Names_And_Paths()
-    Log_Files_Netadata_Info = {}
+    Log_Files_Metadata_Info = {}
 
     for (log_file_name , log_file_path) in Log_Files_Names_And_Paths:
         if(Specific_Log_File_Name and log_file_name != Specific_Log_File_Name):
@@ -272,16 +287,21 @@ def Get_Metadata_Info_From_Log_Files(Specific_Log_File_Name="" , Get_All_Metadat
 
         metadata_info = os.stat(log_file_path)
         if(Get_All_Metadata_Info):
-            Log_Files_Netadata_Info[log_file_name] = metadata_info
+            Log_Files_Metadata_Info[log_file_name] = metadata_info
         else:
-            Log_Files_Netadata_Info[log_file_name] = {
+            Log_Files_Metadata_Info[log_file_name] = {
                 "Size": metadata_info.st_size,
-                "Last_Access": time.ctime(metadata_info.st_atime),
-                "Last_Modification": time.ctime(metadata_info.st_mtime),
-                "Creation_Date": time.ctime(metadata_info.st_birthtime),
+                "Last_Access": Format_Time(metadata_info.st_atime),
+                "Last_Modification": Format_Time(metadata_info.st_mtime),
             }
-    
-    return Log_Files_Netadata_Info
+
+            # ******** Nota: Al hacer a="cualquiertipovariable", con coma al final el valor termina siendo una tupla xd********
+            if(hasattr(metadata_info , "st_birthtime")):
+                Log_Files_Metadata_Info[log_file_name]["Creation_Date"] = Format_Time(metadata_info.st_birthtime)
+            elif(platform.system == "Windows"):
+                Log_Files_Metadata_Info[log_file_name]["Creation_Date"] = Format_Time(metadata_info.st_ctime)
+
+    return Log_Files_Metadata_Info
 
 def Verify_Log_File_Exists_In_Logs_Folder():
     Today_Date = datetime.now().strftime("%d-%m-%Y")
@@ -343,7 +363,13 @@ def Delete_Log_Files_After_Certain_Time():
     Days_Until_Delete = Logs_Settings["delete_files_after_certain_time"]
 
     for metadata_info_log_file , log_file_path in zip(Metadata_Info_Log_Files.values() , Log_Files_Paths):
-        if((Actual_Date - metadata_info_log_file.st_birthtime) / (60 * 60 * 24) >= Days_Until_Delete):
+
+        if(hasattr(Metadata_Info_Log_Files , "st_birthtime")):
+            Creation_File_Date = metadata_info_log_file.st_birthtime
+        elif(platform.system() == "Windows"):
+            Creation_File_Date = metadata_info_log_file.st_ctime
+        
+        if((Actual_Date - Creation_File_Date) / (60 * 60 * 24) >= Days_Until_Delete):
             os.remove(log_file_path)
 
 # ==================================================================== JSON Settings Tools ====================================================================

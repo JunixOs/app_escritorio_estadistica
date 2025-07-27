@@ -73,7 +73,6 @@ class Notebook_For_Logs:
             self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].insert("" , END , values=(text_line,))
         self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].yview_moveto(1.0)
 
-
     def Create_Widgets_For_Log_Files_Info(self):
         Metadata_Info_In_Log_Files = Get_Metadata_Info_From_Log_Files()
         Content_In_Log_Files = Read_Content_In_Log_Files()
@@ -139,7 +138,7 @@ def Create_Window_Config_Logs_Settings(W_View_Logs):
     Center_Window(W_Config_Logs_Settings , 500 , 300)
 
     W_Config_Logs_Settings.title("Configuracion de registros")
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Config_Logs_Settings , file=Get_Resource_Path("Images/icon.png"))
     W_Config_Logs_Settings.iconphoto(False , Icon)
     W_Config_Logs_Settings.grab_set()
     W_Config_Logs_Settings.lift()
@@ -189,7 +188,7 @@ def Create_Window_View_Logs(Father_Window=None):
 
         W_View_Logs.lift()
         W_View_Logs.title("Ver Archivos de Registro")
-        Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+        Icon = PhotoImage(master=W_View_Logs , file=Get_Resource_Path("Images/icon.png"))
         W_View_Logs.iconphoto(False , Icon)
         W_View_Logs.resizable(False , False)
 

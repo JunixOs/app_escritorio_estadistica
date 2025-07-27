@@ -863,7 +863,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     Center_Window(Window_Frecuences_Table , 1400 , 800)
     Window_Frecuences_Table.title("Tabla de frecuencias")
     Window_Frecuences_Table.config(bg="#6C6E72")
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=Window_Frecuences_Table , file=Get_Resource_Path("Images/icon.png"))
     Window_Frecuences_Table.iconphoto(False , Icon)
 
     Data_From_Widget_Entry = StringVar(Window_Frecuences_Table) # Estos datos se introducen como texto en el campo de texto de la ventana

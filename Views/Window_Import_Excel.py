@@ -274,7 +274,7 @@ def Create_Window_Import_Configuration(W_Import_Excel=None):
     Center_Window(W_Import_Configuration , 500 , 200)
     W_Import_Configuration.title("Configurar Importacion")
     W_Import_Configuration.config(bg="#d1e7d2")
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Import_Configuration , file=Get_Resource_Path("Images/icon.png"))
     W_Import_Configuration.iconphoto(False , Icon)
     W_Import_Configuration.protocol("WM_DELETE_WINDOW" , Close_Settings_Window)
     W_Import_Configuration.lift()
@@ -305,7 +305,7 @@ def Create_Window_Import_Configuration(W_Import_Excel=None):
 def Create_Window_Import_Excel(Father_Window , Value_For_Entry_Widget_W_Table_Frecuency , Entry_Widget_For_W_Table_Frecuency , Imported_Data_From_Excel , Source_Module_Name):
     W_Import_Excel = Toplevel(Father_Window)
 
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Import_Excel , file=Get_Resource_Path("Images/icon.png"))
 
     W_Import_Excel.grab_set()
     Center_Window(W_Import_Excel , 800 , 550)

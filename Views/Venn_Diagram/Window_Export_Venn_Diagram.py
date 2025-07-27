@@ -40,7 +40,7 @@ def Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph):
 
     Center_Window(W_Export_Venn_Diagram , 800 , 300)
     
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Export_Venn_Diagram , file=Get_Resource_Path("Images/icon.png"))
     W_Export_Venn_Diagram.iconphoto(False , Icon)
     W_Export_Venn_Diagram.title("Exportar Diagrama de Venn")
     W_Export_Venn_Diagram.config(bg="#FFD9FA")

@@ -22,11 +22,11 @@ def On_Closing():
 RAM_Memory = Get_RAM_Memory_In_Device()
 Util_Threads = Get_Number_Of_Util_Threads_In_Device()
 try:
-    if(RAM_Memory["Available"] < 1):
-        raise Exception("El programa no puede iniciarse.\nSe ha detectado menos de 1GB de memoria RAM disponible.")
+    if(RAM_Memory["Available"] < 0.5):
+        raise Exception("El programa no puede iniciarse.\nSe ha detectado menos de 500MB de memoria RAM disponible.")
     
     if(Util_Threads < 2):
-        raise Exception("El programa no puede iniciarse.\nSe han detectado menos de nucleos en su sistema.")
+        raise Exception("El programa no puede iniciarse.\nSe han detectado menos de 2 nucleos en su sistema.")
 
     try:
         Verify_Configurations_Folder()
@@ -45,7 +45,7 @@ except Exception as e:
 else:
     try:
         if(Util_Threads == 2):
-            raise Raise_Warning("Se han detectado dos nucleos en su sistema.\nPodra seguir usando el programa,\npero los calculos seran mas lentos de lo normal.")
+            raise Raise_Warning("Se han detectado solo dos nucleos utiles para el programa en su sistema.\nPodra seguir usando el programa,\npero los calculos seran mas lentos de lo normal.")
     except Raise_Warning as e:
         messagebox.showwarning("Advertencia" , e)
         Insert_Data_In_Log_File(e , "Advertencia" , "Inicio del programa")
@@ -54,7 +54,7 @@ else:
 
     Image_Right_Section = PhotoImage(file=Get_Resource_Path("Images/normal_distribution.png"))
     Image_Right_Section.subsample(10)
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=Main_Window , file=Get_Resource_Path("Images/icon.png"))
 
     Global_ttk_Style = ttk.Style()
     Global_ttk_Style.theme_use("clam")

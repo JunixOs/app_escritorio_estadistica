@@ -26,7 +26,7 @@ def Create_Window_Export_PDF(W_Export_As_File , Results_From_Single_Column , Res
         W_Export_PDF.geometry("700x180+430+350")
 
     W_Export_PDF.title("Exportar en PDF")
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Export_PDF , file=Get_Resource_Path("Images/icon.png"))
     W_Export_PDF.iconphoto(False , Icon)
     W_Export_PDF.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Export_As_File , W_Export_PDF , True))
     W_Export_PDF.config(bg="#CDC4FF")

@@ -19,7 +19,7 @@ def Create_Window_Multiple_Graphs(Father_Window):
     
     W_Multiple_Grahps.geometry("700x500+250+150")
     W_Multiple_Grahps.title("Crear Multiples Graficos")
-    Icon = PhotoImage(file="Images/icon.png")
+    Icon = PhotoImage(master=W_Multiple_Grahps , file="Images/icon.png")
     W_Multiple_Grahps.iconphoto(False , Icon)
     W_Multiple_Grahps.grab_set()
 

@@ -12,6 +12,7 @@ Config/
 build/
 Output/
 dist/
+Docs/
 
 # Archivos con ciertas extensiones
 *.spec

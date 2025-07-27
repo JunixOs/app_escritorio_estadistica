@@ -164,7 +164,7 @@ def Create_Window_Export_Graphs(W_Show_Graph , Dictionary_Of_Generated_Figures ,
     Center_Window(W_Export_Graph , 900 , 700)
     W_Export_Graph.lift()
     W_Export_Graph.grab_set()
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Export_Graph , file=Get_Resource_Path("Images/icon.png"))
     W_Export_Graph.iconphoto(False , Icon)
     W_Export_Graph.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Show_Graph , W_Export_Graph , True))
 

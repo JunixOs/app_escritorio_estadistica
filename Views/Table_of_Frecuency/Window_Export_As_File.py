@@ -19,7 +19,7 @@ def Create_Window_Export_As_File(W_Calc_Frecuences_Table , Results_From_Single_C
         Center_Window(W_Export_As_File , 700 , 500)
 
     W_Export_As_File.title("Exportar Tabla")
-    Icon = PhotoImage(file=Get_Resource_Path("Images/icon.png"))
+    Icon = PhotoImage(master=W_Export_As_File , file=Get_Resource_Path("Images/icon.png"))
     W_Export_As_File.iconphoto(False , Icon)
     W_Export_As_File.resizable(False , False)
     W_Export_As_File.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Calc_Frecuences_Table , W_Export_As_File))
