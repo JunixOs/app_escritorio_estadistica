@@ -2,41 +2,28 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..')))
 
-from Tools import Get_Resource_Path , Center_Window
+from Tools import Get_Resource_Path , Center_Window , Delete_Actual_Window , Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Calcs.Venn.Export_Venn_Diagram import Export_Venn_Diagram_As_Image
 
 from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog
+from tkinter import filedialog , ttk , messagebox
 
-def Select_Path(W_Export_Venn_Diagram , File_Path , Btn_Examine):
-    Btn_Examine.config(state="disabled")
-    Path = filedialog.askdirectory(title="Seleccione una carpeta")
-    if(os.path.isdir(Path) and Path):
-        if(File_Path):
-            File_Path.set("")
-        File_Path.set(Path)
-    
-    Btn_Examine.config(state="normal")
-    W_Export_Venn_Diagram.lift()
+def Select_Path(File_Path , Btn_Examine):
+    try:
+        Btn_Examine.config(state="disabled")
+        Path = filedialog.askdirectory(title="Seleccione una carpeta")
+        if(os.path.isdir(Path) and Path):
+            if(File_Path):
+                File_Path.set("")
+            File_Path.set(Path)
+        
+        Btn_Examine.config(state="normal")
+    except Exception:
+        messagebox.showerror("Error" , "Hubo un error al seleccionar la carpeta de destino")
+        Insert_Data_In_Log_File("Ocurrio un error al seleccionar la carpeta de destino" , "Error" , "Exportacion de graficos de venn" , Get_Detailed_Info_About_Error())
 
 def Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph):
-    def Back():
-        for widgets in W_Export_Venn_Diagram.winfo_children():
-            widgets.destroy()
-
-        W_Export_Venn_Diagram.quit()
-        W_Export_Venn_Diagram.destroy()
-
-        W_Create_Venn_Diagram.lift()
-
-    if(__name__ == "__main__"):
-        W_Export_Venn_Diagram = Tk()
-    else:
-        W_Export_Venn_Diagram = Toplevel(W_Create_Venn_Diagram)
-        W_Export_Venn_Diagram.grab_set()
-        W_Export_Venn_Diagram.lift()
-        W_Export_Venn_Diagram.protocol("WM_DELETE_WINDOW" , Back)
+    W_Export_Venn_Diagram = Toplevel(W_Create_Venn_Diagram)
 
     Center_Window(W_Export_Venn_Diagram , 800 , 300)
     
@@ -45,6 +32,10 @@ def Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph):
     W_Export_Venn_Diagram.title("Exportar Diagrama de Venn")
     W_Export_Venn_Diagram.config(bg="#FFD9FA")
 
+    W_Export_Venn_Diagram.grab_set()
+    W_Export_Venn_Diagram.lift()
+    W_Export_Venn_Diagram.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(W_Create_Venn_Diagram , W_Export_Venn_Diagram))
+    
     File_Name = StringVar(W_Export_Venn_Diagram)
     File_Name.set("")
     File_Path = StringVar(W_Export_Venn_Diagram)
@@ -67,7 +58,7 @@ def Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph):
     Input_File_Path = Entry(W_Export_Venn_Diagram , font=("Courier New" , 13) , textvariable=File_Path , state="readonly")
     Input_File_Path.place(x=270 , y=60 , width=500)
 
-    Btn_Examine = Button(W_Export_Venn_Diagram , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_Path(W_Export_Venn_Diagram , File_Path , Btn_Examine) , bg="#F9FFD1")
+    Btn_Examine = Button(W_Export_Venn_Diagram , text="Examinar" , font=("Times New Roman" , 13) , command= lambda: Select_Path(File_Path , Btn_Examine) , bg="#F9FFD1")
     Btn_Examine.place(x=40 , y=90)
 
     Text_Input_Resolution = Label(W_Export_Venn_Diagram , text="Resolucion de la imagen (DPI):\n96 resolucion estandar \n>300 alta resolucion" , font=("Times New Roman" , 13) , justify=LEFT , bg="#FFD9FA")
@@ -86,6 +77,3 @@ def Create_Window_Export_Diagram(W_Create_Venn_Diagram , Figure_Venn_Graph):
 
     W_Export_Venn_Diagram.resizable(False , False)
     W_Export_Venn_Diagram.mainloop()
-
-if(__name__ == "__main__"):
-    Create_Window_Export_Diagram(None , None)

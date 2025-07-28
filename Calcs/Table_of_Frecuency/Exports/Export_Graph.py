@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
 
+from Tools import Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Exceptions.Exception_Warning import Raise_Warning; from Tools import Delete_Actual_Window
 
 from datetime import datetime
@@ -80,10 +81,13 @@ def Manage_Export_Of_Graphs(
             raise Raise_Warning("Debe seleccionar al menos un grafico a exportar.")
         
     except Raise_Warning as e:
+        Insert_Data_In_Log_File(e , "Advertencia" , "Exportacion de graficos de frecuencia")
         messagebox.showwarning("Advertencia" , f"{e}")
     except Exception as e:
-        messagebox.showerror("Error" , f"{e}")
+        Insert_Data_In_Log_File("Ocurrio un error al exportar los graficos de frecuencias" , "Error" , "Exportacion de graficos de frecuencia" , Get_Detailed_Info_About_Error())
+        messagebox.showerror("Error" , "Ocurrio un error al exportar los graficos de frecuencias")
     else:
+        Insert_Data_In_Log_File(f"Los graficos de frecuencia fueron correctamente exportados a {File_Path}" , "Operacion exitosa" , "Exportacion de graficos de frecuencia")
         Reply = messagebox.askquestion("Success" , f"Las imagenes fueron exportadas con exito a\n{File_Path}\n¿Desea salir de la ventana de exportacion?")
         if(Reply == "yes"):
             Delete_Actual_Window(W_Show_Graph , W_Export_Graph , True)

@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from Tools import Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Exceptions.Exception_Warning import Raise_Warning
 from datetime import datetime
 from tkinter import messagebox
@@ -46,9 +47,14 @@ def Export_Venn_Diagram_As_Image(W_Export_Venn_Diagram , Graph , File_Name , Fil
         Export.Export()
 
     except Raise_Warning as e:
+        Insert_Data_In_Log_File(e , "Advertencia" , "Exportacion de graficos de Venn")
         messagebox.showwarning("Advertencia" , f"{e}")
     except Exception as e:
-        messagebox.showerror("Error" , f"{e}")
+        Insert_Data_In_Log_File("Ocurrio un error al exportar los diagramas de Venn" , "Error" , "Exportacion de graficos de Venn" , Get_Detailed_Info_About_Error())
+        messagebox.showerror("Error" , "Ocurrio un error al exportar los diagramas de Venn")
     else:
+        Insert_Data_In_Log_File(f"Se exporto el grafico de Venn correctamente a {File_Path}" , "Operacion exitosa" , "Exportacion de graficos de Venn")
+
         messagebox.showinfo("Sucess" , f"Grafico exportado con exito a {File_Path}")
+
         W_Export_Venn_Diagram.destroy()

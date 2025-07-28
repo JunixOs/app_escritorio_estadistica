@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , '..' , '..')))
 
+from Tools import Delete_Actual_Window , Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
 from Exceptions.Exception_Warning import Raise_Warning
 
 from tkinter import messagebox
@@ -436,17 +437,15 @@ def Export_Table_In_Excel(
         else:
             raise Exception("No se encontraron los datos a exportar.")
     except Raise_Warning as e:
+        Insert_Data_In_Log_File(e , "Advertencia" , "Exportacion de frecuencias en excel")
         messagebox.showwarning("Advertencia" , f"{e}")
     except Exception as e:
-        messagebox.showerror("Error" , f"Hubo un error al exportar el Excel\n{e}")
+        Insert_Data_In_Log_File("Ocurrio un error al exportar las frecuencias a excel" , "Error" , "Exportacion de frecuencias en excel" , Get_Detailed_Info_About_Error())
+        messagebox.showerror("Error" , f"Ocurrio un error al exportar las frecuencias a excel")
     else:
+        Insert_Data_In_Log_File("Se exportaron correctamente las frecuencias a excel" , "Operacion exitosa" , "Exportacion de frecuencias en excel")
         messagebox.showinfo("Sucess" , f"Excel exportado correctamente a {Route}")
-        
-        W_Export_As_File.state(newstate="normal")
-        W_Export_As_File.lift()
-
-        W_Export_Excel.quit()
-        W_Export_Excel.destroy()
+        W_Export_As_File.after(10 , Delete_Actual_Window(W_Export_As_File , W_Export_Excel , True))
 
 def For_Single_Column_Data(Results_From_Single_Column , Type_Of_Variable , Route , File_Name = ""):
     Export = Export_Data(Results_From_Single_Column , Type_Of_Variable , Route , File_Name)

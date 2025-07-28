@@ -3,7 +3,7 @@ import os
 import numpy
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Get_Resource_Path , Get_Version , Center_Window , Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
+from Tools import Get_Resource_Path , Get_Version , Center_Window , Insert_Data_In_Log_File , Get_Detailed_Info_About_Error , Delete_Actual_Window
 from Exceptions.Exception_Warning import Raise_Warning
 from Calcs.Table_of_Frecuency.Calc_Values_Tables import *
 from Views.Table_of_Frecuency.Window_Export_As_File import Create_Window_Export_As_File
@@ -527,7 +527,7 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
         self.Data_To_Analized = Data_To_Analized
         self.Precision = Precision
         self.Results = {}
-        self.Type_Of_Variable = None
+        self.Type_Of_Variable = ""
         self.Amplitude_N_Decimals = None
         self.Variable_Name = Variable_Name
         self.Multiple_Columns = Multiple_Columns
@@ -543,6 +543,7 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
 
     def Calc_Results(self , Repeated_Calc):
         global Dictionary_For_Generated_Figures
+
         Results = Main_Function(self.Data_To_Analized , [self.Checked_Is_Continue , self.Checkbox_Group_Data_In_Intervals] , Repeated_Calc)
 
         if(Results["Frecuences_Cuant_Grouped"] != None):
@@ -554,13 +555,12 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
             self.Type_Of_Variable = "Cualitative"
             self.Checkbox_Group_Data_In_Intervals = None
         
-        Without_None = {}
+        Only_Data_With_Values = {}
         for key,value in Results.items():
             if(value != None):
-                Without_None[key] = value
+                Only_Data_With_Values[key] = value
 
-        self.Results = Without_None
-
+        self.Results = Only_Data_With_Values
         if(Repeated_Calc):
             Table_Of_Frecuences.Destroy_Table(self)
             Labels_Summary_Measures.Destroy_Labels(self)
@@ -659,19 +659,6 @@ class Process_Column_Of_Data(Table_Of_Frecuences , Labels_Summary_Measures , Qua
 def Create_Window_Frecuences_Table(Main_Window):
     Main_Window.state(newstate="withdraw")
 
-    def Back_to_main_window():
-        Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
-        for widget in Window_Frecuences_Table.winfo_children():
-            widget.destroy()
-
-        Window_Frecuences_Table.grab_release()
-        Window_Frecuences_Table.quit()
-        Window_Frecuences_Table.destroy()
-        Main_Window.state(newstate="normal")
-        Main_Window.geometry("1240x700+135+100")
-        Main_Window.title(f"StatPhi {Get_Version()}")
-        Main_Window.lift()
-
     def Display_Results_By_Column_Name(Event = None):
         Selection = Column_Selection.get()
         for t in Global_Views.values():
@@ -690,6 +677,7 @@ def Create_Window_Frecuences_Table(Main_Window):
                 key, value = next(iter(Imported_Data_From_Excel.items()))
                 Results_On_Window_For_Single_Variable = Process_Column_Of_Data(Window_Frecuences_Table , value , Precision , key) # Para datos importados de Excel
                 Results_On_Window_For_Single_Variable.Calc_Results(False)
+                
                 Results_From_Single_Column[f"{key}"] = Results_On_Window_For_Single_Variable.Results
             else:
                 Results_From_Single_Column = None
@@ -789,13 +777,13 @@ def Create_Window_Frecuences_Table(Main_Window):
                 raise Raise_Warning("No se han ingresado datos.")
 
         except Raise_Warning as e:
-            messagebox.showinfo("Advertencia" , f"{e}")
-            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
             Insert_Data_In_Log_File(e , "Advertencia" , "Calculo de tablas de frecuencia")
+            messagebox.showinfo("Advertencia" , f"{e}")
+            Delete_Previous_Calculated_Data(Columns_Name , Column_Selection , Imported_Data_From_Excel)
         except Exception as e:
-            messagebox.showerror("Error" , f"{e}")
-            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
-            Insert_Data_In_Log_File(e , "Error" , "Calculo de tablas de frecuencia" , Get_Detailed_Info_About_Error())
+            Insert_Data_In_Log_File("Hubo un error al calcular las frecuencias" , "Error" , "Calculo de tablas de frecuencia" , Get_Detailed_Info_About_Error())
+            messagebox.showerror("Error" , "Hubo un error al calcular las frecuencias")
+            Delete_Previous_Calculated_Data(Columns_Name , Column_Selection , Imported_Data_From_Excel)
         else:
             Input_Data.config(state="disabled")
 
@@ -806,7 +794,7 @@ def Create_Window_Frecuences_Table(Main_Window):
 
             Insert_Data_In_Log_File("Calculo de tabla de frecuencia realizada correctamente" , "Operacion exitosa" , "Calculo de tablas de frecuencia")
 
-    def Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel):
+    def Delete_Previous_Calculated_Data(Columns_Name , Column_Selection , Imported_Data_From_Excel):
         global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns , Global_Type_Of_Variable_Single_Column , Global_Type_Of_Variable_Multiple_Column , Global_Views , Dictionary_For_Generated_Figures
         try:
             Input_Data.config(state="normal")
@@ -839,9 +827,9 @@ def Create_Window_Frecuences_Table(Main_Window):
             Btn_Generate_Table.config(state="normal")
             Btn_Export_As_File.config(state="disabled")
             Btn_Show_Graph.config(state="disabled")
-        except Exception as e:
+        except Exception:
+            Insert_Data_In_Log_File("Ocurrio un error al intentar eliminar los resultados del calculo anterior" , "Error" , "Calculo de tablas de frecuencia" , Get_Detailed_Info_About_Error())
             messagebox.showerror("Error" , "Ocurrio un error al intentar eliminar\nlos resultados del calculo anterior.")
-            Insert_Data_In_Log_File("Ocurrio un error al intentar eliminar\nlos resultados del calculo anterior" , "Error" , "Calculo de tablas de frecuencia" , Get_Detailed_Info_About_Error())
         else:
             Insert_Data_In_Log_File("Datos anteriores eliminados con exito" , "Operacion exitosa" , "Calculo de tablas de frecuencia")
 
@@ -853,7 +841,7 @@ def Create_Window_Frecuences_Table(Main_Window):
     def Interact_Btn_Generate_Table(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel , Columns_Name , Column_Selection):
         global Global_Results_From_Single_Column , Global_Results_From_Multiple_Columns
         if(Global_Results_From_Multiple_Columns or Global_Results_From_Single_Column):
-            Calculate_Again(Columns_Name , Column_Selection , Imported_Data_From_Excel)
+            Delete_Previous_Calculated_Data(Columns_Name , Column_Selection , Imported_Data_From_Excel)
             Btn_Generate_Table.config(text="Calcular Tabla")
         else:
             Display_Results(Precision , Data_From_Widget_Entry , Imported_Data_From_Excel)
@@ -912,9 +900,9 @@ def Create_Window_Frecuences_Table(Main_Window):
     Section_Frecuences_Table = Label(Window_Frecuences_Table , height=32 , bg="#CBEFE3" , highlightthickness=2 , highlightbackground="#000000")
     Section_Frecuences_Table.place(x=29 , y=255 , width=1340)
 
-    Btn_Back = Button(Window_Frecuences_Table , text="Volver", font=("Times New Roman" , 12) , command=Back_to_main_window , width=134 , bg="#F4B0C0")
+    Btn_Back = Button(Window_Frecuences_Table , text="Volver", font=("Times New Roman" , 12) , command= lambda: Delete_Actual_Window(Main_Window , Window_Frecuences_Table , True) , width=134 , bg="#F4B0C0")
     Btn_Back.place(x=10 , y=760 , width=1380)
 
-    Window_Frecuences_Table.protocol("WM_DELETE_WINDOW" , Back_to_main_window)
+    Window_Frecuences_Table.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(Main_Window , Window_Frecuences_Table , True))
     Window_Frecuences_Table.resizable(False,False)
     Window_Frecuences_Table.mainloop()

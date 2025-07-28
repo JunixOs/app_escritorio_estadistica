@@ -3,27 +3,14 @@ import os
 # Esto añade la carpeta raiz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Center_Window
+from Tools import Center_Window , Delete_Actual_Window
 import Calcs.MAS.MAS_Calc as MAS
 
 from tkinter import *
 
-def Create_Window_MAS(Main_Window=None):
-    def Back():
-        for widget in Window_MAS.winfo_children():
-            widget.destroy()
-        Window_MAS.grab_release()
-        Window_MAS.quit()
-        Window_MAS.destroy()
-
-        Main_Window.state(newstate="normal")
-        Main_Window.lift()
-        
-    if __name__ == "__main__":
-        Window_MAS = Tk()
-    else:
-        Window_MAS = Toplevel(Main_Window)
-        Main_Window.state(newstate="withdraw")
+def Create_Window_MAS(Main_Window):
+    Window_MAS = Toplevel(Main_Window)
+    Main_Window.state(newstate="withdraw")
 
     Icon = PhotoImage(master=Window_MAS , file="Images/icon.png")
     Window_MAS.title("Calcular tamaño de muestra")
@@ -32,7 +19,7 @@ def Create_Window_MAS(Main_Window=None):
 
     Window_MAS.iconphoto(False , Icon)
     Window_MAS.lift()
-    Window_MAS.protocol("WM_DELETE_WINDOW" , Back)
+    Window_MAS.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(Main_Window , Window_MAS , True))
     Window_MAS.config(bg="#CBEFE3")
 
     Checked_Cuantitative_Variable = BooleanVar(Window_MAS)
@@ -236,6 +223,3 @@ def Create_Window_MAS(Main_Window=None):
 
     Window_MAS.resizable(False , False)
     Window_MAS.mainloop()
-
-if __name__ == "__main__":
-    Create_Window_MAS()

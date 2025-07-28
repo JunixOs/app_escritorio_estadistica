@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Tools import Center_Window
+from Tools import Center_Window , Delete_Actual_Window
 from Calcs.Venn.Calc_Venn_Diagram import Venn_Diagram
 from Exceptions.Exception_Warning import Raise_Warning
 import Views.Window_Import_Excel as W_Import_Excel
@@ -20,20 +20,7 @@ def index_to_string(i):
         Temp = Temp // 26 - 1
     return Letter
 
-def Create_Window_Create_Venn_Diagram(Main_Window = None):
-    def Back():
-        if(Widget_Venn_Graph):
-            Calculate_Again()
-
-        for widget in W_Create_Venn_Diagram.winfo_children():
-            widget.destroy()
-        W_Create_Venn_Diagram.grab_release()
-        W_Create_Venn_Diagram.quit()
-        W_Create_Venn_Diagram.destroy()
-
-        Main_Window.state(newstate="normal")
-        Main_Window.lift()
-
+def Create_Window_Create_Venn_Diagram(Main_Window):
     def Process_Data(Widget_Venn_Graph , Figure_Venn_Graph):
         try:
             if(Widget_Venn_Graph):
@@ -153,12 +140,9 @@ def Create_Window_Create_Venn_Diagram(Main_Window = None):
     Btn_Export_Graph.place(x=990 , y=490 , width=210)
     Btn_Export_Graph.config(state="disabled")
 
-    Btn_Volver = Button(W_Create_Venn_Diagram , text="Volver" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command=Back)
+    Btn_Volver = Button(W_Create_Venn_Diagram , text="Volver" , font=("Times New Roman" , 13) , bg="#F9FFD1" , command= lambda: Delete_Actual_Window(Main_Window , W_Create_Venn_Diagram , True))
     Btn_Volver.pack(side=BOTTOM , fill=BOTH)
 
-    W_Create_Venn_Diagram.protocol("WM_DELETE_WINDOW" , Back)
+    W_Create_Venn_Diagram.protocol("WM_DELETE_WINDOW" , lambda: Delete_Actual_Window(Main_Window , W_Create_Venn_Diagram , True))
     W_Create_Venn_Diagram.resizable(False , False)
     W_Create_Venn_Diagram.mainloop()
-
-if(__name__ == "__main__"):
-    Create_Window_Create_Venn_Diagram()

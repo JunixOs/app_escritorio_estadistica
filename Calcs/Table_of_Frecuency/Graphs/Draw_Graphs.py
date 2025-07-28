@@ -77,12 +77,12 @@ def Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Di
                 raise Exception("No se pudo detectar el tipo de variable.")
         #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
     except RuntimeError as e:
-        W_Show_Graph.after(0 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
         W_Show_Graph.after(40 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
+        W_Show_Graph.after(0 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
         return
     except Exception as e:
-        W_Show_Graph.after(0 , messagebox.showerror("Error" , f"{e}"))
         W_Show_Graph.after(40 , Insert_Data_In_Log_File(e , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
+        W_Show_Graph.after(0 , messagebox.showerror("Error" , f"{e}"))
         return
     else:
         W_Show_Graph.after(0 , Insert_Data_In_Log_File(

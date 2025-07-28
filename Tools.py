@@ -311,7 +311,7 @@ def Verify_Log_File_Exists_In_Logs_Folder():
 
     return True if Name_Of_Log_File in Log_Files_Names else False
 
-def Insert_Data_In_Log_File(Event_Message , Event_Type , Event_Section , Detailed_Message_Error=""):
+def Insert_Data_In_Log_File(Event_Message , Event_Type:Literal["Error" , "Advertencia" , "Operacion exitosa"] , Event_Section , Detailed_Message_Error=""):
     Verify_Logs_Folder()
 
     Today_Date = datetime.now().strftime("%d-%m-%Y")
