@@ -6,7 +6,6 @@ import json
 import psutil
 from datetime import datetime
 import time
-import traceback
 from typing import Literal
 import platform
 
@@ -47,7 +46,7 @@ def Get_RAM_Memory_In_Device():
     }
 
 def Get_Version():
-    Version = "v3.0.0"
+    Version = "v3.1.0"
 
     return Version
 
@@ -230,14 +229,39 @@ def Load_Global_Styles(Global_ttk_Style):
                     darkcolor="#0078D7")
 
 # ==================================================================== Threads Tools ====================================================================
-def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Finish=None):
+def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Finish=None , List_Of_Occurred_Errors_In_Threads=[] , Function_To_Execute_If_Error_Occurred=None , *Data_To_Delete):
     # Verifica si todos los hilos terminaron
     if all(not t.is_alive() for t in Threads_List):
-        Class_Progress_Bar.Close_Progress_Bar()
+        # Verifica que no haya ocurrido algun error en un hilo
+        try:
+            if(any(List_Of_Occurred_Errors_In_Threads)):
+                Class_Progress_Bar.Close_Progress_Bar()
+                if(Function_To_Execute_If_Error_Occurred):
+                    Root_Window.after(0 , Delete_Residual_Data_And_Close(Function_To_Execute_If_Error_Occurred , *Data_To_Delete))
+                return
+        except Exception:
+            Insert_Data_In_Log_File("Ocurrio un error al intentar terminar la ejecucion de los hilos" , "Error" , "Verificacion de hilos vivos" , Get_Detailed_Info_About_Error())
+            Class_Progress_Bar.Close_Progress_Bar()
+            return
+        
         if(On_Finish):
             Root_Window.after(0 , On_Finish)
+        Class_Progress_Bar.Close_Progress_Bar()
     else:
-        Root_Window.after(500, Check_Threads_Alive, Threads_List, Root_Window , Class_Progress_Bar , On_Finish)
+        Root_Window.after(500, Check_Threads_Alive, Threads_List, Root_Window , Class_Progress_Bar , On_Finish , Delete_Residual_Data_And_Close)
+
+def Delete_Residual_Data_And_Close(Function_To_Close_Window_If_Error_Occurred , *Data_To_Delete):
+    for data in Data_To_Delete:
+        if(isinstance(data , dict) or isinstance(data , list) or isinstance(data , set)):
+            data.clear()
+        elif(isinstance(data , str)):
+            data = ""
+        elif(isinstance(data , int) or isinstance(data , float)):
+            data = 0
+        else:
+            data = None
+
+    Function_To_Close_Window_If_Error_Occurred()
 
 # ==================================================================== Log Files Tools ====================================================================
 def Verify_Logs_Folder():
@@ -303,7 +327,7 @@ def Get_Metadata_Info_From_Log_Files(Specific_Log_File_Name="" , Get_All_Metadat
 
     return Log_Files_Metadata_Info
 
-def Verify_Log_File_Exists_In_Logs_Folder():
+def Verify_Today_Log_File_Exists_In_Logs_Folder():
     Today_Date = datetime.now().strftime("%d-%m-%Y")
     Name_Of_Log_File = Today_Date + " - log.txt"
 
@@ -317,28 +341,29 @@ def Insert_Data_In_Log_File(Event_Message , Event_Type:Literal["Error" , "Advert
     Today_Date = datetime.now().strftime("%d-%m-%Y")
     Full_Path_Of_Log_File = Get_Resource_Path(f"Logs/{Today_Date} - log.txt" , True)
 
-    Actual_Time = datetime.now().strftime("%H-%M-%S")
+    Actual_Time = datetime.now().strftime("%H:%M:%S")
 
-    Log_File_Exists = Verify_Log_File_Exists_In_Logs_Folder()
+    Today_Log_File_Exists = Verify_Today_Log_File_Exists_In_Logs_Folder()
 
-    if(not Log_File_Exists):
+    if(not Today_Log_File_Exists):
         Log_File = open(Full_Path_Of_Log_File , "w")
     else:
         Log_File = open(Full_Path_Of_Log_File , "a")
 
     if(Detailed_Message_Error):
-        Log_File.write(f"({Actual_Time} - [{Event_Type}] - [Seccion: {Event_Section}]) > {Event_Message}\n===>Mensaje detallado del evento{Detailed_Message_Error}")
+        Log_File.write(f"{Actual_Time} | {Event_Type} | {Event_Section} | {Event_Message} | {Detailed_Message_Error}")
     else:
-        Log_File.write(f"({Actual_Time} - [{Event_Type}] - [Seccion: {Event_Section}]) > {Event_Message}\n")
+        Log_File.write(f"{Actual_Time} | {Event_Type} | {Event_Section} | {Event_Message}\n")
 
     Log_File.close()
 
 def Read_Content_In_Log_Files(Specific_Log_File_Name=""):
     Verify_Logs_Folder()
-    Log_File_Exists = Verify_Log_File_Exists_In_Logs_Folder()
+    Today_Log_File_Exists = Verify_Today_Log_File_Exists_In_Logs_Folder()
 
-    if(not Log_File_Exists):
-        return ""
+    if(not Today_Log_File_Exists):
+        Log_File = open(Get_Resource_Path(f"Logs/{datetime.now().strftime("%d-%m-%Y")} - log.txt" , True) , "w")
+        Log_File.close()
 
     Log_Files_Names_And_Paths = Get_Log_Files_Names_And_Paths()
     Content_In_Log_Files = {}

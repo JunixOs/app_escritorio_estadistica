@@ -61,7 +61,6 @@ class Notebook_For_Logs:
         Metadata_Info_In_Log_File = Get_Metadata_Info_From_Log_Files(Log_File_Name)
         Content_In_Log_File = Read_Content_In_Log_Files(Log_File_Name)
 
-        # self.Collection_Widgets[Log_File_Name]["Widget_Path"].config(text=f"Ruta del archivo: {self.Log_Files_Names_And_Paths[1]}")
         self.Collection_Widgets[Log_File_Name]["Widget_Size"].config(text=f"Tamaño del archivo: {Metadata_Info_In_Log_File[Log_File_Name]['Size']} bytes")
         self.Collection_Widgets[Log_File_Name]["Widget_Creation_Date"].config(text=f"Fecha de creacion: {Metadata_Info_In_Log_File[Log_File_Name]['Creation_Date']}")
         self.Collection_Widgets[Log_File_Name]["Widget_Last_Access"].config(text=f"Ultimo acceso: {Metadata_Info_In_Log_File[Log_File_Name]['Last_Access']}")
@@ -70,15 +69,17 @@ class Notebook_For_Logs:
         self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].delete(*self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].get_children())
 
         for text_line in Content_In_Log_File[Log_File_Name]:
-            self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].insert("" , END , values=(text_line,))
+            text_line = text_line.split("|")
+            if(len(text_line) > 5 or len(text_line) < 4):
+                continue
+            self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].insert("" , END , values=(*text_line,))
         self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].yview_moveto(1.0)
 
     def Create_Widgets_For_Log_Files_Info(self):
         Metadata_Info_In_Log_Files = Get_Metadata_Info_From_Log_Files()
         Content_In_Log_Files = Read_Content_In_Log_Files()
 
-        for (log_file_name , log_file_path) , content_in_log_file , metadata_info_in_log_file , frame_notebook in zip(self.Log_Files_Names_And_Paths , Content_In_Log_Files.values() , Metadata_Info_In_Log_Files.values() , self.Frames_Notebook_Collection.values()):
-            Label_Log_File_Path = ttk.Label(frame_notebook , text=f"Ruta del archivo: {log_file_path}")
+        for (log_file_name , _) , content_in_log_file , metadata_info_in_log_file , frame_notebook in zip(self.Log_Files_Names_And_Paths , Content_In_Log_Files.values() , Metadata_Info_In_Log_Files.values() , self.Frames_Notebook_Collection.values()):
             Label_Log_File_Size = ttk.Label(frame_notebook , text=f"Tamaño del archivo: {metadata_info_in_log_file['Size']} bytes")
             Label_Log_File_Creation_Date = ttk.Label(frame_notebook , text=f"Fecha de creacion: {metadata_info_in_log_file['Creation_Date']}")
             Label_Log_File_Last_Access = ttk.Label(frame_notebook , text=f"Ultimo acceso: {metadata_info_in_log_file['Last_Access']}")
@@ -90,9 +91,17 @@ class Notebook_For_Logs:
             Frame_Treeview_Log_File_Content.rowconfigure(0 , weight=1)
             Frame_Treeview_Log_File_Content.columnconfigure(0 , weight=1)
 
-            Treeview_Log_File_Content = ttk.Treeview(Frame_Treeview_Log_File_Content , columns=("1",) , show="headings")
-            Treeview_Log_File_Content.heading("1" , text="Contenido del archivo de registro")
-            Treeview_Log_File_Content.column("1" , anchor="w" , stretch=True)
+            Treeview_Log_File_Content = ttk.Treeview(Frame_Treeview_Log_File_Content , columns=("1","2","3","4","5") , show="headings")
+            Treeview_Log_File_Content.heading("1" , text="Hora")
+            Treeview_Log_File_Content.heading("2" , text="Tipo de evento")
+            Treeview_Log_File_Content.heading("3" , text="Seccion del evento")
+            Treeview_Log_File_Content.heading("4" , text="Mensaje del evento")
+            Treeview_Log_File_Content.heading("5" , text="Informacion detallada del evento")
+            Treeview_Log_File_Content.column("1" , anchor="center" , stretch=True)
+            Treeview_Log_File_Content.column("2" , anchor="center" , stretch=True)
+            Treeview_Log_File_Content.column("3" , anchor="center" , stretch=True)
+            Treeview_Log_File_Content.column("4" , anchor="center" , stretch=True)
+            Treeview_Log_File_Content.column("5" , anchor="center" , stretch=True)
             Treeview_Log_File_Content.delete(*Treeview_Log_File_Content.get_children())
             
             Scrollbar_y_Treeview_Log_File_Content = ttk.Scrollbar(Frame_Treeview_Log_File_Content , orient="vertical" , command=Treeview_Log_File_Content.yview)
@@ -102,12 +111,14 @@ class Notebook_For_Logs:
             Scrollbar_y_Treeview_Log_File_Content.grid(row=0 , column=1 , sticky="ns")
 
             for text_line in content_in_log_file:
-                Treeview_Log_File_Content.insert("" , END , values=(text_line,))
+                text_line = text_line.split("|")
+                if(len(text_line) > 5 or len(text_line) < 4):
+                    continue
+                Treeview_Log_File_Content.insert("" , END , values=(*text_line,))
 
             Treeview_Log_File_Content.yview_moveto(1.0)
 
             self.Collection_Widgets[log_file_name] = {
-                "Widget_Path": Label_Log_File_Path,
                 "Widget_Button_Update": Btn_Refresh_Log_File_Content,
                 "Widget_Size": Label_Log_File_Size,
                 "Widget_Creation_Date": Label_Log_File_Creation_Date,
@@ -119,15 +130,13 @@ class Notebook_For_Logs:
     def Display_Widgets_For_Log_Files_Info(self):
         # 6 rows widgets labels and 7 rows widget treeview, total 13 rows
         for collection_widgets in self.Collection_Widgets.values():
-            collection_widgets["Widget_Path"].grid(row=0 , column=0 , columnspan=2 , padx=(5,5) , pady=(5,0) , sticky="ew")
+            collection_widgets["Widget_Size"].grid(row=0 , column=0 , columnspan=2 , padx=(5,5) , pady=(5,0) , sticky="ew")
+            collection_widgets["Widget_Creation_Date"].grid(row=1 , column=0 , columnspan=2 , padx=(5,5) , pady=(5,0) , sticky="ew")
+            collection_widgets["Widget_Last_Access"].grid(row=2 , column=0 , columnspan=2 , padx=(5,5) , pady=(5,0) , sticky="ew")
+            collection_widgets["Widget_Last_Modification"].grid(row=3 , column=0 , padx=(5,5) , pady=(5,0) , sticky="ew")
 
-            collection_widgets["Widget_Size"].grid(row=1 , column=0 , columnspan=2 , padx=(5,5) , pady=(5,0) , sticky="ew")
-            collection_widgets["Widget_Creation_Date"].grid(row=2 , column=0 , columnspan=2 , padx=(5,5) , pady=(5,0) , sticky="ew")
-            collection_widgets["Widget_Last_Access"].grid(row=3 , column=0 , columnspan=2 , padx=(5,5) , pady=(5,0) , sticky="ew")
-            collection_widgets["Widget_Last_Modification"].grid(row=4 , column=0 , padx=(5,5) , pady=(5,0) , sticky="ew")
-
-            collection_widgets["Widget_Button_Update"].grid(row=4 , column=1 , padx=(5,5) , pady=(5,0) , sticky="w")
-            collection_widgets["Widget_Log_File_Content"][0].grid(row=5 , column=0 , rowspan=9 , columnspan=2 , padx=(5,5) , pady=(0,0) , sticky="nsew")
+            collection_widgets["Widget_Button_Update"].grid(row=3 , column=1 , padx=(5,5) , pady=(5,0) , sticky="w")
+            collection_widgets["Widget_Log_File_Content"][0].grid(row=4 , column=0 , rowspan=10 , columnspan=2 , padx=(5,5) , pady=(0,0) , sticky="nsew")
 
         self.Notebook_Logs.grid(row=0 , column=0 , sticky="nsew")
 
@@ -208,7 +217,7 @@ def Create_Window_View_Logs(Father_Window=None):
             Delete_Actual_Window(Father_Window , W_View_Logs , True)
 
         Btn_Logs_Settings = Button(W_View_Logs , text="\u2699" , font=("Segoe UI Emoji", 9) , bg="#d0d0d0" , command= lambda: Create_Window_Config_Logs_Settings(W_View_Logs))
-        Btn_Logs_Settings.place(x=8 , y=293)
+        Btn_Logs_Settings.place(x=8 , y=263)
 
 
         W_View_Logs.mainloop()

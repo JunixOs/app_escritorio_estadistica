@@ -16,10 +16,10 @@ from Window_Progress_Bar import W_Progress_Bar
 
 import threading
 
-def Generate_Graph_For_Limited_Threads(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , Info_For_Graphs):
+def Generate_Graph_For_Limited_Threads(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , List_Of_Occurred_Errors_In_Threads , Idx_Thread , Info_For_Graphs):
     try:
         for category_graph , variable_frecuency_list in Info_For_Graphs.items():
-            Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , category_graph , variable_frecuency_list)
+            Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , List_Of_Occurred_Errors_In_Threads , Idx_Thread , category_graph , variable_frecuency_list)
     except RuntimeError:
         W_Show_Graph.after(30 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
         W_Show_Graph.after(40 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error()))
@@ -57,7 +57,7 @@ class Handler_Of_States_And_Actions:
     def Get_Dictionary_Of_Graphs(self):
         return self.Dictionary_Of_Generated_Figures
 
-    def Generate_Graphs(self , On_Finish=None):
+    def Generate_Graphs(self , On_Finish=None , Function_To_Close_Window_If_Error_Occurred=None):
         try:    
             if(all(list(self.Dictionary_Of_Generated_Figures.values()))):
                 if(On_Finish):
@@ -76,14 +76,17 @@ class Handler_Of_States_And_Actions:
 
             Threads_List = []
             if(Number_Of_Util_Threads >= self.Total_Of_Works):
-                for category_graph , variable_frecuency_list in self.Info_For_Generate_Graphs.items():
-                    Thread = threading.Thread(target= lambda: Manage_All_Graphs_Draw(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , category_graph , variable_frecuency_list))
+                List_Of_Occurred_Errors_In_Threads = [False for _ in range(self.Total_Of_Works)]
+
+                for idx_thread , (category_graph , variable_frecuency_list) in enumerate(self.Info_For_Generate_Graphs.items()):
+                    Thread = threading.Thread(target= lambda: Manage_All_Graphs_Draw(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , List_Of_Occurred_Errors_In_Threads , idx_thread , category_graph , variable_frecuency_list))
                     Threads_List.append(Thread)
                     Thread.start()
         
-            elif(Number_Of_Util_Threads > 2 and Number_Of_Util_Threads < self.Total_Of_Works):
-                Chunks = [{} for i in range(Number_Of_Util_Threads - 1)]
-                
+            elif(Number_Of_Util_Threads >= 2 and Number_Of_Util_Threads < self.Total_Of_Works):
+                Chunks = [{} for i in range(Number_Of_Util_Threads)]
+                List_Of_Occurred_Errors_In_Threads = [False for _ in range(len(Chunks))]
+
                 idx = 0
                 for key , value in self.Info_For_Generate_Graphs.items():
                     if(idx == Number_Of_Util_Threads - 1):
@@ -92,26 +95,35 @@ class Handler_Of_States_And_Actions:
                         idx += 1
                     Chunks[idx][key] = value
                     
-                for chunk in Chunks:
-                    Thread = threading.Thread(target= lambda: Generate_Graph_For_Limited_Threads(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , chunk))
+                for idx_thread , chunk in enumerate(Chunks):
+                    Thread = threading.Thread(target= lambda: Generate_Graph_For_Limited_Threads(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , List_Of_Occurred_Errors_In_Threads , idx_thread , chunk))
                     Threads_List.append(Thread)
                     Thread.start()
 
-            elif(Number_Of_Util_Threads == 2):
-                def Work():
-                    Generate_Graph_For_Limited_Threads(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , self.Info_For_Generate_Graphs)
+            elif(Number_Of_Util_Threads == 1):
+                List_Of_Occurred_Errors_In_Threads = [False]
 
-                Thread = threading.Thread(target=Work)
+                Thread = threading.Thread(target= lambda: Generate_Graph_For_Limited_Threads(self.W_Show_Graph , self.Results_From_Calcs , self.Axis_x_Title , self.Dictionary_Of_Generated_Figures , self.Class_Generator_Of_Graphs , List_Of_Occurred_Errors_In_Threads , 0 , self.Info_For_Generate_Graphs))
                 Threads_List.append(Thread)
                 Thread.start()
-            elif(Number_Of_Util_Threads < 2):
+            elif(Number_Of_Util_Threads < 1):
                 raise Exception("Error" , "No se puede ejecutar la generacion de graficos.\nSe detectaron menos de 2 nucleos de CPU\nen su dispositivo.")
             
-            self.W_Show_Graph.after(500 , Check_Threads_Alive , Threads_List , self.W_Show_Graph , Class_Progress_Bar , On_Finish)
+            self.W_Show_Graph.after(
+                500 , 
+                Check_Threads_Alive , 
+                Threads_List , 
+                self.W_Show_Graph , 
+                Class_Progress_Bar , 
+                On_Finish , 
+                List_Of_Occurred_Errors_In_Threads , 
+                Function_To_Close_Window_If_Error_Occurred ,
+                self.Dictionary_Of_Generated_Figures , self.Dictionary_Of_Generated_Widgets,
+            )
 
-        except Exception as e:
-            self.W_Show_Graph.after(30 , messagebox.showerror("Error" , f"{e}"))
-            self.W_Show_Graph.after(40 , Insert_Data_In_Log_File(e , "Error" , "Creacion de graficos" , Get_Detailed_Info_About_Error()))
+        except Exception:
+            self.W_Show_Graph.after(30 , messagebox.showerror("Error" , f"Hubo un error al generar los graficos"))
+            self.W_Show_Graph.after(40 , Insert_Data_In_Log_File("Hubo un error al generar los graficos" , "Error" , "Creacion de graficos" , Get_Detailed_Info_About_Error()))
         else:
             self.W_Show_Graph.after(10 , Insert_Data_In_Log_File("La funcion de generacion de graficos se ejecuto e inicio los hilos correctamente." , "Operacion exitosa" , "Creacion de graficos"))
 
@@ -495,6 +507,11 @@ class Checkboxes_For_Cualitative_Data(Handler_Of_States_And_Actions):
         }
 
 def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Column , Results_From_Multiple_Columns , Precision , Dictionary_Of_Generated_Figures , Type_Of_Variable):
+    def Close_Window_If_An_Error_Occurred_And_Show_Message():
+        W_Show_Graph.after(20 , Insert_Data_In_Log_File("Ocurrio un error en uno de los hilos al generar los graficos" , "Error" , "Visualizacion de graficos" , "\nSe encuentra en el registro del hilo que fallo, lineas mas arriba\n"))
+        W_Show_Graph.after(0 , messagebox.showerror("Error" , "Ocurrio un error al generar los graficos en hilos"))
+        Delete_Actual_Window(W_Calc_Frecuences_Table , W_Show_Graph)
+
     def Change_To_Different_Variable_Graph(Event = None):
         if(Checkboxes_Class_Collection):
             Selection = Combobox_For_Variable_Names.get()
@@ -575,7 +592,10 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
             Checkboxes_Class_Collection[f"{variable_name}"] = Class_For_Checkboxes
             List_Of_Variable_Names.append(variable_name)
 
-            Class_For_Checkboxes.Generate_Graphs(On_Finish=lambda: Continue_Processing_Of_Columns_Graphs(Class_For_Checkboxes , variable_name , Index))
+            Class_For_Checkboxes.Generate_Graphs(
+                On_Finish=lambda: Continue_Processing_Of_Columns_Graphs(Class_For_Checkboxes , variable_name , Index) , 
+                Function_To_Close_Window_If_Error_Occurred=Close_Window_If_An_Error_Occurred_And_Show_Message
+            )
         except Exception as e:
             messagebox.showerror("Error" , f"{e}")
             Insert_Data_In_Log_File(e , "Error" , "Visualizacion de graficos" , Get_Detailed_Info_About_Error())
@@ -638,7 +658,9 @@ def Create_Window_Show_Graph(W_Calc_Frecuences_Table , Results_From_Single_Colum
                 case "Cualitative":
                     Class_For_Checkboxes = Checkboxes_For_Cualitative_Data(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures)
 
-            Class_For_Checkboxes.Generate_Graphs()
+            Class_For_Checkboxes.Generate_Graphs(
+                Function_To_Close_Window_If_Error_Occurred=Close_Window_If_An_Error_Occurred_And_Show_Message
+            )
 
             Class_For_Checkboxes.Generate_Checkboxes()
             Class_For_Checkboxes.Display_Checkboxes()

@@ -57,7 +57,7 @@ def Create_Class_Generator_Of_Graphs(Class_Generator_Of_Graphs , Results_From_Ca
         Class_Generator_Of_Graphs.append(Class_Graph)
 
 
-def Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , Category_Graph , Variable_Of_Frecuency=None):
+def Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Dictionary_Of_Generated_Figures , Class_Generator_Of_Graphs , An_Error_Occurred_In_Thread , Idx_Thread , Category_Graph , Variable_Of_Frecuency=None):
     #print(f"Thread {threading.get_ident()} empezando trabajo {Category_Graph}")
     try:
         Axis_y_Title = Define_Axis_y_Title(Variable_Of_Frecuency)
@@ -77,18 +77,20 @@ def Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Di
                 raise Exception("No se pudo detectar el tipo de variable.")
         #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
     except RuntimeError as e:
-        W_Show_Graph.after(40 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
-        W_Show_Graph.after(0 , messagebox.showerror("Error" , "Error al procesar en hilos\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo."))
+        W_Show_Graph.after(40 , Insert_Data_In_Log_File(f"Error en hilo {Idx_Thread}. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
+        An_Error_Occurred_In_Thread[Idx_Thread] = True
         return
     except Exception as e:
-        W_Show_Graph.after(40 , Insert_Data_In_Log_File(e , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
-        W_Show_Graph.after(0 , messagebox.showerror("Error" , f"{e}"))
+        W_Show_Graph.after(40 , Insert_Data_In_Log_File(f"Ocurrio un error en el hilo {Idx_Thread}" , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
+        An_Error_Occurred_In_Thread[Idx_Thread] = True
         return
     else:
+        An_Error_Occurred_In_Thread[Idx_Thread] = False
         W_Show_Graph.after(0 , Insert_Data_In_Log_File(
-            f"Tanda de graficos \"{Category_Graph}\" para \"{Axis_x_Title}\" creada con exito" if Axis_x_Title else f"Tanda de graficos de \"{Category_Graph}\" para la variable creada con exito", 
+            f"Hilo {Idx_Thread}: Tanda de graficos \"{Category_Graph}\" para \"{Axis_x_Title}\" creada con exito" if Axis_x_Title else f"Tanda de graficos de \"{Category_Graph}\" para la variable creada con exito", 
             "Operacion exitosa" , 
-            "Thread de Creacion de Graficos")
+            "Thread de Creacion de Graficos"
+            )
         )
 
 def Manage_Generation_Of_Graphs_For_Grouped_Data(Class_Generator_Of_Graphs , Dictionary_Of_Generated_Figures , Variable_Of_Frecuency , Axis_y_Title , Category_Graph):

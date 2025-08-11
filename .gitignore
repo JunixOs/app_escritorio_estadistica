@@ -13,6 +13,7 @@ build/
 Output/
 dist/
 Docs/
+Stable_Installers/
 
 # Archivos con ciertas extensiones
 *.spec

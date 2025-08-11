@@ -1,6 +1,86 @@
+from Exceptions.Exception_Warning import Raise_Warning
+from Tools import Insert_Data_In_Log_File , Get_Detailed_Info_About_Error
+
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk , messagebox
 from typing import Literal
+
+
+# ==================================================================== Tabla ====================================================================
+class Table_Widget:
+    def __init__(self , Father_Window , Number_Of_Table_Columns: int , Titles_For_Heading_Table_Columns: list[str]):
+        self.Number_Of_Table_Columns = Number_Of_Table_Columns
+        self.Titles_For_Heading_Table_Columns = Titles_For_Heading_Table_Columns
+
+        self.Father_Frame_Of_Table = ttk.Frame(Father_Window)
+        self.Father_Frame_Of_Table.rowconfigure(0 , weight=1)
+        self.Father_Frame_Of_Table.columnconfigure(0 , weight=1)
+
+        Columns_IDs = [str(idx) for idx in range(1 , Number_Of_Table_Columns + 1)]
+        self.Treeview_Widget = ttk.Treeview(self.Father_Frame_Of_Table , columns=tuple(Columns_IDs) , show="headings")
+        for col_idx , title_column in zip(Columns_IDs , Titles_For_Heading_Table_Columns):
+            self.Treeview_Widget.heading(col_idx , text=title_column)
+            self.Treeview_Widget.column(col_idx , anchor="center" , stretch=True)
+        
+        self.Treeview_Widget.delete(*self.Treeview_Widget.get_children())
+
+        self.y_Scrollbar = ttk.Scrollbar(self.Father_Frame_Of_Table , orient="vertical" , command=self.Treeview_Widget.yview)
+        self.x_Scrollbar = ttk.Scrollbar(self.Father_Frame_Of_Table , orient="horizontal" , command=self.Treeview_Widget.xview)
+
+        self.Treeview_Widget.configure(yscrollcommand=self.y_Scrollbar.set)
+        self.Treeview_Widget.configure(xscrollcommand=self.x_Scrollbar.set)
+
+        self.Treeview_Widget.grid(row=0 , column=0 , sticky="nsew")
+        self.y_Scrollbar.grid(row=0 , column=1 , sticky="ns")
+        self.x_Scrollbar.grid(row=1 , column=0 , sticky="ew")
+
+        self.Extra_Data_For_Been_Saved = {}
+
+    def Delete_Items_In_Table(self):
+        self.Treeview_Widget.delete(*self.Treeview_Widget.get_children())
+
+    def Display_Table(self , Type_Of_Display: Literal["place" , "grid"] , **Position_Parameters):
+        try:
+            match(Type_Of_Display):
+                case "place":
+                    self.Father_Frame_Of_Table.place(**Position_Parameters)
+                case "grid":
+                    self.Father_Frame_Of_Table.grid(**Position_Parameters)
+        except Exception:
+            Insert_Data_In_Log_File("Ocurrio un error al posicionar una tabla" , "Error" , "Creacion del Widget de Tabla" , Get_Detailed_Info_About_Error())
+            messagebox.showerror("Error" , "Ocurrio un error al posicionar una tabla")
+
+    def Hidden_Table(self):
+        self.Father_Frame_Of_Table.grid_forget()
+
+    def Modify_Number_Of_Columns(self , New_Number_Of_Table_Columns: int , New_Titles_For_Heading_Table_Columns: list[str] , Columns_Width: int):
+        self.Number_Of_Table_Columns = New_Number_Of_Table_Columns
+        self.Titles_For_Heading_Table_Columns = New_Titles_For_Heading_Table_Columns
+
+        self.Treeview_Widget["columns"] = []
+        self.Treeview_Widget["columns"] = [f"{col_idx}" for col_idx in range(1 , self.Number_Of_Table_Columns + 1)]
+        
+        for col_idx , title_column in enumerate(self.Titles_For_Heading_Table_Columns , start=1):
+            self.Treeview_Widget.heading(f"{col_idx}" , text=title_column)
+            self.Treeview_Widget.column(f"{col_idx}" , anchor="center" , width=Columns_Width , stretch=False)
+
+    def Insert_Data(self , Data_To_Display , Extra_Data_In_Bottom_Of_Table=None):
+        self.Delete_Items_In_Table()
+
+        try:
+            for row_data in Data_To_Display:
+                self.Treeview_Widget.insert(
+                    "" , "end" , values=row_data if isinstance(row_data , tuple) else tuple(row_data)
+                )
+            
+            if(Extra_Data_In_Bottom_Of_Table):
+                self.Treeview_Widget.insert(
+                    "" , "end" , values=Extra_Data_In_Bottom_Of_Table if isinstance(Extra_Data_In_Bottom_Of_Table , tuple) else tuple(Extra_Data_In_Bottom_Of_Table)
+                )
+            
+        except Exception:
+            Insert_Data_In_Log_File("Ocurrio un error al mostrar una tabla" , "Error" , "Creacion del Widget de Tabla" , Get_Detailed_Info_About_Error())
+            messagebox.showerror("Error" , "Ocurrio un error al mostrar una tabla")
 
 # ==================================================================== Spinbox que valida el valor ====================================================================
 class Spinbox_With_Validation:
@@ -50,3 +130,7 @@ class Entry_With_Validation:
         if(len(Text) > self.Max_Characters_Number):
             self.Entry_Variable.set(Text[:self.Max_Characters_Number])
         self.Char_Count.set(f"{len(self.Entry_Variable.get())}/{self.Max_Characters_Number} caracteres")
+
+class Notepad_Visor:
+    def __init__(self):
+        pass
