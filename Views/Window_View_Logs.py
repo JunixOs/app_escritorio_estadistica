@@ -3,7 +3,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Tools import Verify_Logs_Folder , Get_Log_Files_Names_And_Paths , Read_Content_In_Log_Files , Get_Metadata_Info_From_Log_Files , Delete_Log_Files_After_Certain_Time , Insert_Data_In_Log_File , Center_Window , Get_Resource_Path , Delete_Actual_Window , Get_Detailed_Info_About_Error , Read_Data_From_JSON , Save_New_Configurations_In_JSON_File
-from Special_Tkinter_Widgets import Spinbox_With_Validation
+from Special_Tkinter_Widgets import Spinbox_With_Validation , Table_Widget
 
 from tkinter import *
 from tkinter import ttk , messagebox
@@ -66,14 +66,8 @@ class Notebook_For_Logs:
         self.Collection_Widgets[Log_File_Name]["Widget_Last_Access"].config(text=f"Ultimo acceso: {Metadata_Info_In_Log_File[Log_File_Name]['Last_Access']}")
         self.Collection_Widgets[Log_File_Name]["Widget_Last_Modification"].config(text=f"Ultima modificacion: {Metadata_Info_In_Log_File[Log_File_Name]['Last_Modification']}")
 
-        self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].delete(*self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].get_children())
-
-        for text_line in Content_In_Log_File[Log_File_Name]:
-            text_line = text_line.split("|")
-            if(len(text_line) > 5 or len(text_line) < 4):
-                continue
-            self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].insert("" , END , values=(*text_line,))
-        self.Collection_Widgets[Log_File_Name]["Widget_Log_File_Content"][1].yview_moveto(1.0)
+        self.Collection_Widgets[Log_File_Name]["Class_Table_Log_File_Content"].Insert_Data(Content_In_Log_File[Log_File_Name])
+        self.Collection_Widgets[Log_File_Name]["Class_Table_Log_File_Content"].Treeview_Widget.yview_moveto(1.0)
 
     def Create_Widgets_For_Log_Files_Info(self):
         Metadata_Info_In_Log_Files = Get_Metadata_Info_From_Log_Files()
@@ -87,36 +81,10 @@ class Notebook_For_Logs:
 
             Btn_Refresh_Log_File_Content = Button(frame_notebook , text="\u27f3" , font=("Segoe UI", 12) , bg="#d0d0d0" , command= lambda name=log_file_name: self.Update_Log_Content_In_Treeview(name))
 
-            Frame_Treeview_Log_File_Content = ttk.Frame(frame_notebook)
-            Frame_Treeview_Log_File_Content.rowconfigure(0 , weight=1)
-            Frame_Treeview_Log_File_Content.columnconfigure(0 , weight=1)
+            Table_Show_Log_File_Content = Table_Widget(frame_notebook , 1 , ["Contenido del archivo de registro"] , True , "w")
+            Table_Show_Log_File_Content.Insert_Data(content_in_log_file)
 
-            Treeview_Log_File_Content = ttk.Treeview(Frame_Treeview_Log_File_Content , columns=("1","2","3","4","5") , show="headings")
-            Treeview_Log_File_Content.heading("1" , text="Hora")
-            Treeview_Log_File_Content.heading("2" , text="Tipo de evento")
-            Treeview_Log_File_Content.heading("3" , text="Seccion del evento")
-            Treeview_Log_File_Content.heading("4" , text="Mensaje del evento")
-            Treeview_Log_File_Content.heading("5" , text="Informacion detallada del evento")
-            Treeview_Log_File_Content.column("1" , anchor="center" , stretch=True)
-            Treeview_Log_File_Content.column("2" , anchor="center" , stretch=True)
-            Treeview_Log_File_Content.column("3" , anchor="center" , stretch=True)
-            Treeview_Log_File_Content.column("4" , anchor="center" , stretch=True)
-            Treeview_Log_File_Content.column("5" , anchor="center" , stretch=True)
-            Treeview_Log_File_Content.delete(*Treeview_Log_File_Content.get_children())
-            
-            Scrollbar_y_Treeview_Log_File_Content = ttk.Scrollbar(Frame_Treeview_Log_File_Content , orient="vertical" , command=Treeview_Log_File_Content.yview)
-            Treeview_Log_File_Content.configure(yscrollcommand=Scrollbar_y_Treeview_Log_File_Content.set)
-
-            Treeview_Log_File_Content.grid(row=0 , column=0 , sticky="nsew")
-            Scrollbar_y_Treeview_Log_File_Content.grid(row=0 , column=1 , sticky="ns")
-
-            for text_line in content_in_log_file:
-                text_line = text_line.split("|")
-                if(len(text_line) > 5 or len(text_line) < 4):
-                    continue
-                Treeview_Log_File_Content.insert("" , END , values=(*text_line,))
-
-            Treeview_Log_File_Content.yview_moveto(1.0)
+            Table_Show_Log_File_Content.Treeview_Widget.yview_moveto(1.0)
 
             self.Collection_Widgets[log_file_name] = {
                 "Widget_Button_Update": Btn_Refresh_Log_File_Content,
@@ -124,7 +92,7 @@ class Notebook_For_Logs:
                 "Widget_Creation_Date": Label_Log_File_Creation_Date,
                 "Widget_Last_Access": Label_Log_File_Last_Access,
                 "Widget_Last_Modification": Label_Log_File_Last_Modification,
-                "Widget_Log_File_Content": [Frame_Treeview_Log_File_Content , Treeview_Log_File_Content , Scrollbar_y_Treeview_Log_File_Content],
+                "Class_Table_Log_File_Content": Table_Show_Log_File_Content,
             }
 
     def Display_Widgets_For_Log_Files_Info(self):
@@ -136,7 +104,10 @@ class Notebook_For_Logs:
             collection_widgets["Widget_Last_Modification"].grid(row=3 , column=0 , padx=(5,5) , pady=(5,0) , sticky="ew")
 
             collection_widgets["Widget_Button_Update"].grid(row=3 , column=1 , padx=(5,5) , pady=(5,0) , sticky="w")
-            collection_widgets["Widget_Log_File_Content"][0].grid(row=4 , column=0 , rowspan=10 , columnspan=2 , padx=(5,5) , pady=(0,0) , sticky="nsew")
+            collection_widgets["Class_Table_Log_File_Content"].Display_Table(
+                "grid" , 
+                row=4 , column=0 , rowspan=10 , columnspan=2 , padx=(5,5) , pady=(0,0) , sticky="nsew"
+            )
 
         self.Notebook_Logs.grid(row=0 , column=0 , sticky="nsew")
 

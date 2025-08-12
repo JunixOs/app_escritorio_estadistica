@@ -231,24 +231,25 @@ def Load_Global_Styles(Global_ttk_Style):
 # ==================================================================== Threads Tools ====================================================================
 def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Finish=None , List_Of_Occurred_Errors_In_Threads=[] , Function_To_Execute_If_Error_Occurred=None , *Data_To_Delete):
     # Verifica si todos los hilos terminaron
-    if all(not t.is_alive() for t in Threads_List):
-        # Verifica que no haya ocurrido algun error en un hilo
-        try:
+    try:
+        if all(not t.is_alive() for t in Threads_List):
+            # Verifica que no haya ocurrido algun error en un hilo
             if(any(List_Of_Occurred_Errors_In_Threads)):
                 Class_Progress_Bar.Close_Progress_Bar()
                 if(Function_To_Execute_If_Error_Occurred):
                     Root_Window.after(0 , Delete_Residual_Data_And_Close(Function_To_Execute_If_Error_Occurred , *Data_To_Delete))
                 return
-        except Exception:
-            Insert_Data_In_Log_File("Ocurrio un error al intentar terminar la ejecucion de los hilos" , "Error" , "Verificacion de hilos vivos" , Get_Detailed_Info_About_Error())
+            
+            if(On_Finish):
+                Root_Window.after(0 , On_Finish)
             Class_Progress_Bar.Close_Progress_Bar()
-            return
-        
-        if(On_Finish):
-            Root_Window.after(0 , On_Finish)
+        else:
+            Root_Window.after(500, Check_Threads_Alive, Threads_List, Root_Window , Class_Progress_Bar , On_Finish , List_Of_Occurred_Errors_In_Threads , Function_To_Execute_If_Error_Occurred , *Data_To_Delete)
+    
+    except Exception:
+        Insert_Data_In_Log_File("Ocurrio un error al intentar terminar la ejecucion de los hilos" , "Error" , "Verificacion de hilos vivos" , Get_Detailed_Info_About_Error())
         Class_Progress_Bar.Close_Progress_Bar()
-    else:
-        Root_Window.after(500, Check_Threads_Alive, Threads_List, Root_Window , Class_Progress_Bar , On_Finish , Delete_Residual_Data_And_Close)
+        return
 
 def Delete_Residual_Data_And_Close(Function_To_Close_Window_If_Error_Occurred , *Data_To_Delete):
     for data in Data_To_Delete:
@@ -351,9 +352,9 @@ def Insert_Data_In_Log_File(Event_Message , Event_Type:Literal["Error" , "Advert
         Log_File = open(Full_Path_Of_Log_File , "a")
 
     if(Detailed_Message_Error):
-        Log_File.write(f"{Actual_Time} | {Event_Type} | {Event_Section} | {Event_Message} | {Detailed_Message_Error}")
+        Log_File.write(f"( {Actual_Time} - [{Event_Type}] - [Seccion: {Event_Section}] ) > {Event_Message}\n==> Mensaje detallado del error{Detailed_Message_Error}")
     else:
-        Log_File.write(f"{Actual_Time} | {Event_Type} | {Event_Section} | {Event_Message}\n")
+        Log_File.write(f"( {Actual_Time} - [{Event_Type}] - [Seccion: {Event_Section}] ) > {Event_Message}\n")
 
     Log_File.close()
 

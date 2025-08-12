@@ -27,6 +27,7 @@ def string_to_index(s):
         result = result * 26 + (ord(char.upper()) - 65 + 1)
     return result - 1
 
+
 class Validator:
     def Validate_Format_For_Each_Range_Cells(self , One_Range_Cells):
         One_Range_Cells = One_Range_Cells.upper()
@@ -86,9 +87,9 @@ class Validator:
                 raise Raise_Warning("Los datos seleccionados contienen algun valor nulo. Por favor, revise si los datos tienen un formato adecuado.")
 
 
-class Loader_Of_Data:
+class Loader_Of_Selected_Data_In_Table:
     def __init__(self):
-        self.Table_Show_Data = None
+        self.Table_For_Show_Selected_Data = None
 
         self.Entry_Widget_For_W_Table_Frecuency = None
         self.Value_For_Entry_Widget_W_Table_Frecuency = None
@@ -103,11 +104,11 @@ class Loader_Of_Data:
         self.Start_Row = None
         self.End_Row = None
 
-    def Insert_Imported_Data_To_Preview(self):
+    def Load_Selected_Data_In_Table(self):
         self.Imported_Data = self.Imported_Data.dropna(axis=1, how='all')
         Titles_For_Columns = ["N° fila"] + self.Imported_Data.columns.tolist()
 
-        self.Table_Show_Data.Modify_Number_Of_Columns(len(Titles_For_Columns) , Titles_For_Columns , 120)
+        self.Table_For_Show_Selected_Data.Modify_Number_Of_Columns(len(Titles_For_Columns) , Titles_For_Columns , 100)
 
         Data_To_Display = []
 
@@ -126,9 +127,9 @@ class Loader_Of_Data:
             for (index, row) in (self.Imported_Data.iterrows()):
                 Data_To_Display.append(tuple([index + 1] + row.tolist()))
         
-        self.Table_Show_Data.Insert_Data(Data_To_Display , Total_Row_Text)
+        self.Table_For_Show_Selected_Data.Insert_Data(Data_To_Display , Total_Row_Text)
 
-    def Load_For_Module_Table_Of_Frecuency(self):
+    def Manage_Load_For_Module_Table_Of_Frecuency(self):
         if(self.Value_For_Entry_Widget_W_Table_Frecuency.get()):
             self.Value_For_Entry_Widget_W_Table_Frecuency.set("")
         if(self.Imported_Data_From_Excel_For_Calcs):
@@ -145,7 +146,7 @@ class Loader_Of_Data:
                 self.Entry_Widget_For_W_Table_Frecuency.config(state="disabled")
                 self.Value_For_Entry_Widget_W_Table_Frecuency.set(text)
 
-                self.Insert_Imported_Data_To_Preview()
+                self.Load_Selected_Data_In_Table()
 
             case False:
                 self.Imported_Data_From_Excel_For_Calcs[f"{self.Imported_Column_Names}"] = [value[0] for value in self.Imported_Data.values]
@@ -153,9 +154,9 @@ class Loader_Of_Data:
                 self.Entry_Widget_For_W_Table_Frecuency.config(state="disabled")
                 self.Value_For_Entry_Widget_W_Table_Frecuency.set(f"Columna Importada: {self.Imported_Column_Names}")
 
-                self.Insert_Imported_Data_To_Preview()
+                self.Load_Selected_Data_In_Table()
 
-    def Load_For_Module_Venn_Diagram(self):
+    def Manage_Load_For_Module_Venn_Diagram(self):
         for data_widget in self.Entry_Widgets_For_Venn_Diagram.values():
             if(data_widget.get()):
                 data_widget.set("")
@@ -172,16 +173,19 @@ class Loader_Of_Data:
             else:
                 widget.config(state="disabled")
 
-        self.Insert_Imported_Data_To_Preview(self.Start_Row , self.End_Row)
+        self.Load_Selected_Data_In_Table(self.Start_Row , self.End_Row)
 
 class Importer_Of_All_Data_In_Excel_File:
-    def __init__(self , W_Import_Excel , File_Path , Sheet_Number_Intvar_Value , Table_For_Show_Data):
+    def __init__(self , W_Import_Excel , File_Path , Sheet_Number_Intvar_Value , Table_For_Show_Imported_Data):
+        """
+            Esta clase permite importar todos los datos de una hoja especifica de un archivo excel.
+        """
         self.W_Import_Excel = W_Import_Excel
         self.File_Path = File_Path
         self.Sheet_Number_Intvar_Value = Sheet_Number_Intvar_Value
         self.Sheet_Number_Int_Value = Sheet_Number_Intvar_Value.get()
 
-        self.Table_For_Show_Data = Table_For_Show_Data
+        self.Table_For_Show_Imported_Data = Table_For_Show_Imported_Data
 
         self.Total_Rows_In_Excel_Sheet = 0
         self.Total_Columns_In_Excel_Sheet = 0
@@ -219,13 +223,12 @@ class Importer_Of_All_Data_In_Excel_File:
         else:
             self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Todos los datos del excel se importaron correctamente" , "Operacion exitosa" , "Thread de importacion de datos de un excel"))
             
-
     def Get_Data_From_One_Sheet(self , Idx_Sheet):
         JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
 
         Data_Excel = CalamineWorkbook.from_path(self.File_Path).get_sheet_by_index(Idx_Sheet).to_python(skip_empty_area=False)
-        if(Idx_Sheet in self.Table_For_Show_Data.Extra_Data_For_Been_Saved):
-            self.Excel_Dataframe = self.Table_For_Show_Data.Extra_Data_For_Been_Saved[Idx_Sheet]["All_Excel_Sheet_Data"]
+        if(Idx_Sheet in self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved):
+            self.Excel_Dataframe = self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Idx_Sheet]["All_Excel_Sheet_Data"]
         elif(Data_Excel):
             self.Excel_Dataframe = pd.DataFrame(data=Data_Excel[1:] , columns=Data_Excel[0])
         else:
@@ -254,15 +257,15 @@ class Importer_Of_All_Data_In_Excel_File:
 
             self.List_Number_Data_In_Row.append(counter_data_in_row + 1)
         
-        if(not Idx_Sheet in self.Table_For_Show_Data.Extra_Data_For_Been_Saved):
-            self.Table_For_Show_Data.Extra_Data_For_Been_Saved[Idx_Sheet] = {
+        if(not Idx_Sheet in self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved):
+            self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Idx_Sheet] = {
                 "All_Excel_Sheet_Data": self.Excel_Dataframe,
                 "Total_Rows_In_Excel_Sheet": self.Total_Rows_In_Excel_Sheet,
                 "Total_Columns_In_Excel_Sheet": self.Total_Columns_In_Excel_Sheet,
             }
         
-        if(not self.File_Path in self.Table_For_Show_Data.Extra_Data_For_Been_Saved):
-            self.Table_For_Show_Data.Extra_Data_For_Been_Saved["File_Path"] = self.File_Path
+        if(not self.File_Path in self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved):
+            self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved["File_Path"] = self.File_Path
 
     def Load_Excel_In_Table(self):
         List_With_All_Columns_Letters = []
@@ -270,8 +273,8 @@ class Importer_Of_All_Data_In_Excel_File:
             Col_Letter = index_to_string(i)
             List_With_All_Columns_Letters.append(Col_Letter)
         
-        Titles_For_Columns = ["N° fila/columna"] + List_With_All_Columns_Letters
-        self.Table_For_Show_Data.Modify_Number_Of_Columns(len(Titles_For_Columns) , Titles_For_Columns , 120)
+        Titles_For_Columns = ["N° fila / columna"] + List_With_All_Columns_Letters
+        self.Table_For_Show_Imported_Data.Modify_Number_Of_Columns(len(Titles_For_Columns) , Titles_For_Columns , 120)
 
         Void_Space_In_Bottom_Preview = [""] + ["" for _ in range(len(Titles_For_Columns))]
 
@@ -284,13 +287,13 @@ class Importer_Of_All_Data_In_Excel_File:
         
         Extra_Data_In_Bottom_Of_Table = ["Ultimo dato en:"] + [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , self.List_Number_Data_In_Row)]
 
-        self.Table_For_Show_Data.Insert_Data(Data_To_Display_In_Table , Extra_Data_In_Bottom_Of_Table)
+        self.Table_For_Show_Imported_Data.Insert_Data(Data_To_Display_In_Table , Extra_Data_In_Bottom_Of_Table)
 
-class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Data):
-    def __init__(self , W_Import_Excel , Table_Show_Data , Range_Cells , Source_Module_Name , Entry_Widget , Value_For_Entry_Widget , Imported_Data_From_Excel):
+class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Selected_Data_In_Table):
+    def __init__(self , W_Import_Excel , Table_For_Show_Selected_Data , Range_Cells , Source_Module_Name , Entry_Widget , Value_For_Entry_Widget , Imported_Data_From_Excel):
         """ 
-            Esta clase permite importar datos de un Excel externo, siempre y cuando
-            el rango de celdas a importar sea de 1.
+            Esta clase permite seleccionar solo los datos indicados de una hoja de excel mediante un rango
+            de celdas, siempre y cuando el rango de celdas a importar sea continua y contenga mas de un dato.
             Por ejemplo, los siguientes rangos de celdas son validos:
             A1:A1001
             D1:E10000
@@ -298,12 +301,12 @@ class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Data):
             A1:A1001;C1:C1001
         """
         Validator.__init__(self)
-        Loader_Of_Data.__init__(self)
+        Loader_Of_Selected_Data_In_Table.__init__(self)
 
         self.Str_Range_Of_Cells = Range_Cells
         self.Import_Multiple_Columns = False
 
-        self.Table_Show_Data = Table_Show_Data
+        self.Table_For_Show_Selected_Data = Table_For_Show_Selected_Data
         self.W_Import_Excel = W_Import_Excel
 
         self.Source_Module_Name = Source_Module_Name
@@ -375,12 +378,12 @@ class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Data):
         try:
             match(self.Source_Module_Name):
                 case "Table_Of_Frecuency":
-                    self.Load_For_Module_Table_Of_Frecuency()
+                    self.Manage_Load_For_Module_Table_Of_Frecuency()
                 case "Venn_Diagram":
                     if(len(self.Imported_Column_Names) < 2):
                         raise Raise_Warning("No se puede importar menos de 2 columnas.")
                     
-                    self.Load_For_Module_Venn_Diagram()
+                    self.Manage_Load_For_Module_Venn_Diagram()
         except Raise_Warning as e:
             Insert_Data_In_Log_File(e , "Advertencia" , "Importacion de datos de un excel")
             messagebox.showwarning("Advertencia" , e)
@@ -391,10 +394,10 @@ class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Data):
             Insert_Data_In_Log_File("Los datos se insertaron correctamente a la tabla de previsualizacion" , "Operacion exitosa" , "Importacion de datos de un excel")
             messagebox.showinfo("Success" , "Datos procesados con exito.\nYa puede salir de la ventana de importacion.")
 
-class Selecter_Of_Data_For_Multiple_Range_Of_Cells(Validator , Loader_Of_Data):
-    def __init__(self , W_Import_Excel , Table_Show_Data , Range_Cells , Source_Module_Name , Entry_Widget , Value_For_Entry_Widget , Imported_Data_From_Excel):
+class Selecter_Of_Data_For_Multiple_Range_Of_Cells(Validator , Loader_Of_Selected_Data_In_Table):
+    def __init__(self , W_Import_Excel , Table_For_Show_Selected_Data , Range_Cells , Source_Module_Name , Entry_Widget , Value_For_Entry_Widget , Imported_Data_From_Excel):
         Validator.__init__(self)
-        Loader_Of_Data.__init__(self)
+        Loader_Of_Selected_Data_In_Table.__init__(self)
 
         self.Str_Range_Of_Cells = Range_Cells
 
@@ -409,7 +412,7 @@ class Selecter_Of_Data_For_Multiple_Range_Of_Cells(Validator , Loader_Of_Data):
         self.Import_Multiple_Columns = True
 
         self.W_Import_Excel = W_Import_Excel
-        self.Table_Show_Data = Table_Show_Data
+        self.Table_For_Show_Selected_Data = Table_For_Show_Selected_Data
         
         self.Source_Module_Name = Source_Module_Name
 
@@ -531,14 +534,14 @@ class Selecter_Of_Data_For_Multiple_Range_Of_Cells(Validator , Loader_Of_Data):
         try:
             match(self.Source_Module_Name):
                 case "Table_Of_Frecuency":
-                    self.Load_For_Module_Table_Of_Frecuency()
+                    self.Manage_Load_For_Module_Table_Of_Frecuency()
                 case "Venn_Diagram":
                     if(len(self.Imported_Column_Names) < 2):
                         raise Raise_Warning("No se puede importar menos de 2 columnas.")
                     elif(len(self.Imported_Column_Names) > 6):
                         raise Raise_Warning("No se puede importar mas de 6 columnas.")
                     
-                    self.Load_For_Module_Venn_Diagram()
+                    self.Manage_Load_For_Module_Venn_Diagram()
         except Raise_Warning as e:
             Insert_Data_In_Log_File(e , "Advertencia" , "Importacion de datos de un excel")
             messagebox.showwarning("Advertencia" , e)

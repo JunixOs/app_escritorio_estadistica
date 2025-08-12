@@ -8,20 +8,24 @@ from typing import Literal
 
 # ==================================================================== Tabla ====================================================================
 class Table_Widget:
-    def __init__(self , Father_Window , Number_Of_Table_Columns: int , Titles_For_Heading_Table_Columns: list[str]):
+    def __init__(self , Father_Window , Number_Of_Table_Columns: int , Titles_For_Heading_Table_Columns: list[str] , Stretch_Columns:bool , Justify_Direction_Of_Text_In_Table:Literal["center" , "n" , "s" , "e" , "w"]):
         self.Number_Of_Table_Columns = Number_Of_Table_Columns
         self.Titles_For_Heading_Table_Columns = Titles_For_Heading_Table_Columns
+        self.Stretch_Columns = Stretch_Columns
+        self.Justify_Direction_Of_Text_In_Table = Justify_Direction_Of_Text_In_Table
 
         self.Father_Frame_Of_Table = ttk.Frame(Father_Window)
         self.Father_Frame_Of_Table.rowconfigure(0 , weight=1)
         self.Father_Frame_Of_Table.columnconfigure(0 , weight=1)
+        self.Father_Frame_Of_Table.grid_propagate(False)
+        self.Father_Frame_Of_Table.config(width=300 , height=200)
 
         Columns_IDs = [str(idx) for idx in range(1 , Number_Of_Table_Columns + 1)]
         self.Treeview_Widget = ttk.Treeview(self.Father_Frame_Of_Table , columns=tuple(Columns_IDs) , show="headings")
         for col_idx , title_column in zip(Columns_IDs , Titles_For_Heading_Table_Columns):
             self.Treeview_Widget.heading(col_idx , text=title_column)
-            self.Treeview_Widget.column(col_idx , anchor="center" , stretch=True)
-        
+            self.Treeview_Widget.column(col_idx , anchor=self.Justify_Direction_Of_Text_In_Table , stretch=self.Stretch_Columns)
+
         self.Treeview_Widget.delete(*self.Treeview_Widget.get_children())
 
         self.y_Scrollbar = ttk.Scrollbar(self.Father_Frame_Of_Table , orient="vertical" , command=self.Treeview_Widget.yview)
@@ -57,12 +61,15 @@ class Table_Widget:
         self.Number_Of_Table_Columns = New_Number_Of_Table_Columns
         self.Titles_For_Heading_Table_Columns = New_Titles_For_Heading_Table_Columns
 
-        self.Treeview_Widget["columns"] = []
-        self.Treeview_Widget["columns"] = [f"{col_idx}" for col_idx in range(1 , self.Number_Of_Table_Columns + 1)]
+        New_Columns = [str(col_idx) for col_idx in range(1 , self.Number_Of_Table_Columns + 1)]
+        self.Treeview_Widget.config(columns=New_Columns)
+        for col_idx in self.Treeview_Widget["columns"]:
+            self.Treeview_Widget.heading(str(col_idx), text="")
+            self.Treeview_Widget.column(str(col_idx), width=0)
         
         for col_idx , title_column in enumerate(self.Titles_For_Heading_Table_Columns , start=1):
-            self.Treeview_Widget.heading(f"{col_idx}" , text=title_column)
-            self.Treeview_Widget.column(f"{col_idx}" , anchor="center" , width=Columns_Width , stretch=False)
+            self.Treeview_Widget.heading(str(col_idx) , text=title_column)
+            self.Treeview_Widget.column(str(col_idx) , anchor=self.Justify_Direction_Of_Text_In_Table , width=Columns_Width , stretch=self.Stretch_Columns)
 
     def Insert_Data(self , Data_To_Display , Extra_Data_In_Bottom_Of_Table=None):
         self.Delete_Items_In_Table()
@@ -70,12 +77,12 @@ class Table_Widget:
         try:
             for row_data in Data_To_Display:
                 self.Treeview_Widget.insert(
-                    "" , "end" , values=row_data if isinstance(row_data , tuple) else tuple(row_data)
+                    "" , "end" , values=row_data if isinstance(row_data , tuple) else (row_data,)
                 )
             
             if(Extra_Data_In_Bottom_Of_Table):
                 self.Treeview_Widget.insert(
-                    "" , "end" , values=Extra_Data_In_Bottom_Of_Table if isinstance(Extra_Data_In_Bottom_Of_Table , tuple) else tuple(Extra_Data_In_Bottom_Of_Table)
+                    "" , "end" , values=Extra_Data_In_Bottom_Of_Table if isinstance(Extra_Data_In_Bottom_Of_Table , tuple) else (Extra_Data_In_Bottom_Of_Table,)
                 )
             
         except Exception:

@@ -199,11 +199,13 @@ Algunas caracteristicas importantes de StatPhi son:
 
 ✅ Exportar tablas en PDF.
 
+⬜ Interfaz para diseñar documentos .pdf o .tex para presentar los resultados obtenidos.
+
 ⬜ Creacion y exportacion de multiples graficos en una sola imagen.
 
-⬜ Importacion de datos de archivos .csv .txt .sql
+⬜ Permitir la importacion de datos de multiples archivos (.csv .txt .sql)
 
-⬜ Implementacion de librerias para acelerar la importacion y analisis de miles de datos.
+⬜ Implementacion de librerias y multithreading para acelerar la importacion y analisis de miles de datos.
 
 
 ---
@@ -269,10 +271,12 @@ Statphi/
 │   ├── Main_Window.py
 │   ├── Window_Create_Multiple_Graphs.py
 │   ├── Window_Import_Excel.py
-│   └── Window_Progress_Bar.py
+│   ├── Window_Progress_Bar.py
+│   └── Window_View_Logs.py
 ├── .gitignore
 ├── LICENCE.txt
-└── README.md
+├── README.md
+├── Special_Tkinter_Widgets.py
 └── Tools.py
 ```
 ---
@@ -290,8 +294,9 @@ Si por el contrario deseas ver el codigo fuente y hacer algunas ediciones, enton
 ### ***Requisitos previos***
 Si deseas instalar el codigo fuente de `StatPhi` en tu ordenador, deberas tener intalado los siguientes programas:
 - Un editor de codigo como `VSCode` (si quieres editar el codigo).
-- `Python 3.11.X` o superior.
+- `Python 3.12.X` o superior.
 - El sistema de control de versiones de `git`.
+- Instalar el kit "Desarrollo en C++ para escritorio con Windows" de Microsoft C++ Build Tools ([Instalador Build Tools](https://visualstudio.microsoft.com/es/visual-cpp-build-tools/)).
 - Una cuenta en GitHub.
 
 > [!WARNING]
@@ -317,15 +322,25 @@ Si deseas instalar el codigo fuente de `StatPhi` en tu ordenador, deberas tener 
     .\venv\Scripts\activate
     ```
 
-5. Instalar las librerias necesarias por medio del archivo requirements.txt.
+5. Instalar las librerias necesarias:
+    - Usando `pip`:
+        ```bash
+        pip install pandas numpy matplotlib openpyxl scipy seaborn venn reportlab python-calamine psutil polars
+        ```
+    - Usando `conda` (no recomendado, ya que ciertas librerias no se encuentran disponibles en los canales de Conda):
+        ```bash
+        conda install pandas numpy matplotlib openpyxl scipy seaborn venn reportlab python-calamine psutil polars
+        ```
+    Tambien es posible usar el archivo requirements.txt para instalar las librerias pero no es recomendado:
     - Usando `pip`:
         ```bash
         pip install -r requirements.txt
         ```
     - Usando `conda` (no recomendado, ya que ciertas librerias no se encuentran disponibles en los canales de Conda):
         ```bash
-        cconda install --file requirements.txt
+        conda install --file requirements.txt
         ```
+
 6. Verificar si los paquetes se instalaron correctamente:
     - Usando `pip`:
         ```bash
@@ -346,7 +361,12 @@ Si deseas instalar el codigo fuente de `StatPhi` en tu ordenador, deberas tener 
 ## **Guia de Uso**
 ### ***Pantalla de Inicio***
 
-En la pantalla de inicio te encontraras con dos botones, uno para dirigirte a la seccion de calculo de tablas de frecuencias y otro para abrir una pequeña ventana donde podras calcular el tamaño de muestra usando el Muestreo Aleatorio Simple.
+En la pantalla de inicio te encontraras con 4 botones, cada uno te dirigira a las siguientes secciones:
+
+#### ***Visualizacion de Registros***
+Esta seccion sirve para visualizar todos los eventos registrados del sistema, como operaciones exitosas, advertencias o errores, esto con el objetivo de brindarle a los desarrolladores y usuarios una forma de saber que sucedio y porque.
+
+--- 
 
 #### ***Calculo de Tablas de Frecuencias***
 
