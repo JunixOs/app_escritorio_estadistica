@@ -76,17 +76,17 @@ def Manage_All_Graphs_Draw(W_Show_Graph , Results_From_Calcs , Axis_x_Title , Di
             else:
                 raise Exception("No se pudo detectar el tipo de variable.")
         #print(f"Thread {threading.get_ident()} terminando trabajo {Category_Graph}")
-    except RuntimeError as e:
-        W_Show_Graph.after(40 , Insert_Data_In_Log_File(f"Error en hilo {Idx_Thread}. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
+    except RuntimeError:
+        W_Show_Graph.after(0 , lambda: Insert_Data_In_Log_File(f"Error en hilo {Idx_Thread}. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo." , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
         An_Error_Occurred_In_Thread[Idx_Thread] = True
         return
-    except Exception as e:
-        W_Show_Graph.after(40 , Insert_Data_In_Log_File(f"Ocurrio un error en el hilo {Idx_Thread}" , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
+    except Exception:
+        W_Show_Graph.after(0 , lambda: Insert_Data_In_Log_File(f"Ocurrio un error en el hilo {Idx_Thread}" , "Error" , "Thread de Creacion de Graficos" , Get_Detailed_Info_About_Error()))
         An_Error_Occurred_In_Thread[Idx_Thread] = True
         return
     else:
         An_Error_Occurred_In_Thread[Idx_Thread] = False
-        W_Show_Graph.after(0 , Insert_Data_In_Log_File(
+        W_Show_Graph.after(0 , lambda: Insert_Data_In_Log_File(
             f"Hilo {Idx_Thread}: Tanda de graficos \"{Category_Graph}\" para \"{Axis_x_Title}\" creada con exito" if Axis_x_Title else f"Tanda de graficos de \"{Category_Graph}\" para la variable creada con exito", 
             "Operacion exitosa" , 
             "Thread de Creacion de Graficos"

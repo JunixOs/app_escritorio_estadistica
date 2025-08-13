@@ -14,6 +14,11 @@ import os
 from tkinter import filedialog , messagebox
 import threading
 
+# =============================================== Variables Globales ===============================================
+Cache_For_Imported_Excel_Sheets = {}
+
+# =============================================== Fin Variables Globales ===============================================
+
 def Select_File_In_User_Device(W_Import_Excel , File_Path_Stringvar_Value , Table_For_Show_Imported_Data , Sheet_Number_Intvar_Value):
     File_Path_Selected_By_User = filedialog.askopenfilename(filetypes=[("Archivos Excel" , "*.xlsx")])
     if(File_Path_Selected_By_User):
@@ -25,8 +30,8 @@ def Select_File_In_User_Device(W_Import_Excel , File_Path_Stringvar_Value , Tabl
 
         Sheet_Number_Intvar_Value.set(1)
 
-        if(not File_Path_Selected_By_User in Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved):
-            Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved.clear()
+        if(not File_Path_Selected_By_User in Cache_For_Imported_Excel_Sheets):
+            Cache_For_Imported_Excel_Sheets.clear()
         
         Import_All_Data_For_Show_In_Table(W_Import_Excel , File_Path_Stringvar_Value , Sheet_Number_Intvar_Value , Table_For_Show_Imported_Data)
 
@@ -42,11 +47,11 @@ def Import_All_Data_For_Show_In_Table(W_Import_Excel , File_Path_Stringvar_Value
             File_Path_Stringvar_Value.set("")
             raise Raise_Warning("El archivo Excel no existe en la ruta especificada.")
         
-        Class_Import_All_Data = Importer_Of_All_Data_In_Excel_File(W_Import_Excel , File_Path_Stringvar_Value.get() , Sheet_Number_Intvar_Value , Table_For_Show_Imported_Data)
-
         Threads_List = []
+        List_Of_Occurred_Errors_In_Threads = [False]
+        Class_Import_All_Data = Importer_Of_All_Data_In_Excel_File(W_Import_Excel , File_Path_Stringvar_Value.get() , Sheet_Number_Intvar_Value)
 
-        Thread = threading.Thread(target=Class_Import_All_Data.Get_Excel_File)
+        Thread = threading.Thread(target=lambda: Class_Import_All_Data.Get_Excel_File(List_Of_Occurred_Errors_In_Threads , Cache_For_Imported_Excel_Sheets))
         Threads_List.append(Thread)
         Thread.start()
 
@@ -56,7 +61,8 @@ def Import_All_Data_For_Show_In_Table(W_Import_Excel , File_Path_Stringvar_Value
             Threads_List , 
             W_Import_Excel , 
             Class_Progress_Bar , 
-            Class_Import_All_Data.Load_Excel_In_Table , 
+            lambda: Class_Import_All_Data.Load_Excel_In_Table(Table_For_Show_Imported_Data) , 
+            List_Of_Occurred_Errors_In_Threads , 
         )
 
     except Raise_Warning as e:
@@ -67,13 +73,16 @@ def Import_All_Data_For_Show_In_Table(W_Import_Excel , File_Path_Stringvar_Value
         Class_Progress_Bar.Close_Progress_Bar()
         Insert_Data_In_Log_File("Ocurrio un error al importar los datos del archivo" , "Error" , "Importacion de datos" , Get_Detailed_Info_About_Error())
         messagebox.showerror("Error" , "Ocurrio un error al importar los datos del archivo")
+    else:
+        Insert_Data_In_Log_File("La ejecucion de hilos para la importacion de datos fue exitosa" , "Operacion exitosa" , "Importacion de datos")
 
-def Execute_Classes_For_Import_Data(W_Import_Excel , Cell_Range , Table_For_Show_Imported_Data , Table_For_Show_Selected_Data , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel , Sheet_Number):
+def Execute_Classes_For_Import_Data(W_Import_Excel , Cell_Range , Table_For_Show_Selected_Data , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel , Sheet_Number):
     try:
         Class_Progress_Bar = W_Progress_Bar(W_Import_Excel)
         Class_Progress_Bar.Start_Progress_Bar()
 
         Threads_List = []
+        List_Of_Occurred_Errors_In_Threads = [False]
 
         if(not Cell_Range.get()):
             raise Raise_Warning("No se ha ingresado un rango de celdas.")
@@ -82,14 +91,26 @@ def Execute_Classes_For_Import_Data(W_Import_Excel , Cell_Range , Table_For_Show
             Class_For_Import_Excel = Selecter_Of_Data_For_Multiple_Range_Of_Cells(W_Import_Excel , Table_For_Show_Selected_Data , Cell_Range.get() , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel)
 
             Class_For_Import_Excel.Process_Input_Data()
-            Thread = threading.Thread(target= lambda: Class_For_Import_Excel.Select_Data_From_Excel_Dataframe(Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Sheet_Number - 1]["All_Excel_Sheet_Data"] , Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Sheet_Number - 1]["Total_Rows_In_Excel_Sheet"] , Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Sheet_Number - 1]["Total_Columns_In_Excel_Sheet"]))
+            Thread = threading.Thread(target= lambda: Class_For_Import_Excel.Select_Data_From_Excel_Dataframe(
+                    Cache_For_Imported_Excel_Sheets[Sheet_Number - 1]["All_Excel_Sheet_Data"] , 
+                    Cache_For_Imported_Excel_Sheets[Sheet_Number - 1]["Total_Rows_In_Excel_Sheet"] , 
+                    Cache_For_Imported_Excel_Sheets[Sheet_Number - 1]["Total_Columns_In_Excel_Sheet"] , 
+                    List_Of_Occurred_Errors_In_Threads
+                )
+            )
             Threads_List.append(Thread)
             Thread.start()
         elif(":" in Cell_Range.get()):
             Class_For_Import_Excel = Selecter_Of_Data_For_Single_Range_Of_Cells(W_Import_Excel , Table_For_Show_Selected_Data , Cell_Range.get() , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel)
 
             Class_For_Import_Excel.Process_Input_Data()
-            Thread = threading.Thread(target= lambda: Class_For_Import_Excel.Select_Data_From_Excel_Dataframe(Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Sheet_Number - 1]["All_Excel_Sheet_Data"] , Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Sheet_Number - 1]["Total_Rows_In_Excel_Sheet"] , Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Sheet_Number - 1]["Total_Columns_In_Excel_Sheet"]))
+            Thread = threading.Thread(target= lambda: Class_For_Import_Excel.Select_Data_From_Excel_Dataframe(
+                    Cache_For_Imported_Excel_Sheets[Sheet_Number - 1]["All_Excel_Sheet_Data"] , 
+                    Cache_For_Imported_Excel_Sheets[Sheet_Number - 1]["Total_Rows_In_Excel_Sheet"] , 
+                    Cache_For_Imported_Excel_Sheets[Sheet_Number - 1]["Total_Columns_In_Excel_Sheet"] , 
+                    List_Of_Occurred_Errors_In_Threads
+                )
+            )
             Threads_List.append(Thread)
             Thread.start()
         else:
@@ -101,7 +122,8 @@ def Execute_Classes_For_Import_Data(W_Import_Excel , Cell_Range , Table_For_Show
             Threads_List ,
             W_Import_Excel , 
             Class_Progress_Bar , 
-            Class_For_Import_Excel.Load_Excel_Data_In_Table
+            Class_For_Import_Excel.Load_Excel_Data_In_Table , 
+            List_Of_Occurred_Errors_In_Threads , 
         )
     
     except Raise_Warning as e:
@@ -239,7 +261,7 @@ def Create_Window_Import_Excel(Father_Window , Value_For_Entry_Widget_W_Table_Fr
     Cells_Range.grid(row=12 , column=1 , columnspan=9 , padx=(0 , 15) , pady=(6 , 6) , sticky="ew")
     Cells_Range.focus()
 
-    Btn_Process_Data = Button(W_Import_Excel , text="Importar Datos" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Execute_Classes_For_Import_Data(W_Import_Excel , Cell_Range_Stringvar_Value , Table_For_Show_Imported_Data , Table_For_Show_Selected_Data , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel , Sheet_Number_Intvar_Value.get()))
+    Btn_Process_Data = Button(W_Import_Excel , text="Importar Datos" , font=("Times New Roman" , 13) , width=25 , bg="#ffe3d4" , command=lambda: Execute_Classes_For_Import_Data(W_Import_Excel , Cell_Range_Stringvar_Value , Table_For_Show_Selected_Data , Source_Module_Name , Entry_Widget_For_W_Table_Frecuency , Value_For_Entry_Widget_W_Table_Frecuency , Imported_Data_From_Excel , Sheet_Number_Intvar_Value.get()))
     Btn_Process_Data.grid(row=13 , column=0 , columnspan=10 , pady=(6 , 0) , sticky="n")
 
     Father_Window.wait_window(W_Import_Excel)

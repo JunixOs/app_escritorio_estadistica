@@ -236,8 +236,9 @@ def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Fin
             # Verifica que no haya ocurrido algun error en un hilo
             if(any(List_Of_Occurred_Errors_In_Threads)):
                 Class_Progress_Bar.Close_Progress_Bar()
+                Root_Window.after(0 , Delete_Residual_Data_On_Thread_Error(*Data_To_Delete))
                 if(Function_To_Execute_If_Error_Occurred):
-                    Root_Window.after(0 , Delete_Residual_Data_And_Close(Function_To_Execute_If_Error_Occurred , *Data_To_Delete))
+                    Function_To_Execute_If_Error_Occurred()
                 return
             
             if(On_Finish):
@@ -251,18 +252,16 @@ def Check_Threads_Alive(Threads_List , Root_Window , Class_Progress_Bar , On_Fin
         Class_Progress_Bar.Close_Progress_Bar()
         return
 
-def Delete_Residual_Data_And_Close(Function_To_Close_Window_If_Error_Occurred , *Data_To_Delete):
+def Delete_Residual_Data_On_Thread_Error(*Data_To_Delete):
     for data in Data_To_Delete:
-        if(isinstance(data , dict) or isinstance(data , list) or isinstance(data , set)):
+        if(isinstance(data , (dict , list , set))):
             data.clear()
         elif(isinstance(data , str)):
             data = ""
-        elif(isinstance(data , int) or isinstance(data , float)):
+        elif(isinstance(data , (int , float))):
             data = 0
         else:
             data = None
-
-    Function_To_Close_Window_If_Error_Occurred()
 
 # ==================================================================== Log Files Tools ====================================================================
 def Verify_Logs_Folder():

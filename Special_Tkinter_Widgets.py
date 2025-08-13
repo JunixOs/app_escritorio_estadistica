@@ -75,14 +75,16 @@ class Table_Widget:
         self.Delete_Items_In_Table()
 
         try:
+            # Para ingresar datos dentro de un Treeview debes colocar los datos como iterables (tupla o lista) y dejar que Treeview
+            # lo trate como multiples columnas porque
             for row_data in Data_To_Display:
                 self.Treeview_Widget.insert(
-                    "" , "end" , values=row_data if isinstance(row_data , tuple) else (row_data,)
+                    "" , "end" , values=row_data if isinstance(row_data , (list , tuple)) else (row_data,)
                 )
             
             if(Extra_Data_In_Bottom_Of_Table):
                 self.Treeview_Widget.insert(
-                    "" , "end" , values=Extra_Data_In_Bottom_Of_Table if isinstance(Extra_Data_In_Bottom_Of_Table , tuple) else (Extra_Data_In_Bottom_Of_Table,)
+                    "" , "end" , values=Extra_Data_In_Bottom_Of_Table
                 )
             
         except Exception:

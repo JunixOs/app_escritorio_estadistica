@@ -118,7 +118,7 @@ class Handler_Of_States_And_Actions:
                 On_Finish , 
                 List_Of_Occurred_Errors_In_Threads , 
                 Function_To_Close_Window_If_Error_Occurred ,
-                self.Dictionary_Of_Generated_Figures , self.Dictionary_Of_Generated_Widgets,
+                self.Dictionary_Of_Generated_Figures ,
             )
 
         except Exception:

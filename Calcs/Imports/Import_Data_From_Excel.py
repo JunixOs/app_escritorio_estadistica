@@ -176,7 +176,7 @@ class Loader_Of_Selected_Data_In_Table:
         self.Load_Selected_Data_In_Table(self.Start_Row , self.End_Row)
 
 class Importer_Of_All_Data_In_Excel_File:
-    def __init__(self , W_Import_Excel , File_Path , Sheet_Number_Intvar_Value , Table_For_Show_Imported_Data):
+    def __init__(self , W_Import_Excel , File_Path , Sheet_Number_Intvar_Value):
         """
             Esta clase permite importar todos los datos de una hoja especifica de un archivo excel.
         """
@@ -185,15 +185,20 @@ class Importer_Of_All_Data_In_Excel_File:
         self.Sheet_Number_Intvar_Value = Sheet_Number_Intvar_Value
         self.Sheet_Number_Int_Value = Sheet_Number_Intvar_Value.get()
 
-        self.Table_For_Show_Imported_Data = Table_For_Show_Imported_Data
-
+        self.Excel_Dataframe = None
         self.Total_Rows_In_Excel_Sheet = 0
         self.Total_Columns_In_Excel_Sheet = 0
 
-    def Get_Excel_File(self):
+    def Get_Excel_File(self , List_Of_Occurred_Errors_In_Threads , Cache_For_Imported_Excel_Sheets):
         try:
             if(not self.File_Path):
                 raise Raise_Warning("No se encontro la ruta del archivo")
+            
+            if(self.Sheet_Number_Int_Value - 1 in Cache_For_Imported_Excel_Sheets):
+                self.Excel_Dataframe = Cache_For_Imported_Excel_Sheets[self.Sheet_Number_Int_Value - 1]["All_Excel_Sheet_Data"]
+                self.First_Rows_Of_Data_In_Excel_Sheet = self.Excel_Dataframe.head(Read_Data_From_JSON("import_excel_settings")["maximun_rows_to_display_in_preview"] - 1)
+                self.List_Number_Data_Per_Row = Cache_For_Imported_Excel_Sheets[self.Sheet_Number_Int_Value - 1]["List_Number_Data_Per_Row"]
+                return
         
             prev_load_excel = openpyxl.load_workbook(self.File_Path , read_only=True , data_only=True , keep_links=False)
             Sheets = prev_load_excel.sheetnames
@@ -210,32 +215,36 @@ class Importer_Of_All_Data_In_Excel_File:
             self.Total_Rows_In_Excel_Sheet = One_Sheet.max_row
             self.Total_Columns_In_Excel_Sheet = One_Sheet.max_column
 
-            self.Get_Data_From_One_Sheet(Idx_Sheet)
+            self.Get_Data_From_One_Sheet(Idx_Sheet , Cache_For_Imported_Excel_Sheets)
 
         except Raise_Warning as e:
-            self.W_Import_Excel.after(0 , messagebox.showwarning("Advertencia" , e))
-            self.W_Import_Excel.after(30 , Insert_Data_In_Log_File(e , "Advertencia" , "Thread de importacion de datos"))
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File(e , "Advertencia" , "Thread de importacion de datos"))
+            self.W_Import_Excel.after(550 , lambda e=e: messagebox.showwarning("Advertencia" , e))
+            List_Of_Occurred_Errors_In_Threads[0] = True
+            if(self.Sheet_Number_Int_Value - 1 in Cache_For_Imported_Excel_Sheets):
+                Cache_For_Imported_Excel_Sheets[self.Sheet_Number_Int_Value - 1].clear()
             return
-        except Exception as e:
-            self.W_Import_Excel.after(0 , messagebox.showerror("Error" , "Ocurrio un error al intentar importar los datos del archivo"))
-            self.W_Import_Excel.after(30 , Insert_Data_In_Log_File("Ocurrio un error al intentar importar los datos del archivo" , "Error" , "Thread de importacion de datos" , Get_Detailed_Info_About_Error()))
+        except Exception:
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Ocurrio un error al intentar importar los datos del archivo" , "Error" , "Thread de importacion de datos" , Get_Detailed_Info_About_Error()))
+            self.W_Import_Excel.after(550 , lambda: messagebox.showerror("Error" , "Ocurrio un error al intentar importar los datos del archivo"))
+            List_Of_Occurred_Errors_In_Threads[0] = True
+            if(self.Sheet_Number_Int_Value - 1 in Cache_For_Imported_Excel_Sheets):
+                Cache_For_Imported_Excel_Sheets[self.Sheet_Number_Int_Value - 1].clear()
             return
         else:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Todos los datos del excel se importaron correctamente" , "Operacion exitosa" , "Thread de importacion de datos de un excel"))
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Todos los datos del excel se importaron correctamente" , "Operacion exitosa" , "Thread de importacion de datos de un excel"))
             
-    def Get_Data_From_One_Sheet(self , Idx_Sheet):
+    def Get_Data_From_One_Sheet(self , Idx_Sheet , Cache_For_Imported_Excel_Sheets):
         JSON_Settings_Data = Read_Data_From_JSON("import_excel_settings")
 
         Data_Excel = CalamineWorkbook.from_path(self.File_Path).get_sheet_by_index(Idx_Sheet).to_python(skip_empty_area=False)
-        if(Idx_Sheet in self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved):
-            self.Excel_Dataframe = self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Idx_Sheet]["All_Excel_Sheet_Data"]
-        elif(Data_Excel):
+        if(Data_Excel):
             self.Excel_Dataframe = pd.DataFrame(data=Data_Excel[1:] , columns=Data_Excel[0])
         else:
             self.Excel_Dataframe = pd.DataFrame(data=[""] , columns=["No hay datos"])
 
-        self.First_One_Hundred_Data = self.Excel_Dataframe.head(JSON_Settings_Data["maximun_rows_to_display_in_preview"] - 1)
-        self.List_Number_Data_In_Row = []
+        self.First_Rows_Of_Data_In_Excel_Sheet = self.Excel_Dataframe.head(JSON_Settings_Data["maximun_rows_to_display_in_preview"] - 1)
+        self.List_Number_Data_Per_Row = []
         Values_Recognized_as_Null = ["" , "NaN" , "None"]
 
         for col_pos in range(self.Excel_Dataframe.shape[1]):
@@ -255,39 +264,43 @@ class Importer_Of_All_Data_In_Excel_File:
                 if(counter_void_places > JSON_Settings_Data["void_tolerance"]):
                     break
 
-            self.List_Number_Data_In_Row.append(counter_data_in_row + 1)
+            self.List_Number_Data_Per_Row.append(counter_data_in_row + 1)
         
-        if(not Idx_Sheet in self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved):
-            self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved[Idx_Sheet] = {
+        if(not Idx_Sheet in Cache_For_Imported_Excel_Sheets):
+            Cache_For_Imported_Excel_Sheets[Idx_Sheet] = {
                 "All_Excel_Sheet_Data": self.Excel_Dataframe,
                 "Total_Rows_In_Excel_Sheet": self.Total_Rows_In_Excel_Sheet,
                 "Total_Columns_In_Excel_Sheet": self.Total_Columns_In_Excel_Sheet,
+                "List_Number_Data_Per_Row": self.List_Number_Data_Per_Row,
             }
         
-        if(not self.File_Path in self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved):
-            self.Table_For_Show_Imported_Data.Extra_Data_For_Been_Saved["File_Path"] = self.File_Path
+        if(not self.File_Path in Cache_For_Imported_Excel_Sheets):
+            Cache_For_Imported_Excel_Sheets["File_Path"] = self.File_Path
 
-    def Load_Excel_In_Table(self):
-        List_With_All_Columns_Letters = []
-        for i in range(len(self.First_One_Hundred_Data.columns)):
-            Col_Letter = index_to_string(i)
-            List_With_All_Columns_Letters.append(Col_Letter)
-        
-        Titles_For_Columns = ["N° fila / columna"] + List_With_All_Columns_Letters
-        self.Table_For_Show_Imported_Data.Modify_Number_Of_Columns(len(Titles_For_Columns) , Titles_For_Columns , 120)
+    def Load_Excel_In_Table(self , Table_For_Show_Imported_Data):
+        try:
+            List_With_All_Columns_Letters = []
+            for i in range(len(self.First_Rows_Of_Data_In_Excel_Sheet.columns)):
+                Col_Letter = index_to_string(i)
+                List_With_All_Columns_Letters.append(Col_Letter)
+            
+            Titles_For_Columns = ["N° fila / columna"] + List_With_All_Columns_Letters
+            Table_For_Show_Imported_Data.Modify_Number_Of_Columns(len(Titles_For_Columns) , Titles_For_Columns , 120)
 
-        Void_Space_In_Bottom_Preview = [""] + ["" for _ in range(len(Titles_For_Columns))]
+            Void_Space_In_Bottom_Preview = [""] + ["" for _ in range(len(Titles_For_Columns))]
 
-        Data_To_Display_In_Table = []
-        Data_To_Display_In_Table.append(tuple([1] + self.First_One_Hundred_Data.columns.tolist()))
-        for (index, data_in_row) in self.First_One_Hundred_Data.iterrows():
-            Data_To_Display_In_Table.append(tuple([index + 2] + data_in_row.tolist()))
+            Data_To_Display_In_Table = []
+            Data_To_Display_In_Table.append(tuple([1] + self.First_Rows_Of_Data_In_Excel_Sheet.columns.tolist()))
+            for (index, data_in_row) in self.First_Rows_Of_Data_In_Excel_Sheet.iterrows():
+                Data_To_Display_In_Table.append(tuple([index + 2] + data_in_row.tolist()))
 
-        Data_To_Display_In_Table.append(Void_Space_In_Bottom_Preview)
-        
-        Extra_Data_In_Bottom_Of_Table = ["Ultimo dato en:"] + [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , self.List_Number_Data_In_Row)]
-
-        self.Table_For_Show_Imported_Data.Insert_Data(Data_To_Display_In_Table , Extra_Data_In_Bottom_Of_Table)
+            Data_To_Display_In_Table.append(Void_Space_In_Bottom_Preview)
+            
+            Extra_Data_In_Bottom_Of_Table = ["Ultimo dato en:"] + [f"{col_letter}{row_count}" for col_letter , row_count in zip(List_With_All_Columns_Letters , self.List_Number_Data_Per_Row)]
+            Table_For_Show_Imported_Data.Insert_Data(Data_To_Display_In_Table , Extra_Data_In_Bottom_Of_Table)
+        except Exception:
+            Insert_Data_In_Log_File("Ocurrio un error al intentar mostrar los datos del archivo seleccionado" , "Error" , "Importacion de datos de un excel" , Get_Detailed_Info_About_Error())
+            messagebox.showerror("Error" , "Ocurrio un error al intentar mostrar los datos del archivo seleccionado")
 
 class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Selected_Data_In_Table):
     def __init__(self , W_Import_Excel , Table_For_Show_Selected_Data , Range_Cells , Source_Module_Name , Entry_Widget , Value_For_Entry_Widget , Imported_Data_From_Excel):
@@ -334,7 +347,7 @@ class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Selected_
         if(self.End_Column != self.Start_Column):
             self.Import_Multiple_Columns = True
 
-    def Select_Data_From_Excel_Dataframe(self , Loaded_Excel_Dataframe , Total_Rows_In_Excel_Sheet , Total_Columns_In_Excel_Sheet):
+    def Select_Data_From_Excel_Dataframe(self , Loaded_Excel_Dataframe , Total_Rows_In_Excel_Sheet , Total_Columns_In_Excel_Sheet , List_Of_Occurred_Errors_In_Threads):
         try:
             Validator.Validate_Row_Limit_Excel(self, self.Start_Row , self.End_Row , Total_Rows_In_Excel_Sheet)
             Validator.Validate_Column_Limit_Excel(self , self.Start_Column , self.End_Column , Total_Columns_In_Excel_Sheet)
@@ -359,20 +372,23 @@ class Selecter_Of_Data_For_Single_Range_Of_Cells(Validator , Loader_Of_Selected_
             self.Imported_Data = self.Imported_Data.dropna()
 
             Validator.Validate_Data_Imported_Is_Null(self , self.Imported_Data)
-        except RuntimeError as e:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
-            self.W_Import_Excel.after(10 , messagebox.showerror("Error" , "Error al procesar en hilos.\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo"))
+        except RuntimeError:
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
+            self.W_Import_Excel.after(550 , lambda: messagebox.showerror("Error" , "Error al procesar en hilos.\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo"))
+            List_Of_Occurred_Errors_In_Threads[0] = True
             return
         except Raise_Warning as e:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File(e , "Advertencia" , "Thread de importacion de datos de un excel"))
-            self.W_Import_Excel.after(10 , messagebox.showwarning("Advertencia" , e))
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File(e , "Advertencia" , "Thread de importacion de datos de un excel"))
+            self.W_Import_Excel.after(550 , lambda e=e: messagebox.showwarning("Advertencia" , e))
+            List_Of_Occurred_Errors_In_Threads[0] = True
             return
-        except Exception as e:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Ocurrio un error al intentar importar los datos del archivo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
-            self.W_Import_Excel.after(10 , messagebox.showerror("Error" , "Ocurrio un error al intentar importar los datos del archivo"))
+        except Exception:
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Ocurrio un error al intentar importar los datos del archivo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
+            self.W_Import_Excel.after(550 , lambda: messagebox.showerror("Error" , "Ocurrio un error al intentar importar los datos del archivo"))
+            List_Of_Occurred_Errors_In_Threads[0] = True
             return
         else:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Se seleccionaron correctamente los datos solicitados" , "Operacion exitosa" , "Thread de importacion de datos de un excel"))
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Se seleccionaron correctamente los datos solicitados" , "Operacion exitosa" , "Thread de importacion de datos de un excel"))
             
     def Load_Excel_Data_In_Table(self):
         try:
@@ -441,7 +457,7 @@ class Selecter_Of_Data_For_Multiple_Range_Of_Cells(Validator , Loader_Of_Selecte
             self.Collection_Of_Cells["Rows"].append([self.Start_Row , self.End_Row])
         Validator.Validate_For_Avoid_Repeated_Range_Cells(self , Fixed_Ranges_Of_Cells)
         
-    def Select_Data_From_Excel_Dataframe(self , Excel_Dataframe , Total_Rows_In_Excel_Sheet , Total_Columns_In_Excel_Sheet):
+    def Select_Data_From_Excel_Dataframe(self , Excel_Dataframe , Total_Rows_In_Excel_Sheet , Total_Columns_In_Excel_Sheet , List_Of_Occurred_Errors_In_Threads):
         try:
             Arr_Columns = []
             Arr_Rows = []
@@ -507,7 +523,8 @@ class Selecter_Of_Data_For_Multiple_Range_Of_Cells(Validator , Loader_Of_Selecte
                         column_i.dropna()
                         Validator.Validate_Data_Imported_Is_Null(self , column_i , False)
                         Concat_Columns.append(column_i)
-                self.Imported_Data = pd.concat(Concat_Columns , axis=1 , ignore_index=True , join="outer")
+                Final_Joined_Data = pd.concat(Concat_Columns , axis=1 , ignore_index=True , join="outer")
+                self.Imported_Data = Final_Joined_Data
                 self.Imported_Data.columns = self.Imported_Column_Names
             except Exception as e:
                 raise Raise_Warning("Algo salio mal, asegurese de que el rango de celdas ingresado no tenga intersecciones.\nCorrecto: A1:D1001;F1:H1001 \nIncorrecto: A1:D1001;C1:E1001")
@@ -516,19 +533,22 @@ class Selecter_Of_Data_For_Multiple_Range_Of_Cells(Validator , Loader_Of_Selecte
             self.Start_Row = min(Arr_Rows)
             self.End_Row = max(Arr_Rows)
         except RuntimeError:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Error al procesar en hilos.\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
-            self.W_Import_Excel.after(10 , messagebox.showerror("Error" , "Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo"))
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Error al procesar en hilos.\nError en tiempo de ejecucion.\nSi ocurre demasiadas veces reportelo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
+            self.W_Import_Excel.after(550 , lambda: messagebox.showerror("Error" , "Error al procesar en hilos. Error en tiempo de ejecucion. Si ocurre demasiadas veces reportelo"))
+            List_Of_Occurred_Errors_In_Threads[0] = True
             return
         except Raise_Warning as e:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File(e , "Advertencia" , "Thread de importacion de datos de un excel"))
-            self.W_Import_Excel.after(10 , messagebox.showwarning("Advertencia" , e))
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File(e , "Advertencia" , "Thread de importacion de datos de un excel"))
+            self.W_Import_Excel.after(550 , lambda e=e: messagebox.showwarning("Advertencia" , e))
+            List_Of_Occurred_Errors_In_Threads[0] = True
             return
-        except Exception as e:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Ocurrio un error al intentar importar los datos del archivo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
-            self.W_Import_Excel.after(10 , messagebox.showerror("Error" , "Ocurrio un error al intentar importar los datos del archivo"))
+        except Exception:
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Ocurrio un error al intentar importar los datos del archivo" , "Error" , "Thread de importacion de datos de un excel" , Get_Detailed_Info_About_Error()))
+            self.W_Import_Excel.after(550 , lambda: messagebox.showerror("Error" , "Ocurrio un error al intentar importar los datos del archivo"))
+            List_Of_Occurred_Errors_In_Threads[0] = True
             return
         else:
-            self.W_Import_Excel.after(0 , Insert_Data_In_Log_File("Se seleccionaron correctamente los datos solicitados" , "Operacion exitosa" , "Thread de importacion de datos de un excel"))
+            self.W_Import_Excel.after(0 , lambda: Insert_Data_In_Log_File("Se seleccionaron correctamente los datos solicitados" , "Operacion exitosa" , "Thread de importacion de datos de un excel"))
         
     def Load_Excel_Data_In_Table(self):
         try:
